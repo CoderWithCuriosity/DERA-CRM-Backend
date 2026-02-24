@@ -1,68 +1,134 @@
-import User from './User';
-import Contact from './Contact';
-import Deal from './Deal';
-import Activity from './Activity';
-import Ticket from './Ticket';
-import TicketComment from './TicketComment';
-import EmailTemplate from './EmailTemplate';
-import Campaign from './Campaign';
-import Organization from './Organization';
+import { Sequelize } from 'sequelize';
+import sequelize from '../config/database';
 
-// User associations
-User.hasMany(Contact, { foreignKey: 'user_id', as: 'contacts' });
-User.hasMany(Deal, { foreignKey: 'user_id', as: 'deals' });
-User.hasMany(Activity, { foreignKey: 'user_id', as: 'activities' });
-User.hasMany(Ticket, { foreignKey: 'user_id', as: 'created_tickets' });
-User.hasMany(Ticket, { foreignKey: 'assigned_to', as: 'assigned_tickets' });
-User.hasMany(EmailTemplate, { foreignKey: 'user_id', as: 'email_templates' });
-User.hasMany(Campaign, { foreignKey: 'user_id', as: 'campaigns' });
-User.belongsTo(Organization, { foreignKey: 'organization_id' });
+// Import models
+import User, { UserAttributes, UserCreationAttributes } from './User';
+import Contact, { ContactAttributes, ContactCreationAttributes } from './Contact';
+import Deal, { DealAttributes, DealCreationAttributes } from './Deal';
+import Activity, { ActivityAttributes, ActivityCreationAttributes } from './Activity';
+import Ticket, { TicketAttributes, TicketCreationAttributes } from './Ticket';
+import TicketComment, { TicketCommentAttributes, TicketCommentCreationAttributes } from './TicketComment';
+import EmailTemplate, { EmailTemplateAttributes, EmailTemplateCreationAttributes } from './EmailTemplate';
+import Campaign, { CampaignAttributes, CampaignCreationAttributes } from './Campaign';
+import CampaignRecipient, { CampaignRecipientAttributes, CampaignRecipientCreationAttributes } from './CampaignRecipient';
+import Organization, { OrganizationAttributes, OrganizationCreationAttributes } from './Organization';
+import AuditLog, { AuditLogAttributes, AuditLogCreationAttributes } from './AuditLog';
+import RefreshToken, { RefreshTokenAttributes, RefreshTokenCreationAttributes } from './RefreshToken';
+import PasswordReset, { PasswordResetAttributes, PasswordResetCreationAttributes } from './PasswordReset';
+import Backup, { BackupAttributes, BackupCreationAttributes } from './Backup';
 
-// Contact associations
-Contact.belongsTo(User, { foreignKey: 'user_id', as: 'creator' });
-Contact.hasMany(Deal, { foreignKey: 'contact_id', as: 'deals' });
-Contact.hasMany(Activity, { foreignKey: 'contact_id', as: 'activities' });
-Contact.hasMany(Ticket, { foreignKey: 'contact_id', as: 'tickets' });
+// Define associations
+export const setupAssociations = () => {
+  // User associations
+  User.hasMany(Contact, { as: 'createdContacts', foreignKey: 'user_id' });
+  User.hasMany(Deal, { as: 'ownedDeals', foreignKey: 'user_id' });
+  User.hasMany(Activity, { as: 'createdActivities', foreignKey: 'user_id' });
+  User.hasMany(Ticket, { as: 'createdTickets', foreignKey: 'user_id' });
+  User.hasMany(Ticket, { as: 'assignedTickets', foreignKey: 'assigned_to' });
+  User.hasMany(TicketComment, { as: 'ticketComments', foreignKey: 'user_id' });
+  User.hasMany(EmailTemplate, { as: 'emailTemplates', foreignKey: 'user_id' });
+  User.hasMany(Campaign, { as: 'campaigns', foreignKey: 'user_id' });
+  User.hasMany(AuditLog, { as: 'auditLogs', foreignKey: 'user_id' });
+  User.hasMany(RefreshToken, { as: 'refreshTokens', foreignKey: 'user_id' });
+  User.hasMany(PasswordReset, { as: 'passwordResets', foreignKey: 'user_id' });
 
-// Deal associations
-Deal.belongsTo(User, { foreignKey: 'user_id', as: 'owner' });
-Deal.belongsTo(Contact, { foreignKey: 'contact_id', as: 'contact' });
-Deal.hasMany(Activity, { foreignKey: 'deal_id', as: 'activities' });
+  // Contact associations
+  Contact.belongsTo(User, { as: 'createdBy', foreignKey: 'user_id' });
+  Contact.hasMany(Deal, { as: 'deals', foreignKey: 'contact_id' });
+  Contact.hasMany(Activity, { as: 'activities', foreignKey: 'contact_id' });
+  Contact.hasMany(Ticket, { as: 'tickets', foreignKey: 'contact_id' });
+  Contact.hasMany(CampaignRecipient, { as: 'campaignRecipients', foreignKey: 'contact_id' });
 
-// Activity associations
-Activity.belongsTo(User, { foreignKey: 'user_id', as: 'creator' });
-Activity.belongsTo(Contact, { foreignKey: 'contact_id', as: 'contact' });
-Activity.belongsTo(Deal, { foreignKey: 'deal_id', as: 'deal' });
+  // Deal associations
+  Deal.belongsTo(Contact, { as: 'contact', foreignKey: 'contact_id' });
+  Deal.belongsTo(User, { as: 'owner', foreignKey: 'user_id' });
+  Deal.hasMany(Activity, { as: 'activities', foreignKey: 'deal_id' });
 
-// Ticket associations
-Ticket.belongsTo(User, { foreignKey: 'user_id', as: 'creator' });
-Ticket.belongsTo(User, { foreignKey: 'assigned_to', as: 'assignee' });
-Ticket.belongsTo(Contact, { foreignKey: 'contact_id', as: 'contact' });
-Ticket.hasMany(TicketComment, { foreignKey: 'ticket_id', as: 'comments' });
+  // Activity associations
+  Activity.belongsTo(User, { as: 'user', foreignKey: 'user_id' });
+  Activity.belongsTo(Contact, { as: 'contact', foreignKey: 'contact_id' });
+  Activity.belongsTo(Deal, { as: 'deal', foreignKey: 'deal_id' });
 
-// TicketComment associations
-TicketComment.belongsTo(Ticket, { foreignKey: 'ticket_id', as: 'ticket' });
-TicketComment.belongsTo(User, { foreignKey: 'user_id', as: 'author' });
+  // Ticket associations
+  Ticket.belongsTo(Contact, { as: 'contact', foreignKey: 'contact_id' });
+  Ticket.belongsTo(User, { as: 'createdBy', foreignKey: 'user_id' });
+  Ticket.belongsTo(User, { as: 'assignedTo', foreignKey: 'assigned_to' });
+  Ticket.hasMany(TicketComment, { as: 'comments', foreignKey: 'ticket_id' });
 
-// EmailTemplate associations
-EmailTemplate.belongsTo(User, { foreignKey: 'user_id', as: 'creator' });
-EmailTemplate.hasMany(Campaign, { foreignKey: 'template_id', as: 'campaigns' });
+  // TicketComment associations
+  TicketComment.belongsTo(Ticket, { as: 'ticket', foreignKey: 'ticket_id' });
+  TicketComment.belongsTo(User, { as: 'user', foreignKey: 'user_id' });
 
-// Campaign associations
-Campaign.belongsTo(User, { foreignKey: 'user_id', as: 'creator' });
-Campaign.belongsTo(EmailTemplate, { foreignKey: 'template_id', as: 'template' });
+  // EmailTemplate associations
+  EmailTemplate.belongsTo(User, { as: 'createdBy', foreignKey: 'user_id' });
+  EmailTemplate.hasMany(Campaign, { as: 'campaigns', foreignKey: 'template_id' });
 
-// Organization associations
-Organization.hasMany(User, { foreignKey: 'organization_id', as: 'users' });
+  // Campaign associations
+  Campaign.belongsTo(EmailTemplate, { as: 'template', foreignKey: 'template_id' });
+  Campaign.belongsTo(User, { as: 'createdBy', foreignKey: 'user_id' });
+  Campaign.hasMany(CampaignRecipient, { as: 'recipients', foreignKey: 'campaign_id' });
 
+  // CampaignRecipient associations
+  CampaignRecipient.belongsTo(Campaign, { as: 'campaign', foreignKey: 'campaign_id' });
+  CampaignRecipient.belongsTo(Contact, { as: 'contact', foreignKey: 'contact_id' });
+
+  // Organization associations
+  Organization.hasMany(User, { as: 'users', foreignKey: 'organization_id' });
+
+  // AuditLog associations
+  AuditLog.belongsTo(User, { as: 'user', foreignKey: 'user_id' });
+
+  // RefreshToken associations
+  RefreshToken.belongsTo(User, { as: 'user', foreignKey: 'user_id' });
+
+  // PasswordReset associations
+  PasswordReset.belongsTo(User, { as: 'user', foreignKey: 'user_id' });
+};
+
+// Export models and types
 export {
-    User,
-    Contact,
-    Deal,
-    Activity,
-    Ticket,
-    TicketComment,
-    EmailTemplate,
-    Campaign,
-    Organization
+  sequelize,
+  Sequelize,
+  User,
+  UserAttributes,
+  UserCreationAttributes,
+  Contact,
+  ContactAttributes,
+  ContactCreationAttributes,
+  Deal,
+  DealAttributes,
+  DealCreationAttributes,
+  Activity,
+  ActivityAttributes,
+  ActivityCreationAttributes,
+  Backup,
+  BackupAttributes,
+  BackupCreationAttributes,
+  Ticket,
+  TicketAttributes,
+  TicketCreationAttributes,
+  TicketComment,
+  TicketCommentAttributes,
+  TicketCommentCreationAttributes,
+  EmailTemplate,
+  EmailTemplateAttributes,
+  EmailTemplateCreationAttributes,
+  Campaign,
+  CampaignAttributes,
+  CampaignCreationAttributes,
+  CampaignRecipient,
+  CampaignRecipientAttributes,
+  CampaignRecipientCreationAttributes,
+  Organization,
+  OrganizationAttributes,
+  OrganizationCreationAttributes,
+  AuditLog,
+  AuditLogAttributes,
+  AuditLogCreationAttributes,
+  RefreshToken,
+  RefreshTokenAttributes,
+  RefreshTokenCreationAttributes,
+  PasswordReset,
+  PasswordResetAttributes,
+  PasswordResetCreationAttributes
 };

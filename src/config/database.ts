@@ -1,88 +1,65 @@
-import { Sequelize, Options } from 'sequelize';
+import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
-import logger from '../utils/logger';
 
 dotenv.config();
 
 interface DatabaseConfig {
-    name: string;
-    user: string;
-    password: string;
-    host: string;
-    port: number;
-    dialect: 'postgres';
-    logging: boolean | ((sql: string, timing?: number) => void);
-    pool: {
-        max: number;
-        min: number;
-        acquire: number;
-        idle: number;
-    };
+  database: string;
+  username: string;
+  password: string;
+  host: string;
+  port: number;
+  dialect: 'postgres';
+  logging: boolean | ((sql: string, timing?: number) => void);
+  pool: {
+    max: number;
+    min: number;
+    acquire: number;
+    idle: number;
+  };
 }
 
 const config: DatabaseConfig = {
-    name: process.env.DB_NAME || 'dera_crm',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres',
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432', 10),
-    dialect: 'postgres',
-    logging: process.env.NODE_ENV === 'development' 
-        ? (sql: string) => logger.debug(sql) 
-        : false,
+  database: process.env.DB_NAME || 'dera_crm',
+  username: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'postgres',
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5432', 10),
+  dialect: 'postgres',
+  logging: process.env.NODE_ENV === 'development' ? console.log : false,
+  pool: {
+    max: 10,
+    min: 2,
+    acquire: 30000,
+    idle: 10000
+  }
+};
+
+// Environment specific configurations
+const envConfigs = {
+  development: {
+    ...config,
+    logging: console.log
+  },
+  test: {
+    ...config,
+    database: process.env.DB_NAME_TEST || 'dera_crm_test',
+    logging: false
+  },
+  production: {
+    ...config,
+    logging: false,
     pool: {
-        max: 10,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
+      max: 20,
+      min: 5,
+      acquire: 60000,
+      idle: 20000
     }
+  }
 };
 
-const sequelizeOptions: Options = {
-    host: config.host,
-    port: config.port,
-    dialect: config.dialect,
-    logging: config.logging,
-    pool: config.pool,
-    define: {
-        timestamps: true,
-        underscored: true,
-        createdAt: 'created_at',
-        updatedAt: 'updated_at'
-    },
-    dialectOptions: {
-        ssl: process.env.DB_SSL === 'true' ? {
-            require: true,
-            rejectUnauthorized: false
-        } : false
-    }
-};
-
-export const sequelize = new Sequelize(
-    config.name,
-    config.user,
-    config.password,
-    sequelizeOptions
-);
-
-export const testConnection = async (): Promise<void> => {
-    try {
-        await sequelize.authenticate();
-        logger.info('Database connection has been established successfully.');
-    } catch (error) {
-        logger.error('Unable to connect to the database:', error);
-        throw error;
-    }
-};
-
-export const closeConnection = async (): Promise<void> => {
-    try {
-        await sequelize.close();
-        logger.info('Database connection closed successfully.');
-    } catch (error) {
-        logger.error('Error closing database connection:', error);
-        throw error;
-    }
-};
+const environment = process.env.NODE_ENV || 'development';
+const sequelize = new Sequelize(envConfigs[environment as keyof typeof envConfigs]);
 
 export default sequelize;
+export { config, envConfigs };

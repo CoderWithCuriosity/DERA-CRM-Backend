@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MANAGER ALERT: SLA Breach - <%= ticket_number %></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f7;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #7F1D1D 0%, #991B1B 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .manager-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: white;
+            color: #7F1D1D;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        .content {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .alert-summary {
+            background: #FEE2E2;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .breach-stat {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #DC2626;
+        }
+        .ticket-details {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .detail-row {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            width: 140px;
+            font-weight: 600;
+            color: #666;
+        }
+        .detail-value {
+            flex: 1;
+        }
+        .action-card {
+            background: #EFF6FF;
+            border-left: 4px solid #3B82F6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #DC2626;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            margin: 5px;
+        }
+        .button.secondary {
+            background: #f8f9fa;
+            color: #DC2626;
+            border: 1px solid #DC2626;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .metric-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1F2937;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="manager-badge">MANAGER ALERT</div>
+            <h1>SLA Breach Notification</h1>
+            <p>Ticket #<%= ticket_number %></p>
+        </div>
+        
+        <div class="content">
+            <h2>Hello <%= first_name %>,</h2>
+            
+            <p>A critical SLA breach has occurred that requires your attention as a manager.</p>
+            
+            <div class="alert-summary">
+                <div class="breach-stat">
+                    <div class="stat-value"><%= breach_duration %></div>
+                    <div>SLA Breach Duration</div>
+                </div>
+            </div>
+            
+            <div class="ticket-details">
+                <div class="detail-row">
+                    <div class="detail-label">Ticket Number:</div>
+                    <div class="detail-value"><strong>#<%= ticket_number %></strong></div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Subject:</div>
+                    <div class="detail-value"><%= subject %></div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Priority:</div>
+                    <div class="detail-value"><span style="color: #DC2626; font-weight: 700;"><%= priority.toUpperCase() %></span></div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Customer:</div>
+                    <div class="detail-value"><%= contact_name %></div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Assigned To:</div>
+                    <div class="detail-value"><%= assigned_to %></div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Created:</div>
+                    <div class="detail-value"><%= new Date(created_at).toLocaleString() %></div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">SLA Due:</div>
+                    <div class="detail-value"><%= new Date(sla_due).toLocaleString() %></div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Breached:</div>
+                    <div class="detail-value"><%= new Date(breached_at).toLocaleString() %></div>
+                </div>
+            </div>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value"><%= team_breaches %></div>
+                    <div>Team Breaches (30d)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value"><%= agent_breaches %></div>
+                    <div>Agent Breaches (30d)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value"><%= avg_response_time %>h</div>
+                    <div>Avg Response Time</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value"><%= compliance_rate %>%</div>
+                    <div>SLA Compliance</div>
+                </div>
+            </div>
+            
+            <div class="action-card">
+                <h3 style="color: #1E40AF; margin-bottom: 10px;">🎯 Recommended Management Actions:</h3>
+                <ul style="margin-left: 20px;">
+                    <li>Review the ticket with the assigned agent</li>
+                    <li>Assess if additional resources are needed</li>
+                    <li>Contact the customer if necessary</li>
+                    <li>Document the breach for reporting</li>
+                    <li>Consider process improvements to prevent future breaches</li>
+                </ul>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="<%= ticket_url %>" class="button">Review Ticket</a>
+                <a href="<%= agent_performance_url %>" class="button secondary">View Agent Performance</a>
+                <a href="<%= sla_report_url %>" class="button secondary">SLA Reports</a>
+            </div>
+            
+            <p>This breach has been logged in the system and will be included in monthly SLA reports. Please ensure appropriate follow-up actions are taken.</p>
+            
+            <p>Best regards,<br>The <%= company_name %> System</p>
+        </div>
+        
+        <div class="footer">
+            <p>© <%= new Date().getFullYear() %> <%= company_name %>. All rights reserved.</p>
+            <p>
+                <a href="#">SLA Dashboard</a> •
+                <a href="#">Team Performance</a> •
+                <a href="#">Reports</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLA BREACHED - <%= ticket_number %></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f7;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.9; }
+            100% { opacity: 1; }
+        }
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .header .ticket-number {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        .breached-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: white;
+            color: #DC2626;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 16px;
+            margin-top: 15px;
+        }
+        .content {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .alert-icon {
+            text-align: center;
+            font-size: 70px;
+            margin-bottom: 20px;
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .breach-details {
+            background: #FEE2E2;
+            border: 2px solid #DC2626;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .breach-time {
+            font-size: 36px;
+            font-weight: 700;
+            color: #DC2626;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .ticket-details {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .detail-row {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            width: 120px;
+            font-weight: 600;
+            color: #666;
+        }
+        .detail-value {
+            flex: 1;
+            color: #333;
+        }
+        .impact-box {
+            background: #FEF3C7;
+            border-left: 4px solid #F59E0B;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .button {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+        .button.primary {
+            background: #DC2626;
+            color: white;
+        }
+        .button.secondary {
+            background: #f8f9fa;
+            color: #DC2626;
+            border: 1px solid #DC2626;
+        }
+        .escalation-notice {
+            background: #1F2937;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="breached-badge">SLA BREACHED</div>
+            <h1>⚠️ ACTION REQUIRED ⚠️</h1>
+            <p class="ticket-number">Ticket #<%= ticket_number %></p>
+        </div>
+        
+        <div class="content">
+            <div class="alert-icon">🚨</div>
+            
+            <h2>Hello <%= first_name %>,</h2>
+            
+            <p>This ticket has <strong style="color: #DC2626;">breached its SLA deadline</strong> and requires immediate escalation.</p>
+            
+            <div class="breach-details">
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <strong style="font-size: 18px;">SLA Breached By:</strong>
+                </div>
+                <div class="breach-time"><%= breach_duration %></div>
+            </div>
+            
+            <div class="ticket-details">
+                <div class="detail-row">
+                    <div class="detail-label">Ticket:</div>
+                    <div class="detail-value"><strong>#<%= ticket_number %></strong></div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Subject:</div>
+                    <div class="detail-value"><%= subject %></div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Priority:</div>
+                    <div class="detail-value">
+                        <span style="color: #DC2626; font-weight: 700;"><%= priority.toUpperCase() %></span>
+                    </div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Customer:</div>
+                    <div class="detail-value"><%= contact_name %></div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Created:</div>
+                    <div class="detail-value"><%= new Date(created_at).toLocaleString() %></div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">SLA Due:</div>
+                    <div class="detail-value"><strong style="color: #DC2626;"><%= new Date(sla_due).toLocaleString() %></strong></div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Assigned To:</div>
+                    <div class="detail-value"><%= assigned_to %></div>
+                </div>
+            </div>
+            
+            <div class="impact-box">
+                <strong>⚠️ Impact of SLA Breach:</strong>
+                <ul style="margin-top: 10px; margin-left: 20px;">
+                    <li>Customer satisfaction may be affected</li>
+                    <li>Service credits may be applicable</li>
+                    <li>This breach will be recorded in reports</li>
+                    <li>Management has been notified</li>
+                </ul>
+            </div>
+            
+            <div class="escalation-notice">
+                <strong>📢 This ticket has been escalated to management</strong>
+                <p style="margin-top: 10px; opacity: 0.9;">Immediate action is required to resolve this ticket and prevent further impact.</p>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="<%= ticket_url %>" class="button primary">Resolve Now</a>
+                <a href="<%= reassign_url %>" class="button secondary">Request Reassignment</a>
+            </div>
+            
+            <p><strong>Required Actions:</strong></p>
+            <ol style="margin: 10px 0 20px 20px; color: #666;">
+                <li>Contact the customer immediately with an update</li>
+                <li>Document the reason for the delay</li>
+                <li>Provide a revised resolution timeline</li>
+                <li>Escalate internally if additional resources are needed</li>
+            </ol>
+            
+            <p>This is a critical issue that requires your immediate attention. Please update management on your action plan within the next hour.</p>
+            
+            <p>Best regards,<br>The <%= company_name %> Support Management Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>© <%= new Date().getFullYear() %> <%= company_name %>. All rights reserved.</p>
+            <p>
+                <a href="#">SLA Policy</a> •
+                <a href="#">Escalation Matrix</a> •
+                <a href="#">Contact Management</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -18,6 +18,23 @@ export interface TokenPayload {
 /**
  * Generate JWT access token
  */
+type ValidExpiry = number | `${number}d` | `${number}h` | `${number}m` | `${number}s` | '7d' | '1h' | '30m' | '24h' | '1d';
+
+const createToken = (
+  payload: TokenPayload, 
+  expiresIn: ValidExpiry
+): string => {
+  return jwt.sign(
+    payload, 
+    environment.jwtSecret as string, 
+    { 
+      expiresIn, 
+      issuer: 'dera-crm', 
+      audience: 'dera-crm-api' 
+    }
+  );
+};
+
 export const generateAccessToken = (user: User): string => {
   const payload: TokenPayload = {
     userId: user.id,
@@ -26,11 +43,7 @@ export const generateAccessToken = (user: User): string => {
     type: 'access'
   };
 
-  return jwt.sign(payload, environment.jwtSecret, {
-    expiresIn: environment.jwtExpire,
-    issuer: 'dera-crm',
-    audience: 'dera-crm-api'
-  });
+  return createToken(payload, environment.jwtExpire as ValidExpiry);
 };
 
 /**

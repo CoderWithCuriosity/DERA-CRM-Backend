@@ -72,6 +72,16 @@
             overflow: hidden;
             margin: 10px 0;
         }
+        .bar1{
+            width: var(--width);
+        }
+        .bar2{
+            width: var(--width);
+        }
+        .bar3{
+            width: var(--width);
+        }
+
         .progress-fill {
             height: 100%;
             background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
@@ -115,6 +125,7 @@
             background: #3B82F6;
             border-radius: 5px 5px 0 0;
             min-height: 20px;
+            height: var(--height);
         }
         .button {
             display: inline-block;
@@ -173,8 +184,8 @@
                         <span>Open Rate</span>
                         <span><strong><%= open_rate %>%</strong></span>
                     </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: <%= open_rate %>%;"></div>
+                    <div class="progress-bar bar1">
+                        <div class="progress-fill" style="--width: <%= open_rate %>%;"></div>
                     </div>
                 </div>
                 
@@ -183,8 +194,8 @@
                         <span>Click Rate</span>
                         <span><strong><%= click_rate %>%</strong></span>
                     </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: <%= click_rate %>%;"></div>
+                    <div class="progress-bar bar2">
+                        <div class="progress-fill" style="--width: <%= click_rate %>%;"></div>
                     </div>
                 </div>
                 
@@ -193,8 +204,8 @@
                         <span>Click-to-Open Rate</span>
                         <span><strong><%= click_to_open_rate %>%</strong></span>
                     </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: <%= click_to_open_rate %>%;"></div>
+                    <div class="progress-bar bar3">
+                        <div class="progress-fill" style="--width: <%= click_to_open_rate %>%;"></div>
                     </div>
                 </div>
             </div>
@@ -203,7 +214,7 @@
                 <h3>Hourly Opens</h3>
                 <div class="hourly-bars">
                     <% hourly_opens.forEach(function(hour) { %>
-                    <div class="hour-bar" style="height: <%= (hour.opens / max_opens) * 100 %>%;" title="<%= hour.hour %>: <%= hour.opens %> opens"></div>
+                    <div class="hour-bar" style="--height: <%= (hour.opens / max_opens) * 100 %>%;" title="<%= hour.hour %>: <%= hour.opens %> opens"></div>
                     <% }); %>
                 </div>
                 <div style="display: flex; justify-content: space-between; color: #666; font-size: 12px; margin-top: 10px;">

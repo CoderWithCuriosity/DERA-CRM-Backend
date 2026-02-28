@@ -23,7 +23,7 @@ export interface UserAttributes {
   updated_at: Date;
 }
 
-export interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'avatar' | 'is_verified' | 'last_login' | 'organization_id' | 'settings' | 'created_at' | 'updated_at'> {}
+export interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'avatar' | 'is_verified' | 'last_login' | 'organization_id' | 'settings' | 'created_at' | 'updated_at'> { }
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public id!: number;
@@ -60,8 +60,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   }
 
   public toJSON() {
-    const values = { ...this.get() };
-    delete values.password;
+    const { password, ...values } = this.get();
     return values;
   }
 }

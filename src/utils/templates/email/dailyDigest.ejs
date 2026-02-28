@@ -1,26 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Daily Digest - <%= company_name %></title>
+    <title>Your Daily Digest - <%= company_name %>
+    </title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
             color: #333;
             background-color: #f4f4f7;
         }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
         }
+
         .header {
             background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
             color: white;
@@ -28,26 +33,31 @@
             text-align: center;
             border-radius: 10px 10px 0 0;
         }
+
         .header h1 {
             font-size: 24px;
             margin-bottom: 5px;
         }
+
         .header .date {
             font-size: 14px;
             opacity: 0.9;
         }
+
         .content {
             background: white;
             padding: 30px;
             border-radius: 0 0 10px 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+
         .greeting {
             font-size: 16px;
             margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 1px solid #e9ecef;
         }
+
         .stats-row {
             display: flex;
             justify-content: space-between;
@@ -56,32 +66,39 @@
             background: #f8f9fa;
             border-radius: 8px;
         }
+
         .stat-item {
             text-align: center;
             flex: 1;
         }
+
         .stat-value {
             font-size: 24px;
             font-weight: 700;
             color: #3B82F6;
         }
+
         .stat-label {
             font-size: 12px;
             color: #666;
             text-transform: uppercase;
         }
+
         .section {
             margin: 30px 0;
         }
+
         .section-title {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
         }
+
         .section-title h2 {
             font-size: 18px;
             margin-right: 10px;
         }
+
         .section-title .badge {
             background: #e9ecef;
             padding: 3px 8px;
@@ -89,34 +106,42 @@
             font-size: 12px;
             color: #666;
         }
+
         .task-list {
             list-style: none;
         }
+
         .task-item {
             display: flex;
             align-items: center;
             padding: 12px 0;
             border-bottom: 1px solid #e9ecef;
         }
+
         .task-item:last-child {
             border-bottom: none;
         }
+
         .task-time {
             min-width: 80px;
             font-size: 14px;
             color: #666;
         }
+
         .task-content {
             flex: 1;
         }
+
         .task-title {
             font-weight: 600;
             margin-bottom: 2px;
         }
+
         .task-meta {
             font-size: 12px;
             color: #999;
         }
+
         .priority-tag {
             display: inline-block;
             padding: 2px 8px;
@@ -125,41 +150,51 @@
             font-weight: 600;
             margin-left: 10px;
         }
+
         .priority-high {
             background: #FEE2E2;
             color: #EF4444;
         }
+
         .priority-medium {
             background: #FEF3C7;
             color: #F59E0B;
         }
+
         .priority-low {
             background: #E0F2FE;
             color: #3B82F6;
         }
+
         .deal-progress {
             margin: 15px 0;
         }
+
         .deal-item {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
         }
+
         .deal-info {
             flex: 1;
         }
+
         .deal-name {
             font-weight: 600;
             margin-bottom: 5px;
         }
+
         .deal-stage {
             font-size: 12px;
             color: #666;
         }
+
         .deal-amount {
             font-weight: 700;
             color: #059669;
         }
+
         .progress-bar {
             height: 6px;
             background: #e9ecef;
@@ -167,11 +202,13 @@
             overflow: hidden;
             margin-top: 5px;
         }
+
         .progress-fill {
             height: 100%;
             background: #3B82F6;
             border-radius: 3px;
         }
+
         .button {
             display: inline-block;
             padding: 10px 20px;
@@ -183,146 +220,185 @@
             font-size: 14px;
             margin: 5px;
         }
+
         .button.outline {
             background: white;
             color: #3B82F6;
             border: 1px solid #3B82F6;
         }
+
         .footer {
             text-align: center;
             padding: 20px;
             color: #999;
             font-size: 12px;
         }
+
         @media only screen and (max-width: 600px) {
             .stats-row {
                 flex-direction: column;
                 gap: 15px;
             }
+
             .task-item {
                 flex-direction: column;
                 align-items: flex-start;
             }
+
             .task-time {
                 margin-bottom: 5px;
             }
         }
+
+        .progress-dynamic {
+            width: var(--width);
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
             <h1>Good Morning, <%= first_name %>! ☀️</h1>
-            <p class="date"><%= current_date %></p>
+            <p class="date">
+                <%= current_date %>
+            </p>
         </div>
-        
+
         <div class="content">
             <div class="greeting">
                 Here's your daily digest. Let's make today productive!
             </div>
-            
+
             <div class="stats-row">
                 <div class="stat-item">
-                    <div class="stat-value"><%= tasks_today %></div>
+                    <div class="stat-value">
+                        <%= tasks_today %>
+                    </div>
                     <div class="stat-label">Tasks Today</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value"><%= meetings_today %></div>
+                    <div class="stat-value">
+                        <%= meetings_today %>
+                    </div>
                     <div class="stat-label">Meetings</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value"><%= new_leads %></div>
+                    <div class="stat-value">
+                        <%= new_leads %>
+                    </div>
                     <div class="stat-label">New Leads</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value"><%= open_tickets %></div>
+                    <div class="stat-value">
+                        <%= open_tickets %>
+                    </div>
                     <div class="stat-label">Open Tickets</div>
                 </div>
             </div>
-            
+
             <div class="section">
                 <div class="section-title">
                     <h2>📋 Today's Schedule</h2>
-                    <span class="badge"><%= tasks_today %> items</span>
+                    <span class="badge">
+                        <%= tasks_today %> items
+                    </span>
                 </div>
-                
+
                 <ul class="task-list">
                     <% todays_tasks.forEach(function(task) { %>
-                    <li class="task-item">
-                        <span class="task-time"><%= task.time %></span>
-                        <div class="task-content">
-                            <span class="task-title"><%= task.title %></span>
-                            <div class="task-meta">
-                                <%= task.type %> • <%= task.contact %>
-                                <span class="priority-tag priority-<%= task.priority %>"><%= task.priority %></span>
+                        <li class="task-item">
+                            <span class="task-time">
+                                <%= task.time %>
+                            </span>
+                            <div class="task-content">
+                                <span class="task-title">
+                                    <%= task.title %>
+                                </span>
+                                <div class="task-meta">
+                                    <%= task.type %> • <%= task.contact %>
+                                            <span class="priority-tag priority-<%= task.priority %>">
+                                                <%= task.priority %>
+                                            </span>
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                    <% }); %>
+                        </li>
+                        <% }); %>
                 </ul>
-                
-                <% if (tasks_today === 0) { %>
-                <p style="color: #999; text-align: center; padding: 20px;">No tasks scheduled for today</p>
-                <% } %>
+
+                <% if (tasks_today===0) { %>
+                    <p style="color: #999; text-align: center; padding: 20px;">No tasks scheduled for today</p>
+                    <% } %>
             </div>
-            
+
             <div class="section">
                 <div class="section-title">
                     <h2>💰 Deals at Risk</h2>
-                    <span class="badge"><%= at_risk_deals.length %> deals</span>
+                    <span class="badge">
+                        <%= at_risk_deals.length %> deals
+                    </span>
                 </div>
-                
+
                 <% at_risk_deals.forEach(function(deal) { %>
-                <div class="deal-item">
-                    <div class="deal-info">
-                        <div class="deal-name">
-                            <%= deal.name %>
-                            <span class="deal-amount"><%= new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(deal.amount) %></span>
-                        </div>
-                        <div class="deal-stage">Stage: <%= deal.stage %> • Probability: <%= deal.probability %>%</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: <%= deal.probability %>%"></div>
+                    <div class="deal-item">
+                        <div class="deal-info">
+                            <div class="deal-name">
+                                <%= deal.name %>
+                                    <span class="deal-amount">
+                                        <%= new Intl.NumberFormat('en-US', { style: 'currency' , currency: 'USD'
+                                            }).format(deal.amount) %>
+                                    </span>
+                            </div>
+                            <div class="deal-stage">Stage: <%= deal.stage %> • Probability: <%= deal.probability %>%
+                            </div>
+                            <div class="progress-bar">
+                               <div class="progress-fill progress-dynamic" style="--width: <%= deal.probability %>%"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <% }); %>
+                    <% }); %>
             </div>
-            
+
             <div class="section">
                 <div class="section-title">
                     <h2>🎫 Urgent Tickets</h2>
-                    <span class="badge"><%= urgent_tickets.length %> tickets</span>
+                    <span class="badge">
+                        <%= urgent_tickets.length %> tickets
+                    </span>
                 </div>
-                
+
                 <ul class="task-list">
                     <% urgent_tickets.forEach(function(ticket) { %>
-                    <li class="task-item">
-                        <span class="task-time">#<%= ticket.number %></span>
-                        <div class="task-content">
-                            <span class="task-title"><%= ticket.subject %></span>
-                            <div class="task-meta">
-                                <%= ticket.customer %> • 
-                                <span style="color: #EF4444;">Due <%= ticket.due_time %></span>
+                        <li class="task-item">
+                            <span class="task-time">#<%= ticket.number %></span>
+                            <div class="task-content">
+                                <span class="task-title">
+                                    <%= ticket.subject %>
+                                </span>
+                                <div class="task-meta">
+                                    <%= ticket.customer %> •
+                                        <span style="color: #EF4444;">Due <%= ticket.due_time %></span>
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                    <% }); %>
+                        </li>
+                        <% }); %>
                 </ul>
             </div>
-            
+
             <div style="text-align: center; margin: 30px 0;">
                 <a href="<%= dashboard_url %>" class="button">Go to Dashboard</a>
                 <a href="<%= calendar_url %>" class="button outline">View Calendar</a>
             </div>
-            
+
             <p style="color: #666; font-size: 14px; text-align: center;">
-                Have a productive day! Need to adjust your notification settings? 
+                Have a productive day! Need to adjust your notification settings?
                 <a href="<%= settings_url %>" style="color: #3B82F6;">Update preferences</a>
             </p>
         </div>
-        
+
         <div class="footer">
-            <p>© <%= new Date().getFullYear() %> <%= company_name %>. All rights reserved.</p>
+            <p>© <%= new Date().getFullYear() %>
+                    <%= company_name %>. All rights reserved.</p>
             <p>
                 <a href="#">Dashboard</a> •
                 <a href="#">Calendar</a> •
@@ -332,4 +408,5 @@
         </div>
     </div>
 </body>
+
 </html>

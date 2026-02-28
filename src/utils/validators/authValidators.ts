@@ -1,5 +1,4 @@
 import { body } from 'express-validator';
-import { USER_ROLES } from '../../config/constants';
 
 /**
  * Register validation rules

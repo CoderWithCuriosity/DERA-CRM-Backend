@@ -74,7 +74,8 @@ export const PRIORITY_ICONS: Record<Priority, string> = {
  * Check if priority is high or urgent
  */
 export const isHighPriority = (priority: Priority): boolean => {
-  return [PRIORITIES.HIGH, PRIORITIES.URGENT].includes(priority);
+  const highPriorities = [PRIORITIES.HIGH, PRIORITIES.URGENT] as const;
+  return highPriorities.includes(priority as typeof highPriorities[number]);
 };
 
 /**

@@ -13,7 +13,7 @@ dotenv.config();
 // Handle uncaught exceptions
 handleUncaughtException();
 
-let server: Server;
+let server: Server | undefined;
 
 /**
  * Start server

@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../config/database';
 import { v4 as uuidv4 } from 'uuid';
+import User from './User'; // Import User model
 
 export interface RefreshTokenAttributes {
   id: number;
@@ -22,6 +23,9 @@ class RefreshToken extends Model<RefreshTokenAttributes, RefreshTokenCreationAtt
   public revoked!: boolean;
   public created_at!: Date;
   public updated_at!: Date;
+
+  // Define association property
+  public readonly user?: User; // Add this line
 
   // Instance methods
   public isExpired(): boolean {
@@ -107,5 +111,6 @@ RefreshToken.init(
     ]
   }
 );
+
 
 export default RefreshToken;

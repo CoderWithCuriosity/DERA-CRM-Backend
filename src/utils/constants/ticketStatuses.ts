@@ -59,14 +59,16 @@ export const TICKET_STATUS_ICONS: Record<TicketStatus, string> = {
  * Check if status is active (not resolved/closed)
  */
 export const isActiveStatus = (status: TicketStatus): boolean => {
-  return [TICKET_STATUS.NEW, TICKET_STATUS.OPEN, TICKET_STATUS.PENDING].includes(status);
+  const activeStatuses = [TICKET_STATUS.NEW, TICKET_STATUS.OPEN, TICKET_STATUS.PENDING] as const;
+  return activeStatuses.includes(status as typeof activeStatuses[number]);
 };
 
 /**
  * Check if status is resolved or closed
  */
 export const isResolvedStatus = (status: TicketStatus): boolean => {
-  return [TICKET_STATUS.RESOLVED, TICKET_STATUS.CLOSED].includes(status);
+  const resolvedStatuses = [TICKET_STATUS.RESOLVED, TICKET_STATUS.CLOSED] as const;
+  return resolvedStatuses.includes(status as typeof resolvedStatuses[number]);
 };
 
 /**

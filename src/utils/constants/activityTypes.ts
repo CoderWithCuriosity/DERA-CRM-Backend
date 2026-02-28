@@ -64,14 +64,16 @@ export const ACTIVITY_DEFAULT_DURATIONS: Record<ActivityType, number> = {
  * Check if activity type requires scheduling
  */
 export const requiresScheduling = (type: ActivityType): boolean => {
-  return [ACTIVITY_TYPES.CALL, ACTIVITY_TYPES.MEETING, ACTIVITY_TYPES.TASK].includes(type);
+  const schedulingTypes = [ACTIVITY_TYPES.CALL, ACTIVITY_TYPES.MEETING, ACTIVITY_TYPES.TASK] as const;
+  return schedulingTypes.includes(type as typeof schedulingTypes[number]);
 };
 
 /**
  * Check if activity type is communication
  */
 export const isCommunication = (type: ActivityType): boolean => {
-  return [ACTIVITY_TYPES.CALL, ACTIVITY_TYPES.EMAIL, ACTIVITY_TYPES.FOLLOW_UP].includes(type);
+  const communicationTypes = [ACTIVITY_TYPES.CALL, ACTIVITY_TYPES.EMAIL, ACTIVITY_TYPES.FOLLOW_UP] as const;
+  return communicationTypes.includes(type as typeof communicationTypes[number]);
 };
 
 /**

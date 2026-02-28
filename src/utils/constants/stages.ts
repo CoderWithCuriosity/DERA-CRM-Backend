@@ -64,7 +64,7 @@ export const DEAL_STAGE_PROBABILITIES: Record<DealStage, number> = {
  * Check if stage is active (not won/lost)
  */
 export const isActiveStage = (stage: DealStage): boolean => {
-  return ![DEAL_STAGES.WON, DEAL_STAGES.LOST].includes(stage);
+  return ![DEAL_STAGES.WON, DEAL_STAGES.LOST].includes(stage as typeof DEAL_STAGES.WON | typeof DEAL_STAGES.LOST);
 };
 
 /**

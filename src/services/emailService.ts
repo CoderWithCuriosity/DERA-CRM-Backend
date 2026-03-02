@@ -159,14 +159,44 @@ export const sendEmailDirect = async ({
 /**
  * Queue email for sending
  */
+// Define the exact type that emailQueue.add expects
+type EmailQueueJobInput = {
+  to: string;
+  subject: string;
+  template: string;
+  data: Record<string, any>;
+  attachments?: Array<{
+    filename: string;
+    content?: string | Buffer;
+    path?: string;
+    contentType?: string;
+  }>;
+  maxRetries: number; // This is required
+};
+
+/**
+ * Queue email for sending
+ */
 export const sendEmail = async (options: {
   to: string;
   subject: string;
   template: string;
-  data: any;
-  attachments?: any[];
+  data: Record<string, any>;
+  attachments?: Array<{
+    filename: string;
+    content?: string | Buffer;
+    path?: string;
+    contentType?: string;
+  }>;
+  maxRetries?: number; // Make it optional in your function
 }): Promise<string> => {
-  return emailQueue.add(options);
+  // Provide a default value for maxRetries
+  const queueInput: EmailQueueJobInput = {
+    ...options,
+    maxRetries: options.maxRetries ?? 3, // Default to 3 if not provided
+  };
+  
+  return emailQueue.add(queueInput);
 };
 
 /**

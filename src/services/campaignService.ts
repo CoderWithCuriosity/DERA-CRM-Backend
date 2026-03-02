@@ -1,11 +1,11 @@
 import { Op } from 'sequelize';
-import { Campaign, CampaignRecipient, EmailTemplate, Contact, User } from '../models';
+import { Campaign, CampaignRecipient, EmailTemplate, Contact, ContactAttributes } from '../models';
 import { CAMPAIGN_STATUS } from '../config/constants';
 import { sendEmail } from './emailService';
 import logger from '../config/logger';
 import AppError from '../utils/AppError';
 import { HTTP_STATUS } from '../config/constants';
-import { queueJob } from '../jobs/campaignScheduler';
+import { queueCampaign } from '../jobs/campaignScheduler';
 
 /**
  * Campaign analytics interface
@@ -114,7 +114,7 @@ export const createCampaign = async (
       campaign_id: campaign.id,
       contact_id: contactId,
       email: '', // Will be populated from contact when sending
-      status: 'pending'
+      status: 'pending' as const
     }));
 
     await CampaignRecipient.bulkCreate(recipients);
@@ -122,7 +122,7 @@ export const createCampaign = async (
 
   // Queue campaign if scheduled
   if (scheduled_at) {
-    await queueJob('send-campaign', { campaignId: campaign.id }, scheduled_at);
+    await queueCampaign(campaign.id, scheduled_at);
   }
 
   return campaign;
@@ -150,6 +150,9 @@ export const sendCampaign = async (campaignId: number): Promise<void> => {
         ]
       }
     ]
+  }) as (Campaign & {
+    template: EmailTemplate;
+    recipients: (CampaignRecipient & { contact: Contact })[];
   });
 
   if (!campaign) {
@@ -175,13 +178,13 @@ export const sendCampaign = async (campaignId: number): Promise<void> => {
 
   for (let i = 0; i < recipients.length; i += batchSize) {
     const batch = recipients.slice(i, i + batchSize);
-    
+
     await Promise.all(
       batch.map(recipient => sendCampaignEmail(campaign, recipient))
     );
 
     sentCount += batch.length;
-    
+
     // Update sent count periodically
     if (sentCount % 100 === 0) {
       await campaign.update({ sent_count: sentCount });
@@ -206,8 +209,8 @@ export const sendCampaign = async (campaignId: number): Promise<void> => {
  * Send single campaign email
  */
 export const sendCampaignEmail = async (
-  campaign: Campaign,
-  recipient: CampaignRecipient
+  campaign: Campaign & { template: EmailTemplate },
+  recipient: CampaignRecipient & { contact?: Contact }
 ): Promise<void> => {
   try {
     if (!recipient.contact) {
@@ -244,11 +247,12 @@ export const sendCampaignEmail = async (
       sent_at: new Date()
     });
   } catch (error) {
-    logger.error(`Failed to send campaign email to recipient ${recipient.id}:`, error);
-    
+    const err = error as Error;
+    logger.error(`Failed to send campaign email to recipient ${recipient.id}:`, err);
+
     await recipient.update({
       status: 'failed',
-      error_message: error.message
+      error_message: err.message
     });
   }
 };
@@ -258,7 +262,7 @@ export const sendCampaignEmail = async (
  */
 export const addClickTracking = (html: string, campaignId: number, recipientId: number): string => {
   const trackingUrl = `${process.env.SERVER_URL}/track/click/${campaignId}/${recipientId}`;
-  
+
   // Replace all href attributes with tracking URLs
   return html.replace(/<a\s+(?:[^>]*?\s+)?href="([^"]*)"/g, (match, url) => {
     const encodedUrl = encodeURIComponent(url);
@@ -331,7 +335,9 @@ export const getCampaignAnalytics = async (campaignId: number): Promise<Campaign
         as: 'recipients'
       }
     ]
-  });
+  }) as Campaign & {
+    recipients: CampaignRecipient[];
+  };
 
   if (!campaign) {
     throw new AppError('Campaign not found', HTTP_STATUS.NOT_FOUND);
@@ -415,7 +421,9 @@ export const duplicateCampaign = async (campaignId: number, userId: number): Pro
         as: 'recipients'
       }
     ]
-  });
+  }) as Campaign & {
+    recipients: CampaignRecipient[]
+  };
 
   if (!campaign) {
     throw new AppError('Campaign not found', HTTP_STATUS.NOT_FOUND);
@@ -448,7 +456,7 @@ export const duplicateCampaign = async (campaignId: number, userId: number): Pro
         campaign_id: duplicate.id,
         contact_id: r.contact_id,
         email: r.email,
-        status: 'pending'
+        status: 'pending' as const
       }));
 
       await CampaignRecipient.bulkCreate(recipients);
@@ -480,6 +488,9 @@ export const cancelCampaign = async (campaignId: number): Promise<Campaign> => {
 /**
  * Validate campaign before sending
  */
+/**
+ * Validate campaign before sending
+ */
 export const validateCampaign = async (campaignId: number): Promise<boolean> => {
   const campaign = await Campaign.findByPk(campaignId, {
     include: [
@@ -493,7 +504,10 @@ export const validateCampaign = async (campaignId: number): Promise<boolean> => 
         where: { status: 'pending' }
       }
     ]
-  });
+  }) as Campaign & {
+    template: EmailTemplate;
+    recipients: CampaignRecipient[]
+  };
 
   if (!campaign) {
     throw new AppError('Campaign not found', HTTP_STATUS.NOT_FOUND);
@@ -511,12 +525,35 @@ export const validateCampaign = async (campaignId: number): Promise<boolean> => 
 
   // Validate template variables
   const variables = campaign.template.variables || [];
+  
+  // Define which Contact fields are available for templates
+  const validContactFields: (keyof ContactAttributes)[] = [
+    'first_name',
+    'last_name', 
+    'email',
+    'company',
+    'job_title',
+    'phone',
+    'status',
+    'source',
+    'notes',
+    'tags'
+  ];
+
   for (const recipient of campaign.recipients) {
     const contact = await Contact.findByPk(recipient.contact_id);
     if (contact) {
+      const contactData = contact.toJSON() as ContactAttributes;
+      
       for (const variable of variables) {
-        if (!contact[variable] && !contact.dataValues[variable]) {
-          logger.warn(`Missing variable ${variable} for contact ${contact.id}`);
+        // Check if variable is a valid contact field
+        if (validContactFields.includes(variable as keyof ContactAttributes)) {
+          const key = variable as keyof ContactAttributes;
+          if (!contactData[key]) {
+            logger.warn(`Missing variable ${variable} for contact ${contact.id}`);
+          }
+        } else {
+          logger.warn(`Variable ${variable} is not a valid contact field for contact ${contact.id}`);
         }
       }
     }

@@ -4,13 +4,25 @@ import { Op } from 'sequelize';
 import { Request } from 'express';
 import logger from '../config/logger';
 
+// Define types from constants
+type AuditAction = typeof AUDIT_ACTIONS[keyof typeof AUDIT_ACTIONS];
+type EntityType = typeof ENTITY_TYPES[keyof typeof ENTITY_TYPES];
+
+// Extend Express Request to include user
+interface RequestWithUser extends Request {
+  user?: {
+    id: number;
+    [key: string]: any;
+  };
+}
+
 /**
  * Audit log entry interface
  */
 export interface AuditLogEntry {
   user_id: number | null;
-  action: string;
-  entity_type: string;
+  action: AuditAction;
+  entity_type: EntityType;
   entity_id: number;
   details: string;
   ip_address?: string;
@@ -45,9 +57,9 @@ export const createAuditLog = async (
  * Log user action with request context
  */
 export const logAction = async (
-  req: Request,
-  action: string,
-  entityType: string,
+  req: RequestWithUser,
+  action: AuditAction,
+  entityType: EntityType,
   entityId: number,
   details: string
 ): Promise<void> => {
@@ -67,12 +79,12 @@ export const logAction = async (
  */
 export const logLogin = async (
   userId: number,
-  req: Request,
+  req: RequestWithUser,
   success: boolean
 ): Promise<void> => {
   await createAuditLog({
     user_id: userId,
-    action: success ? AUDIT_ACTIONS.LOGIN : 'LOGIN_FAILED',
+    action: success ? AUDIT_ACTIONS.LOGIN : 'LOGIN_FAILED' as AuditAction,
     entity_type: ENTITY_TYPES.USER,
     entity_id: userId,
     details: success ? 'User logged in' : 'Failed login attempt',
@@ -86,7 +98,7 @@ export const logLogin = async (
  */
 export const logLogout = async (
   userId: number,
-  req: Request
+  req: RequestWithUser
 ): Promise<void> => {
   await createAuditLog({
     user_id: userId,
@@ -103,8 +115,8 @@ export const logLogout = async (
  * Log resource creation
  */
 export const logCreate = async (
-  req: Request,
-  entityType: string,
+  req: RequestWithUser,
+  entityType: EntityType,
   entityId: number,
   details: string
 ): Promise<void> => {
@@ -115,8 +127,8 @@ export const logCreate = async (
  * Log resource update
  */
 export const logUpdate = async (
-  req: Request,
-  entityType: string,
+  req: RequestWithUser,
+  entityType: EntityType,
   entityId: number,
   details: string
 ): Promise<void> => {
@@ -127,8 +139,8 @@ export const logUpdate = async (
  * Log resource delete
  */
 export const logDelete = async (
-  req: Request,
-  entityType: string,
+  req: RequestWithUser,
+  entityType: EntityType,
   entityId: number,
   details: string
 ): Promise<void> => {
@@ -139,8 +151,8 @@ export const logDelete = async (
  * Log resource view
  */
 export const logView = async (
-  req: Request,
-  entityType: string,
+  req: RequestWithUser,
+  entityType: EntityType,
   entityId: number,
   details: string
 ): Promise<void> => {
@@ -151,8 +163,8 @@ export const logView = async (
  * Log export
  */
 export const logExport = async (
-  req: Request,
-  entityType: string,
+  req: RequestWithUser,
+  entityType: EntityType,
   count: number
 ): Promise<void> => {
   await logAction(
@@ -168,8 +180,8 @@ export const logExport = async (
  * Log import
  */
 export const logImport = async (
-  req: Request,
-  entityType: string,
+  req: RequestWithUser,
+  entityType: EntityType,
   count: number
 ): Promise<void> => {
   await logAction(
@@ -187,8 +199,8 @@ export const logImport = async (
 export const getAuditLogs = async (
   filters: {
     userId?: number;
-    action?: string;
-    entityType?: string;
+    action?: AuditAction;
+    entityType?: EntityType;
     entityId?: number;
     startDate?: Date;
     endDate?: Date;
@@ -249,7 +261,13 @@ export const getAuditLogs = async (
 export const getUserActivitySummary = async (
   userId: number,
   days: number = 30
-): Promise<any> => {
+): Promise<{
+  total_actions: number;
+  by_action: Record<AuditAction, number>;
+  by_entity: Record<EntityType, number>;
+  daily_activity: Record<string, number>;
+  recent_actions: AuditLog[];
+}> => {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
 
@@ -263,18 +281,20 @@ export const getUserActivitySummary = async (
 
   const summary = {
     total_actions: logs.length,
-    by_action: {} as any,
-    by_entity: {} as any,
-    daily_activity: {} as any,
+    by_action: {} as Record<AuditAction, number>,
+    by_entity: {} as Record<EntityType, number>,
+    daily_activity: {} as Record<string, number>,
     recent_actions: logs.slice(0, 10)
   };
 
   logs.forEach(log => {
     // Count by action
-    summary.by_action[log.action] = (summary.by_action[log.action] || 0) + 1;
+    const action = log.action as AuditAction;
+    summary.by_action[action] = (summary.by_action[action] || 0) + 1;
 
     // Count by entity
-    summary.by_entity[log.entity_type] = (summary.by_entity[log.entity_type] || 0) + 1;
+    const entityType = log.entity_type as EntityType;
+    summary.by_entity[entityType] = (summary.by_entity[entityType] || 0) + 1;
 
     // Daily activity
     const date = log.created_at.toISOString().split('T')[0];
@@ -306,13 +326,30 @@ export const cleanupOldLogs = async (daysToKeep: number = 90): Promise<number> =
  * Export audit logs
  */
 export const exportAuditLogs = async (
-  filters: any,
+  filters: {
+    userId?: number;
+    action?: AuditAction;
+    entityType?: EntityType;
+    entityId?: number;
+    startDate?: Date;
+    endDate?: Date;
+  },
   format: 'csv' | 'json' = 'json'
 ): Promise<any> => {
   const { logs } = await getAuditLogs({ ...filters, limit: 10000 });
+  
+  // Type assertion for logs with user
+  const logsWithUser = logs as (AuditLog & {
+    user?: {
+      id: number;
+      first_name: string;
+      last_name: string;
+      email: string;
+    };
+  })[];
 
   if (format === 'csv') {
-    const csv = logs.map(log => ({
+    const csv = logsWithUser.map(log => ({
       timestamp: log.created_at,
       user: log.user ? `${log.user.first_name} ${log.user.last_name}` : 'System',
       action: log.action,
@@ -324,5 +361,5 @@ export const exportAuditLogs = async (
     return csv;
   }
 
-  return logs;
+  return logsWithUser;
 };

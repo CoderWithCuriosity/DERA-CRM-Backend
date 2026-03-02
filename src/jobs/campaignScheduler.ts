@@ -138,7 +138,10 @@ const processCampaign = async (campaignId: number): Promise<void> => {
         ]
       }
     ]
-  });
+  }) as (Campaign & { 
+    template: EmailTemplate;
+    recipients: (CampaignRecipient & { contact: Contact })[];
+  });;
 
   if (!campaign) {
     throw new Error(`Campaign ${campaignId} not found`);

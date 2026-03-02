@@ -18,7 +18,7 @@ export const generateToken = (user: User): string => {
       role: user.role
     },
     environment.jwtSecret,
-    { expiresIn: environment.jwtExpire }
+    { expiresIn: environment.jwtExpire as jwt.SignOptions['expiresIn'] }
   );
 };
 
@@ -182,7 +182,7 @@ export const verifyPasswordResetToken = async (token: string): Promise<User> => 
   const passwordReset = await PasswordReset.findOne({
     where: { token, used: false },
     include: ['user']
-  });
+  }) as (PasswordReset & {user: User}) || null;
 
   if (!passwordReset || !passwordReset.isValid()) {
     throw new AppError('Invalid or expired token', HTTP_STATUS.BAD_REQUEST);

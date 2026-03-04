@@ -158,6 +158,17 @@ export const CAMPAIGN_STATUS = {
   CANCELLED: 'cancelled'
 } as const;
 
+//campaign recipient status
+export const CAMPAIGN_RECIPIENT_STATUS = {
+  PENDING: 'pending',
+  SENT: 'sent',
+  FAILED: 'failed',
+  OPENED: 'opened',
+  CLICKED: 'clicked',
+  BOUNCED: 'bounced',
+  UNSUBSCRIBED: 'unsubscribed'
+} as const;
+
 export type CampaignStatus = typeof CAMPAIGN_STATUS[keyof typeof CAMPAIGN_STATUS];
 
 // Audit Actions

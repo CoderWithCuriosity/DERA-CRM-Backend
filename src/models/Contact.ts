@@ -15,11 +15,12 @@ export interface ContactAttributes {
   notes: string | null;
   tags: string[];
   user_id: number;
+  avatar: string | null;
   created_at: Date;
   updated_at: Date;
 }
 
-export interface ContactCreationAttributes extends Optional<ContactAttributes, 'id' | 'phone' | 'company' | 'job_title' | 'notes' | 'tags' | 'created_at' | 'updated_at'> {}
+export interface ContactCreationAttributes extends Optional<ContactAttributes, 'id' | 'phone' | 'company' | 'job_title' | 'notes' | 'tags' | 'avatar' | 'created_at' | 'updated_at'> {}
 
 class Contact extends Model<ContactAttributes, ContactCreationAttributes> implements ContactAttributes {
   public id!: number;
@@ -34,6 +35,7 @@ class Contact extends Model<ContactAttributes, ContactCreationAttributes> implem
   public notes!: string | null;
   public tags!: string[];
   public user_id!: number;
+   public avatar!: string | null;
   public created_at!: Date;
   public updated_at!: Date;
 
@@ -115,6 +117,10 @@ Contact.init(
         model: 'users',
         key: 'id'
       }
+    },
+     avatar: {
+      type: DataTypes.STRING(255),
+      allowNull: true
     },
     created_at: {
       type: DataTypes.DATE,

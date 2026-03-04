@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
-import { Op, fn, col, literal } from 'sequelize';
+import { Op } from 'sequelize';
 import { Contact, Deal, Activity, Ticket, User } from '../models';
-import { 
-  HTTP_STATUS, DEAL_STAGES, DEAL_STATUS, TICKET_STATUS,
-  TIME 
+import {
+  HTTP_STATUS, DEAL_STAGES, DEAL_STATUS, TICKET_STATUS
 } from '../config/constants';
 import catchAsync from '../utils/catchAsync';
 
@@ -82,7 +81,7 @@ export const getDashboard = catchAsync(async (req: Request, res: Response) => {
         status: DEAL_STATUS.OPEN
       },
       attributes: ['amount', 'probability']
-    }).then(deals => 
+    }).then(deals =>
       deals.reduce((sum, deal) => sum + (deal.amount * deal.probability / 100), 0)
     ),
     Deal.count({
@@ -185,7 +184,9 @@ export const getDashboard = catchAsync(async (req: Request, res: Response) => {
         attributes: ['first_name', 'last_name']
       }
     ]
-  });
+  }) as (Activity & {
+    contact: Contact
+  })[];
 
   // Get top performers (admin/manager only)
   let topPerformers: any[] = [];
@@ -204,8 +205,8 @@ export const getDashboard = catchAsync(async (req: Request, res: Response) => {
         weighted_pipeline_value: weightedPipelineValue || 0,
         deals_won_this_month: dealsWonThisMonth || 0,
         deals_lost_this_month: dealsLostThisMonth || 0,
-        win_rate: dealsWonThisMonth + dealsLostThisMonth > 0 
-          ? (dealsWonThisMonth / (dealsWonThisMonth + dealsLostThisMonth)) * 100 
+        win_rate: dealsWonThisMonth + dealsLostThisMonth > 0
+          ? (dealsWonThisMonth / (dealsWonThisMonth + dealsLostThisMonth)) * 100
           : 0,
         new_tickets: newTickets || 0,
         open_tickets: openTickets || 0,
@@ -295,7 +296,7 @@ export const getTicketChart = catchAsync(async (req: Request, res: Response) => 
 // Helper functions
 async function getSalesChartData(whereClause: any, period: string = 'month', year: number = new Date().getFullYear()) {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  
+
   const wonDeals = [];
   const lostDeals = [];
 

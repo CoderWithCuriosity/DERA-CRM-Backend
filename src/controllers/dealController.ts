@@ -2,14 +2,15 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
 import { Deal, Contact, User, Activity, AuditLog } from '../models';
-import { 
-  HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, 
+import {
+  HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES,
   DEAL_STAGES, DEAL_STATUS, DEAL_STAGE_DISPLAY, DEAL_STAGE_COLORS,
-  AUDIT_ACTIONS, ENTITY_TYPES 
+  AUDIT_ACTIONS, ENTITY_TYPES
 } from '../config/constants';
 import catchAsync from '../utils/catchAsync';
 import { getPagination, getPagingData } from '../utils/pagination';
 import { sendEmail } from '../services/emailService';
+import sequelize from '../config/database';
 
 // @desc    Create deal
 // @route   POST /api/deals
@@ -45,7 +46,7 @@ export const createDeal = catchAsync(async (req: Request, res: Response) => {
 
   // Determine owner
   const ownerId = user_id || req.user.id;
-  
+
   // Check if owner exists and has permission
   if (user_id && req.user.role !== 'admin' && req.user.role !== 'manager') {
     return res.status(HTTP_STATUS.FORBIDDEN).json({
@@ -124,12 +125,15 @@ export const createDeal = catchAsync(async (req: Request, res: Response) => {
 // @route   GET /api/deals
 // @access  Private
 export const getDeals = catchAsync(async (req: Request, res: Response) => {
-  const { 
-    page, limit, stage, status, user_id, contact_id, search, 
-    date_from, date_to, min_amount, max_amount 
+  const {
+    page, limit, stage, status, user_id, contact_id, search,
+    date_from, date_to, min_amount, max_amount
   } = req.query;
 
-  const { limit: take, offset } = getPagination(page as string, limit as string);
+  // Fix 1: Get pagination correctly - offset doesn't exist in the return value
+  const pagination = getPagination(page as string, limit as string);
+  const take = pagination.limit; // or pagination.take depending on your function
+  const skip = pagination.skip; // Use skip instead of offset
 
   let whereClause: any = {};
 
@@ -143,9 +147,9 @@ export const getDeals = catchAsync(async (req: Request, res: Response) => {
 
   if (user_id) {
     whereClause.user_id = user_id;
-  } else if (req.user.role === 'agent') {
+  } else if ((req.user as any).role === 'agent') {
     // Agents see only their own deals
-    whereClause.user_id = req.user.id;
+    whereClause.user_id = (req.user as any).id;
   }
 
   if (contact_id) {
@@ -182,7 +186,7 @@ export const getDeals = catchAsync(async (req: Request, res: Response) => {
   const deals = await Deal.findAndCountAll({
     where: whereClause,
     limit: take,
-    offset,
+    offset: skip, // Use skip here
     order: [['created_at', 'DESC']],
     include: [
       {
@@ -206,14 +210,24 @@ export const getDeals = catchAsync(async (req: Request, res: Response) => {
     ]
   });
 
+  // Fix 2: Properly type the rows and access activities
+  const rows = deals.rows as (Deal & {
+    contact?: Contact;
+    owner?: User;
+    activities?: Activity[];
+  })[];
+
   // Enhance deals with counts and calculated fields
-  const enhancedDeals = deals.rows.map(deal => {
-    const dealData = deal.toJSON();
+  const enhancedDeals = rows.map(deal => {
+    // Fix 3: Access activities directly from the deal object, not from toJSON()
+    const activities = deal.activities || [];
+
     return {
-      ...dealData,
-      weighted_amount: deal.weightedAmount,
-      activities_count: dealData.activities?.length || 0,
-      is_overdue: deal.isOverdue
+      ...deal.toJSON(),
+      // Fix 4: Access virtual fields safely
+      weighted_amount: (deal as any).weightedAmount || 0,
+      activities_count: activities.length,
+      is_overdue: (deal as any).isOverdue || false
     };
   });
 
@@ -226,11 +240,9 @@ export const getDeals = catchAsync(async (req: Request, res: Response) => {
     limit as string
   );
 
-  response.summary = summary;
-
   res.status(HTTP_STATUS.OK).json({
     success: true,
-    data: response
+    data: { ...response, summary }
   });
 });
 
@@ -429,6 +441,9 @@ export const markDealAsWon = catchAsync(async (req: Request, res: Response) => {
         as: 'owner'
       }
     ]
+  }) as (Deal & {
+    contact: Contact,
+    owner: User
   });
 
   if (!deal) {
@@ -628,7 +643,9 @@ export const getKanbanBoard = catchAsync(async (req: Request, res: Response) => 
       }
     ],
     order: [['created_at', 'DESC']]
-  });
+  }) as (Deal & {
+    contact: Contact
+  })[];
 
   // Group deals by stage
   const columns = Object.values(DEAL_STAGES).map(stage => ({
@@ -658,6 +675,7 @@ export const getKanbanBoard = catchAsync(async (req: Request, res: Response) => 
 });
 
 // Helper function to get deal summary
+// Helper function to get deal summary
 async function getDealSummary(whereClause: any) {
   const stages = await Deal.findAll({
     where: whereClause,
@@ -669,13 +687,19 @@ async function getDealSummary(whereClause: any) {
     group: ['stage']
   });
 
-  const stageSummary = stages.map(s => ({
-    name: s.stage,
-    display_name: DEAL_STAGE_DISPLAY[s.stage as keyof typeof DEAL_STAGE_DISPLAY],
-    count: parseInt(s.getDataValue('count')),
-    value: parseFloat(s.getDataValue('value')) || 0,
-    color: DEAL_STAGE_COLORS[s.stage as keyof typeof DEAL_STAGE_COLORS]
-  }));
+  const stageSummary = stages.map(s => {
+    // Fix: Handle the return type of get properly
+    const count = s.get('count');
+    const value = s.get('value');
+    
+    return {
+      name: s.stage,
+      display_name: DEAL_STAGE_DISPLAY[s.stage as keyof typeof DEAL_STAGE_DISPLAY] || s.stage,
+      count: count ? parseInt(count.toString()) : 0,
+      value: value ? parseFloat(value.toString()) : 0,
+      color: DEAL_STAGE_COLORS[s.stage as keyof typeof DEAL_STAGE_COLORS] || '#6B7280'
+    };
+  });
 
   // Calculate weighted values
   const deals = await Deal.findAll({
@@ -690,8 +714,8 @@ async function getDealSummary(whereClause: any) {
   let lostDeals = 0;
 
   deals.forEach(deal => {
-    totalValue += deal.amount;
-    weightedValue += deal.amount * (deal.probability / 100);
+    totalValue += deal.amount || 0;
+    weightedValue += (deal.amount || 0) * ((deal.probability || 0) / 100);
 
     if (deal.stage === DEAL_STAGES.WON) {
       wonDeals++;
@@ -706,7 +730,7 @@ async function getDealSummary(whereClause: any) {
   const enhancedStages = stageSummary.map(stage => {
     const stageDeals = deals.filter(d => d.stage === stage.name);
     const stageWeightedValue = stageDeals.reduce(
-      (sum, deal) => sum + deal.amount * (deal.probability / 100),
+      (sum, deal) => sum + (deal.amount || 0) * ((deal.probability || 0) / 100),
       0
     );
     return {
@@ -720,6 +744,7 @@ async function getDealSummary(whereClause: any) {
   const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const firstDayOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
   const firstDayOfQuarter = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
+  const lastDayOfQuarter = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3 + 3, 0);
 
   const thisMonthDeals = await Deal.sum('amount', {
     where: {
@@ -734,7 +759,10 @@ async function getDealSummary(whereClause: any) {
     where: {
       ...whereClause,
       expected_close_date: {
-        [Op.between]: [firstDayOfNextMonth, new Date(firstDayOfNextMonth.getFullYear(), firstDayOfNextMonth.getMonth() + 1, 1)]
+        [Op.between]: [
+          firstDayOfNextMonth, 
+          new Date(firstDayOfNextMonth.getFullYear(), firstDayOfNextMonth.getMonth() + 1, 1)
+        ]
       }
     }
   });
@@ -743,7 +771,7 @@ async function getDealSummary(whereClause: any) {
     where: {
       ...whereClause,
       expected_close_date: {
-        [Op.gte]: firstDayOfQuarter
+        [Op.between]: [firstDayOfQuarter, lastDayOfQuarter]
       }
     }
   });

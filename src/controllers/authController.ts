@@ -4,11 +4,9 @@ import jwt from 'jsonwebtoken';
 import { User, RefreshToken, PasswordReset, AuditLog } from '../models';
 import { environment, email as emailConfig } from '../config/environment';
 import { HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, AUDIT_ACTIONS, ENTITY_TYPES } from '../config/constants';
-import AppError from '../utils/AppError';
 import catchAsync from '../utils/catchAsync';
 import { sendEmail } from '../services/emailService';
-import { generateToken, generateRefreshToken, verifyRefreshToken } from '../services/tokenService';
-import { v4 as uuidv4 } from 'uuid';
+import { generateAccessToken , generateRefreshToken, verifyRefreshToken } from '../services/tokenService';
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -65,7 +63,7 @@ export const register = catchAsync(async (req: Request, res: Response) => {
   });
 
   // Generate auth token
-  const token = generateToken(user);
+  const token = generateAccessToken (user);
   const refreshToken = await generateRefreshToken(user.id);
 
   // Log audit
@@ -79,7 +77,7 @@ export const register = catchAsync(async (req: Request, res: Response) => {
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.CREATED).json({
+  return res.status(HTTP_STATUS.CREATED).json({
     success: true,
     message: SUCCESS_MESSAGES.REGISTER_SUCCESS,
     data: {
@@ -139,7 +137,7 @@ export const login = catchAsync(async (req: Request, res: Response) => {
   await user.updateLastLogin();
 
   // Generate tokens
-  const token = generateToken(user);
+  const token = generateAccessToken (user);
   const refreshToken = await generateRefreshToken(user.id);
 
   // Log audit
@@ -153,7 +151,7 @@ export const login = catchAsync(async (req: Request, res: Response) => {
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: SUCCESS_MESSAGES.LOGIN_SUCCESS,
     data: {
@@ -193,10 +191,10 @@ export const refreshToken = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
-  const token = generateToken(user);
+  const token = generateAccessToken (user);
   const newRefreshToken = await generateRefreshToken(user.id);
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: {
       token,
@@ -229,7 +227,7 @@ export const logout = catchAsync(async (req: Request, res: Response) => {
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: SUCCESS_MESSAGES.LOGOUT_SUCCESS
   });
@@ -272,7 +270,7 @@ export const verifyEmail = catchAsync(async (req: Request, res: Response) => {
       user_agent: req.get('user-agent')
     });
 
-    res.status(HTTP_STATUS.OK).json({
+    return res.status(HTTP_STATUS.OK).json({
       success: true,
       message: SUCCESS_MESSAGES.EMAIL_VERIFIED
     });
@@ -321,7 +319,7 @@ export const forgotPassword = catchAsync(async (req: Request, res: Response) => 
     }
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: SUCCESS_MESSAGES.PASSWORD_RESET_EMAIL_SENT
   });
@@ -345,9 +343,18 @@ export const resetPassword = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
+ // Fetch the user separately
+  const user = await User.findByPk(passwordReset.user_id);
+
+  if (!user) {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      message: ERROR_MESSAGES.INVALID_TOKEN
+    });
+  }
+
   // Update password
-  const user = passwordReset.user;
-  user.password = password;
+  user.password = password; // Assuming pre-save hook handles hashing
   await user.save();
 
   // Mark token as used
@@ -370,7 +377,7 @@ export const resetPassword = catchAsync(async (req: Request, res: Response) => {
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: SUCCESS_MESSAGES.PASSWORD_RESET_SUCCESS
   });
@@ -417,7 +424,7 @@ export const resendVerification = catchAsync(async (req: Request, res: Response)
     }
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: 'Verification email resent successfully'
   });

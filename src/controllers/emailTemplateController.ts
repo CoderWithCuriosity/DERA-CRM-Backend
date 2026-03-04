@@ -2,12 +2,14 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
 import { EmailTemplate, Campaign, AuditLog } from '../models';
-import { 
-  HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, 
-  AUDIT_ACTIONS, ENTITY_TYPES 
+import {
+  HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES,
+  AUDIT_ACTIONS, ENTITY_TYPES
 } from '../config/constants';
 import catchAsync from '../utils/catchAsync';
 import { getPagination, getPagingData } from '../utils/pagination';
+import sequelize from '../config/database';
+import {User} from '../models';
 
 // @desc    Create email template
 // @route   POST /api/email-templates
@@ -60,7 +62,7 @@ export const createEmailTemplate = catchAsync(async (req: Request, res: Response
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.CREATED).json({
+  return res.status(HTTP_STATUS.CREATED).json({
     success: true,
     message: SUCCESS_MESSAGES.CREATED('Email template'),
     data: { template }
@@ -71,9 +73,18 @@ export const createEmailTemplate = catchAsync(async (req: Request, res: Response
 // @route   GET /api/email-templates
 // @access  Private
 export const getEmailTemplates = catchAsync(async (req: Request, res: Response) => {
+  // Check authentication
+  if (!req.user?.id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+      success: false,
+      message: 'User not authenticated'
+    });
+  }
+
   const { page, limit, search } = req.query;
 
-  const { limit: take, offset } = getPagination(page as string, limit as string);
+  // Get pagination parameters - note: returns { take, skip }
+  const { take, skip } = getPagination(page as string, limit as string);
 
   let whereClause: any = {};
 
@@ -93,8 +104,8 @@ export const getEmailTemplates = catchAsync(async (req: Request, res: Response) 
 
   const templates = await EmailTemplate.findAndCountAll({
     where: whereClause,
-    limit: take,
-    offset,
+    limit: take,      // Use 'take' instead of 'limit'
+    offset: skip,     // Use 'skip' instead of 'offset'
     order: [['created_at', 'DESC']],
     attributes: {
       include: [
@@ -119,7 +130,7 @@ export const getEmailTemplates = catchAsync(async (req: Request, res: Response) 
       .replace(/\s+/g, ' ')
       .trim()
       .substring(0, 100) + '...';
-    
+
     return {
       ...templateData,
       preview
@@ -132,7 +143,7 @@ export const getEmailTemplates = catchAsync(async (req: Request, res: Response) 
     limit as string
   );
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: response
   });
@@ -169,7 +180,7 @@ export const getEmailTemplateById = catchAsync(async (req: Request, res: Respons
     });
   }
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: { template }
   });
@@ -236,7 +247,7 @@ export const updateEmailTemplate = catchAsync(async (req: Request, res: Response
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: SUCCESS_MESSAGES.UPDATED('Email template'),
     data: { template }
@@ -288,7 +299,7 @@ export const deleteEmailTemplate = catchAsync(async (req: Request, res: Response
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: SUCCESS_MESSAGES.DELETED('Email template')
   });
@@ -325,7 +336,7 @@ export const previewEmailTemplate = catchAsync(async (req: Request, res: Respons
     </div>
   `;
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: {
       subject: preview.subject,
@@ -379,7 +390,7 @@ export const duplicateEmailTemplate = catchAsync(async (req: Request, res: Respo
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.CREATED).json({
+  return res.status(HTTP_STATUS.CREATED).json({
     success: true,
     message: 'Template duplicated successfully',
     data: { template: duplicate }

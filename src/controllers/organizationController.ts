@@ -1,20 +1,43 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
+import { Op } from 'sequelize';
+import jwt from 'jsonwebtoken';
 import { Organization, AuditLog, User } from '../models';
-import { 
+import {
   HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES,
-  AUDIT_ACTIONS, ENTITY_TYPES 
+  AUDIT_ACTIONS, ENTITY_TYPES, TIME
 } from '../config/constants';
 import catchAsync from '../utils/catchAsync';
 import { deleteFile } from '../config/fileUpload';
 import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs';
+import { getPagination, getPagingData } from '../utils/pagination';
+import { sendEmail } from '../services/emailService';
+import { environment } from '../config/environment';
+
+// Extend Request type to include user
+interface AuthenticatedRequest extends Request {
+  user?: {
+    id: number;
+    email: string;
+    role: string;
+    fullName?: string;
+  };
+}
 
 // @desc    Get organization settings
 // @route   GET /api/organization/settings
 // @access  Private
-export const getOrganizationSettings = catchAsync(async (req: Request, res: Response) => {
+export const getOrganizationSettings = catchAsync(async (req: AuthenticatedRequest, res: Response) => {
+  // Check authentication
+  if (!req.user?.id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+      success: false,
+      message: 'User not authenticated'
+    });
+  }
+
   // Assuming each user belongs to an organization
   // For now, get first organization or create default
   let organization = await Organization.findOne();
@@ -28,7 +51,7 @@ export const getOrganizationSettings = catchAsync(async (req: Request, res: Resp
     });
   }
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: organization
   });
@@ -37,7 +60,15 @@ export const getOrganizationSettings = catchAsync(async (req: Request, res: Resp
 // @desc    Update organization settings
 // @route   PUT /api/organization/settings
 // @access  Private/Admin
-export const updateOrganizationSettings = catchAsync(async (req: Request, res: Response) => {
+export const updateOrganizationSettings = catchAsync(async (req: AuthenticatedRequest, res: Response) => {
+  // Check authentication
+  if (!req.user?.id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+      success: false,
+      message: 'User not authenticated'
+    });
+  }
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(HTTP_STATUS.BAD_REQUEST).json({
@@ -76,7 +107,7 @@ export const updateOrganizationSettings = catchAsync(async (req: Request, res: R
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: SUCCESS_MESSAGES.UPDATED('Organization settings'),
     data: organization
@@ -86,7 +117,15 @@ export const updateOrganizationSettings = catchAsync(async (req: Request, res: R
 // @desc    Upload company logo
 // @route   POST /api/organization/logo
 // @access  Private/Admin
-export const uploadCompanyLogo = catchAsync(async (req: Request, res: Response) => {
+export const uploadCompanyLogo = catchAsync(async (req: AuthenticatedRequest, res: Response) => {
+  // Check authentication
+  if (!req.user?.id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+      success: false,
+      message: 'User not authenticated'
+    });
+  }
+
   if (!req.file) {
     return res.status(HTTP_STATUS.BAD_REQUEST).json({
       success: false,
@@ -105,8 +144,12 @@ export const uploadCompanyLogo = catchAsync(async (req: Request, res: Response) 
   let organization = await Organization.findOne();
 
   if (!organization) {
+    // Include all required fields with default values
     organization = await Organization.create({
-      company_name: 'My Company'
+      company_name: 'My Company',
+      timezone: 'UTC',           // Add required field
+      date_format: 'YYYY-MM-DD',  // Add required field
+      currency: 'USD'             // Add required field
     });
   }
 
@@ -145,7 +188,7 @@ export const uploadCompanyLogo = catchAsync(async (req: Request, res: Response) 
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: 'Company logo uploaded successfully',
     data: { company_logo: logoUrl }
@@ -155,7 +198,15 @@ export const uploadCompanyLogo = catchAsync(async (req: Request, res: Response) 
 // @desc    Remove company logo
 // @route   DELETE /api/organization/logo
 // @access  Private/Admin
-export const removeCompanyLogo = catchAsync(async (req: Request, res: Response) => {
+export const removeCompanyLogo = catchAsync(async (req: AuthenticatedRequest, res: Response) => {
+  // Check authentication
+  if (!req.user?.id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+      success: false,
+      message: 'User not authenticated'
+    });
+  }
+
   // Check permission
   if (req.user.role !== 'admin') {
     return res.status(HTTP_STATUS.FORBIDDEN).json({
@@ -183,7 +234,7 @@ export const removeCompanyLogo = catchAsync(async (req: Request, res: Response) 
     });
   }
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: 'Company logo removed successfully'
   });
@@ -192,10 +243,18 @@ export const removeCompanyLogo = catchAsync(async (req: Request, res: Response) 
 // @desc    Get organization users
 // @route   GET /api/organization/users
 // @access  Private/Admin/Manager
-export const getOrganizationUsers = catchAsync(async (req: Request, res: Response) => {
+export const getOrganizationUsers = catchAsync(async (req: AuthenticatedRequest, res: Response) => {
+  // Check authentication
+  if (!req.user?.id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+      success: false,
+      message: 'User not authenticated'
+    });
+  }
+
   const { page, limit, role, search } = req.query;
 
-  const { limit: take, offset } = getPagination(page as string, limit as string);
+  const { take, skip } = getPagination(page as string, limit as string);
 
   let whereClause: any = {};
 
@@ -218,13 +277,13 @@ export const getOrganizationUsers = catchAsync(async (req: Request, res: Respons
     where: whereClause,
     attributes: { exclude: ['password'] },
     limit: take,
-    offset,
+    offset: skip,
     order: [['created_at', 'DESC']]
   });
 
   const response = getPagingData(users, page as string, limit as string);
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: response
   });
@@ -233,7 +292,15 @@ export const getOrganizationUsers = catchAsync(async (req: Request, res: Respons
 // @desc    Invite user to organization
 // @route   POST /api/organization/invite
 // @access  Private/Admin
-export const inviteUser = catchAsync(async (req: Request, res: Response) => {
+export const inviteUser = catchAsync(async (req: AuthenticatedRequest, res: Response) => {
+  // Check authentication
+  if (!req.user?.id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+      success: false,
+      message: 'User not authenticated'
+    });
+  }
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(HTTP_STATUS.BAD_REQUEST).json({
@@ -280,7 +347,7 @@ export const inviteUser = catchAsync(async (req: Request, res: Response) => {
     template: 'userInvitation',
     data: {
       first_name,
-      inviter_name: req.user.fullName,
+      inviter_name: req.user.fullName || 'A user',
       company_name: organization?.company_name || 'DERA CRM',
       invitation_url: invitationUrl,
       expires_in: '7 days'
@@ -298,7 +365,7 @@ export const inviteUser = catchAsync(async (req: Request, res: Response) => {
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: 'Invitation sent successfully'
   });
@@ -307,7 +374,15 @@ export const inviteUser = catchAsync(async (req: Request, res: Response) => {
 // @desc    Get organization billing info
 // @route   GET /api/organization/billing
 // @access  Private/Admin
-export const getBillingInfo = catchAsync(async (req: Request, res: Response) => {
+export const getBillingInfo = catchAsync(async (req: AuthenticatedRequest, res: Response) => {
+  // Check authentication
+  if (!req.user?.id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+      success: false,
+      message: 'User not authenticated'
+    });
+  }
+
   // Check permission
   if (req.user.role !== 'admin') {
     return res.status(HTTP_STATUS.FORBIDDEN).json({
@@ -342,7 +417,7 @@ export const getBillingInfo = catchAsync(async (req: Request, res: Response) => 
     ]
   };
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: billingInfo
   });

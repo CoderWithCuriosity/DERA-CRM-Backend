@@ -396,10 +396,20 @@ export const getRecentActivities = async (
  * Get task list (upcoming activities)
  */
 
+/**
+ * Get task list (upcoming activities)
+ */
 export const getTaskList = async (
   userId?: number,
   limit: number = 5
-): Promise<any[]> => {
+): Promise<Array<{
+  id: number;
+  type: string;
+  description: string;
+  due_date: Date;
+  priority: string;
+  contact: string | null;
+}>> => {
   let whereClause: any = {
     status: ACTIVITY_STATUS.SCHEDULED,
     scheduled_date: {
@@ -422,7 +432,7 @@ export const getTaskList = async (
         attributes: ['first_name', 'last_name']
       }
     ]
-  });
+  }) as (Activity & { contact?: Contact })[];
 
   return tasks.map(task => ({
     id: task.id,

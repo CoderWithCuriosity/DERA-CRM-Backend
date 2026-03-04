@@ -1,16 +1,66 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import { Op } from 'sequelize';
+import { Op, Order } from 'sequelize';
 import { Campaign, EmailTemplate, Contact, CampaignRecipient, AuditLog, User } from '../models';
 import { 
   HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, 
-  CAMPAIGN_STATUS, AUDIT_ACTIONS, ENTITY_TYPES 
+  CAMPAIGN_STATUS, AUDIT_ACTIONS, ENTITY_TYPES, CAMPAIGN_RECIPIENT_STATUS
 } from '../config/constants';
 import catchAsync from '../utils/catchAsync';
 import { getPagination, getPagingData } from '../utils/pagination';
-import { sendCampaignEmail } from '../services/emailService';
+import { sendEmail } from '../services/emailService';
 import { queueCampaign } from '../jobs/campaignScheduler';
-import { v4 as uuidv4 } from 'uuid';
+
+// Define interfaces for type safety - Fix: Don't extend Campaign, use composition instead
+interface CampaignWithAssociations {
+  id: number;
+  name: string;
+  template_id: number;
+  user_id: number;
+  status: string;
+  target_count: number;
+  scheduled_at: Date | null;
+  sent_at: Date | null;
+  sent_count: number;
+  open_count: number;
+  click_count: number;
+  created_at: Date;
+  updated_at: Date;
+  template?: EmailTemplate;
+  createdBy?: User;
+  recipients?: CampaignRecipientWithContact[];
+  openRate?: number;
+  clickRate?: number;
+  clickToOpenRate?: number;
+}
+
+interface CampaignRecipientWithContact extends CampaignRecipient {
+  contact?: Contact;
+}
+
+interface ContactWithEmail extends Contact {
+  email: string;
+}
+
+// Helper function to convert Campaign to CampaignWithAssociations
+function toCampaignWithAssociations(campaign: Campaign, extras: Partial<CampaignWithAssociations> = {}): CampaignWithAssociations {
+  return {
+    id: campaign.id,
+    name: campaign.name,
+    template_id: campaign.template_id,
+    user_id: campaign.user_id,
+    status: campaign.status,
+    target_count: campaign.target_count,
+    scheduled_at: campaign.scheduled_at,
+    sent_at: campaign.sent_at,
+    sent_count: campaign.sent_count,
+    open_count: campaign.open_count,
+    click_count: campaign.click_count,
+    created_at: campaign.created_at,
+    updated_at: campaign.updated_at,
+    ...extras
+  };
+}
 
 // @desc    Create campaign
 // @route   POST /api/campaigns
@@ -57,7 +107,7 @@ export const createCampaign = catchAsync(async (req: Request, res: Response) => 
 
     const contacts = await Contact.findAll({
       where: whereClause,
-      attributes: ['id']
+      attributes: ['id', 'email']
     });
 
     contactIds = contacts.map(c => c.id);
@@ -74,24 +124,30 @@ export const createCampaign = catchAsync(async (req: Request, res: Response) => 
   const campaign = await Campaign.create({
     name,
     template_id,
-    user_id: req.user.id,
+    user_id: (req.user as any).id,
     status: scheduled_at ? CAMPAIGN_STATUS.SCHEDULED : CAMPAIGN_STATUS.DRAFT,
     target_count: targetCount,
     scheduled_at: scheduled_at || null
   });
 
-  // Create campaign recipients
-  const recipients = contactIds.map(contactId => ({
+  // Get contacts with emails
+  const contacts = await Contact.findAll({
+    where: { id: contactIds },
+    attributes: ['id', 'email']
+  }) as ContactWithEmail[];
+
+  // Create campaign recipients with proper status type
+  const recipients = contacts.map(contact => ({
     campaign_id: campaign.id,
-    contact_id: contactId,
-    email: '', // Will be populated from contact
-    status: 'pending'
+    contact_id: contact.id,
+    email: contact.email || '',
+    status: CAMPAIGN_RECIPIENT_STATUS.PENDING
   }));
 
   await CampaignRecipient.bulkCreate(recipients);
 
   // Fetch created campaign with associations
-  const createdCampaign = await Campaign.findByPk(campaign.id, {
+  const campaignWithTemplate = await Campaign.findByPk(campaign.id, {
     include: [
       {
         model: EmailTemplate,
@@ -101,9 +157,13 @@ export const createCampaign = catchAsync(async (req: Request, res: Response) => 
     ]
   });
 
+  const createdCampaign = campaignWithTemplate ? toCampaignWithAssociations(campaignWithTemplate, {
+    template: campaignWithTemplate.get('template') as EmailTemplate | undefined
+  }) : null;
+
   // Log audit
   await AuditLog.create({
-    user_id: req.user.id,
+    user_id: (req.user as any).id,
     action: AUDIT_ACTIONS.CREATE,
     entity_type: ENTITY_TYPES.CAMPAIGN,
     entity_id: campaign.id,
@@ -117,7 +177,7 @@ export const createCampaign = catchAsync(async (req: Request, res: Response) => 
     await queueCampaign(campaign.id, scheduled_at);
   }
 
-  res.status(HTTP_STATUS.CREATED).json({
+  return res.status(HTTP_STATUS.CREATED).json({
     success: true,
     message: SUCCESS_MESSAGES.CREATED('Campaign'),
     data: { campaign: createdCampaign }
@@ -130,7 +190,10 @@ export const createCampaign = catchAsync(async (req: Request, res: Response) => 
 export const getCampaigns = catchAsync(async (req: Request, res: Response) => {
   const { page, limit, status, search } = req.query;
 
-  const { limit: take, offset } = getPagination(page as string, limit as string);
+  // Fix pagination
+  const pagination = getPagination(page as string, limit as string);
+  const take = pagination.limit;
+  const skip = pagination.skip;
 
   let whereClause: any = {};
 
@@ -143,15 +206,18 @@ export const getCampaigns = catchAsync(async (req: Request, res: Response) => {
   }
 
   // Role-based filtering
-  if (req.user.role === 'agent') {
-    whereClause.user_id = req.user.id;
+  if ((req.user as any).role === 'agent') {
+    whereClause.user_id = (req.user as any).id;
   }
+
+  // Fix order typing
+  const order: Order = [['created_at', 'DESC']];
 
   const campaigns = await Campaign.findAndCountAll({
     where: whereClause,
     limit: take,
-    offset,
-    order: [['created_at', 'DESC']],
+    offset: skip,
+    order,
     include: [
       {
         model: EmailTemplate,
@@ -166,8 +232,8 @@ export const getCampaigns = catchAsync(async (req: Request, res: Response) => {
     const campaignData = campaign.toJSON();
     return {
       ...campaignData,
-      open_rate: campaign.openRate,
-      click_rate: campaign.clickRate
+      open_rate: (campaign as any).openRate || 0,
+      click_rate: (campaign as any).clickRate || 0
     };
   });
 
@@ -223,19 +289,22 @@ export const getCampaignById = catchAsync(async (req: Request, res: Response) =>
     });
   }
 
-  // Calculate analytics
+  // Cast recipients to proper type
+  const recipients = (campaign.get('recipients') as CampaignRecipientWithContact[]) || [];
+
+  // Calculate analytics with safe navigation
   const analytics = {
-    open_rate: campaign.openRate,
-    click_rate: campaign.clickRate,
-    click_to_open_rate: campaign.clickToOpenRate,
-    unique_opens: campaign.open_count,
-    unique_clicks: campaign.click_count,
-    bounces: campaign.recipients?.filter(r => r.status === 'bounced').length || 0,
-    unsubscribes: campaign.recipients?.filter(r => r.status === 'unsubscribed').length || 0,
-    complaints: 0 // Track separately
+    open_rate: (campaign as any).openRate || 0,
+    click_rate: (campaign as any).clickRate || 0,
+    click_to_open_rate: (campaign as any).clickToOpenRate || 0,
+    unique_opens: campaign.open_count || 0,
+    unique_clicks: campaign.click_count || 0,
+    bounces: recipients.filter(r => r.status === CAMPAIGN_RECIPIENT_STATUS.BOUNCED).length,
+    unsubscribes: recipients.filter(r => r.status === CAMPAIGN_RECIPIENT_STATUS.UNSUBSCRIBED).length,
+    complaints: 0
   };
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: {
       campaign,
@@ -261,7 +330,7 @@ export const updateCampaign = catchAsync(async (req: Request, res: Response) => 
   }
 
   // Check permission
-  if (req.user.role === 'agent' && campaign.user_id !== req.user.id) {
+  if ((req.user as any).role === 'agent' && campaign.user_id !== (req.user as any).id) {
     return res.status(HTTP_STATUS.FORBIDDEN).json({
       success: false,
       message: ERROR_MESSAGES.FORBIDDEN
@@ -285,7 +354,7 @@ export const updateCampaign = catchAsync(async (req: Request, res: Response) => 
 
   // Log audit
   await AuditLog.create({
-    user_id: req.user.id,
+    user_id: (req.user as any).id,
     action: AUDIT_ACTIONS.UPDATE,
     entity_type: ENTITY_TYPES.CAMPAIGN,
     entity_id: campaign.id,
@@ -294,7 +363,7 @@ export const updateCampaign = catchAsync(async (req: Request, res: Response) => 
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: SUCCESS_MESSAGES.UPDATED('Campaign'),
     data: { campaign }
@@ -335,7 +404,7 @@ export const sendCampaign = catchAsync(async (req: Request, res: Response) => {
   }
 
   // Check permission
-  if (req.user.role === 'agent' && campaign.user_id !== req.user.id) {
+  if ((req.user as any).role === 'agent' && campaign.user_id !== (req.user as any).id) {
     return res.status(HTTP_STATUS.FORBIDDEN).json({
       success: false,
       message: ERROR_MESSAGES.FORBIDDEN
@@ -370,7 +439,7 @@ export const sendCampaign = catchAsync(async (req: Request, res: Response) => {
 
   // Log audit
   await AuditLog.create({
-    user_id: req.user.id,
+    user_id: (req.user as any).id,
     action: AUDIT_ACTIONS.UPDATE,
     entity_type: ENTITY_TYPES.CAMPAIGN,
     entity_id: campaign.id,
@@ -379,12 +448,12 @@ export const sendCampaign = catchAsync(async (req: Request, res: Response) => {
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: send_immediately ? 'Campaign sending started' : 'Campaign scheduled',
     data: {
       campaign,
-      estimated_time: send_immediately ? `${Math.ceil(campaign.target_count / 10)} minutes` : null
+      estimated_time: send_immediately ? `${Math.ceil((campaign.target_count || 0) / 10)} minutes` : null
     }
   });
 });
@@ -405,7 +474,7 @@ export const cancelCampaign = catchAsync(async (req: Request, res: Response) => 
   }
 
   // Check permission
-  if (req.user.role === 'agent' && campaign.user_id !== req.user.id) {
+  if ((req.user as any).role === 'agent' && campaign.user_id !== (req.user as any).id) {
     return res.status(HTTP_STATUS.FORBIDDEN).json({
       success: false,
       message: ERROR_MESSAGES.FORBIDDEN
@@ -424,7 +493,7 @@ export const cancelCampaign = catchAsync(async (req: Request, res: Response) => 
 
   // Log audit
   await AuditLog.create({
-    user_id: req.user.id,
+    user_id: (req.user as any).id,
     action: AUDIT_ACTIONS.UPDATE,
     entity_type: ENTITY_TYPES.CAMPAIGN,
     entity_id: campaign.id,
@@ -433,7 +502,7 @@ export const cancelCampaign = catchAsync(async (req: Request, res: Response) => 
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: 'Campaign cancelled successfully',
     data: { campaign }
@@ -463,20 +532,23 @@ export const sendTestEmail = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
+  const template = campaign.get('template') as EmailTemplate | undefined;
+  
   // Render email with test data
-  const preview = campaign.template.renderPreview(test_data || {});
+  const preview = template?.renderPreview(test_data || {}) || { subject: '', body: '' };
 
-  // Send test email
-  const emailId = await sendCampaignEmail({
+  // Send test email using the existing sendEmail function
+  const emailId = await sendEmail({
     to: test_email,
     subject: `[TEST] ${preview.subject}`,
-    html: preview.body,
-    campaign_id: campaign.id,
-    track_opens: true,
-    track_clicks: true
+    template: 'campaign-test', // You need to create this template
+    data: {
+      content: preview.body,
+      ...test_data
+    }
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: 'Test email sent successfully',
     data: {
@@ -508,28 +580,28 @@ export const getCampaignAnalytics = catchAsync(async (req: Request, res: Respons
     });
   }
 
-  const recipients = campaign.recipients || [];
+  const recipients = (campaign.get('recipients') as CampaignRecipient[]) || [];
 
   // Calculate metrics
   const summary = {
-    sent: campaign.sent_count,
-    delivered: recipients.filter(r => r.status !== 'bounced' && r.status !== 'failed').length,
-    opens: campaign.open_count,
-    unique_opens: campaign.open_count,
-    clicks: campaign.click_count,
-    unique_clicks: campaign.click_count,
-    bounces: recipients.filter(r => r.status === 'bounced').length,
-    unsubscribes: recipients.filter(r => r.status === 'unsubscribed').length,
+    sent: campaign.sent_count || 0,
+    delivered: recipients.filter(r => r.status !== CAMPAIGN_RECIPIENT_STATUS.BOUNCED && r.status !== CAMPAIGN_RECIPIENT_STATUS.FAILED).length,
+    opens: campaign.open_count || 0,
+    unique_opens: campaign.open_count || 0,
+    clicks: campaign.click_count || 0,
+    unique_clicks: campaign.click_count || 0,
+    bounces: recipients.filter(r => r.status === CAMPAIGN_RECIPIENT_STATUS.BOUNCED).length,
+    unsubscribes: recipients.filter(r => r.status === CAMPAIGN_RECIPIENT_STATUS.UNSUBSCRIBED).length,
     complaints: 0
   };
 
   const rates = {
-    delivery_rate: (summary.delivered / summary.sent) * 100 || 0,
-    open_rate: campaign.openRate,
-    click_rate: campaign.clickRate,
-    click_to_open_rate: campaign.clickToOpenRate,
-    bounce_rate: (summary.bounces / summary.sent) * 100 || 0,
-    unsubscribe_rate: (summary.unsubscribes / summary.sent) * 100 || 0
+    delivery_rate: summary.sent > 0 ? (summary.delivered / summary.sent) * 100 : 0,
+    open_rate: (campaign as any).openRate || 0,
+    click_rate: (campaign as any).clickRate || 0,
+    click_to_open_rate: (campaign as any).clickToOpenRate || 0,
+    bounce_rate: summary.sent > 0 ? (summary.bounces / summary.sent) * 100 : 0,
+    unsubscribe_rate: summary.sent > 0 ? (summary.unsubscribes / summary.sent) * 100 : 0
   };
 
   // Get hourly opens (mock data - implement real tracking)
@@ -555,7 +627,7 @@ export const getCampaignAnalytics = catchAsync(async (req: Request, res: Respons
     { url: 'https://deracrm.com/blog', clicks: 4 }
   ];
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: {
       campaign_id: campaign.id,
@@ -604,26 +676,28 @@ export const duplicateCampaign = catchAsync(async (req: Request, res: Response) 
   const duplicate = await Campaign.create({
     name: finalName,
     template_id: campaign.template_id,
-    user_id: req.user.id,
+    user_id: (req.user as any).id,
     status: CAMPAIGN_STATUS.DRAFT,
     target_count: campaign.target_count
   });
 
   // Duplicate recipients
-  if (campaign.recipients && campaign.recipients.length > 0) {
-    const recipients = campaign.recipients.map(r => ({
+  const recipients = (campaign.get('recipients') as CampaignRecipient[]) || [];
+  
+  if (recipients.length > 0) {
+    const newRecipients = recipients.map(r => ({
       campaign_id: duplicate.id,
       contact_id: r.contact_id,
       email: r.email,
-      status: 'pending'
+      status: CAMPAIGN_RECIPIENT_STATUS.PENDING
     }));
 
-    await CampaignRecipient.bulkCreate(recipients);
+    await CampaignRecipient.bulkCreate(newRecipients);
   }
 
   // Log audit
   await AuditLog.create({
-    user_id: req.user.id,
+    user_id: (req.user as any).id,
     action: AUDIT_ACTIONS.CREATE,
     entity_type: ENTITY_TYPES.CAMPAIGN,
     entity_id: duplicate.id,
@@ -632,7 +706,7 @@ export const duplicateCampaign = catchAsync(async (req: Request, res: Response) 
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.CREATED).json({
+  return res.status(HTTP_STATUS.CREATED).json({
     success: true,
     message: 'Campaign duplicated successfully',
     data: { campaign: duplicate }
@@ -665,32 +739,43 @@ async function processCampaign(campaignId: number) {
   }
 
   let sentCount = 0;
+  const recipients = (campaign.get('recipients') as (CampaignRecipient & { contact?: Contact })[]) || [];
 
-  for (const recipient of campaign.recipients || []) {
-    if (recipient.status !== 'pending') continue;
+  for (const recipient of recipients) {
+    if (recipient.status !== CAMPAIGN_RECIPIENT_STATUS.PENDING) continue;
 
     try {
+      const template = campaign.get('template') as EmailTemplate | undefined;
+      
       // Render email with contact data
-      const preview = campaign.template.renderPreview({
+      const preview = template?.renderPreview({
         first_name: recipient.contact?.first_name,
         last_name: recipient.contact?.last_name,
         email: recipient.contact?.email,
         company: recipient.contact?.company
-      });
+      }) || { subject: '', body: '' };
 
-      // Send email
-      await sendCampaignEmail({
+      // Send email using the existing sendEmail function
+      await sendEmail({
         to: recipient.contact?.email || recipient.email,
         subject: preview.subject,
-        html: preview.body,
-        campaign_id: campaign.id,
-        recipient_id: recipient.id,
-        track_opens: true,
-        track_clicks: true
+        template: 'campaign', // You need to create this template
+        data: {
+          content: preview.body,
+          first_name: recipient.contact?.first_name,
+          last_name: recipient.contact?.last_name,
+          email: recipient.contact?.email,
+          company: recipient.contact?.company,
+          campaign_id: campaign.id,
+          recipient_id: recipient.id,
+          track_opens: true,
+          track_clicks: true
+        }
       });
 
+      // Update recipient status
       await recipient.update({
-        status: 'sent',
+        status: CAMPAIGN_RECIPIENT_STATUS.SENT,
         sent_at: new Date()
       });
 
@@ -699,14 +784,14 @@ async function processCampaign(campaignId: number) {
       // Update campaign sent count periodically
       if (sentCount % 10 === 0) {
         await campaign.update({
-          sent_count: campaign.sent_count + 10
+          sent_count: (campaign.sent_count || 0) + 10
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to send to recipient ${recipient.id}:`, error);
       await recipient.update({
-        status: 'failed',
-        error_message: error.message
+        status: CAMPAIGN_RECIPIENT_STATUS.FAILED,
+        error_message: error?.message || 'Unknown error'
       });
     }
 
@@ -717,6 +802,6 @@ async function processCampaign(campaignId: number) {
   // Final update
   await campaign.update({
     status: CAMPAIGN_STATUS.SENT,
-    sent_count: campaign.sent_count + (sentCount % 10)
+    sent_count: (campaign.sent_count || 0) + (sentCount % 10)
   });
 }

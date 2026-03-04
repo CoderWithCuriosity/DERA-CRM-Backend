@@ -4,9 +4,9 @@ import { User, Activity, Ticket, Deal, Contact } from '../models';
 import { ACTIVITY_STATUS, TICKET_STATUS, DEAL_STAGES, TIME } from '../config/constants';
 import { sendEmail } from '../services/emailService';
 import logger from '../config/logger';
-import { 
+import {
   startOfWeek, endOfWeek, startOfDay, endOfDay,
-  formatDate, diffInDays 
+  formatDate, diffInDays
 } from '../utils/helpers/dateHelpers';
 
 /**
@@ -16,7 +16,7 @@ export const scheduleWeeklySummary = (): void => {
   // Run every Monday at 9 AM
   cron.schedule('0 9 * * 1', async () => {
     logger.info('Running weekly summary job...');
-    
+
     try {
       await sendWeeklySummaries();
     } catch (error) {
@@ -45,7 +45,7 @@ const sendWeeklySummaries = async (): Promise<void> => {
     try {
       const summary = await generateUserSummary(user.id);
       await sendSummaryEmail(user, summary);
-      
+
       // Rate limiting
       await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (error) {
@@ -61,7 +61,7 @@ const generateUserSummary = async (userId: number): Promise<any> => {
   const now = new Date();
   const weekStart = startOfWeek(now);
   const weekEnd = endOfWeek(now);
-  
+
   const lastWeekStart = new Date(weekStart);
   lastWeekStart.setDate(lastWeekStart.getDate() - 7);
   const lastWeekEnd = new Date(weekEnd);
@@ -191,8 +191,8 @@ const generateUserSummary = async (userId: number): Promise<any> => {
   }));
 
   // Calculate changes
-  const contactChange = lastWeekContacts > 0 
-    ? ((newContacts - lastWeekContacts) / lastWeekContacts) * 100 
+  const contactChange = lastWeekContacts > 0
+    ? ((newContacts - lastWeekContacts) / lastWeekContacts) * 100
     : newContacts > 0 ? 100 : 0;
 
   const valueChange = lastWeekDealsValue > 0
@@ -222,7 +222,9 @@ const generateUserSummary = async (userId: number): Promise<any> => {
         attributes: ['first_name', 'last_name']
       }
     ]
-  });
+  }) as (Activity & {
+    contact: Contact
+  })[];
 
   return {
     start_date: formatDate(weekStart, 'MMM DD'),
@@ -234,7 +236,7 @@ const generateUserSummary = async (userId: number): Promise<any> => {
     deals_lost: dealsLost,
     deals_value: dealsWon > 0 ? await getDealsValue(userId, weekStart, weekEnd) : 0,
     value_change: Math.round(valueChange),
-    loss_rate: dealsWon + dealsLost > 0 
+    loss_rate: dealsWon + dealsLost > 0
       ? Math.round((dealsLost / (dealsWon + dealsLost)) * 100)
       : 0,
     tickets_resolved: ticketsResolved,

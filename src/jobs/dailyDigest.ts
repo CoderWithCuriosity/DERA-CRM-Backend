@@ -13,7 +13,7 @@ export const scheduleDailyDigest = (): void => {
   // Run daily at 8 AM
   cron.schedule('0 8 * * *', async () => {
     logger.info('Running daily digest job...');
-    
+
     try {
       await sendDailyDigests();
     } catch (error) {
@@ -42,7 +42,7 @@ const sendDailyDigests = async (): Promise<void> => {
     try {
       const digest = await generateUserDigest(user.id);
       await sendDigestEmail(user, digest);
-      
+
       // Rate limiting
       await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (error) {
@@ -62,7 +62,7 @@ const generateUserDigest = async (userId: number): Promise<any> => {
   const tomorrowStart = new Date(today);
   tomorrowStart.setDate(tomorrowStart.getDate() + 1);
   tomorrowStart.setHours(0, 0, 0, 0);
-  
+
   const tomorrowEnd = new Date(tomorrowStart);
   tomorrowEnd.setHours(23, 59, 59, 999);
 
@@ -82,7 +82,9 @@ const generateUserDigest = async (userId: number): Promise<any> => {
         attributes: ['first_name', 'last_name']
       }
     ]
-  });
+  }) as (Activity & {
+    contact: Contact
+  })[];
 
   // Get meetings today
   const todaysMeetings = todaysTasks.filter(t => t.type === 'meeting');
@@ -91,7 +93,7 @@ const generateUserDigest = async (userId: number): Promise<any> => {
   const yesterdayStart = new Date(today);
   yesterdayStart.setDate(yesterdayStart.getDate() - 1);
   yesterdayStart.setHours(0, 0, 0, 0);
-  
+
   const yesterdayEnd = new Date(yesterdayStart);
   yesterdayEnd.setHours(23, 59, 59, 999);
 
@@ -137,28 +139,48 @@ const generateUserDigest = async (userId: number): Promise<any> => {
   // Get urgent tickets (high priority or overdue)
   const urgentTickets = await Ticket.findAll({
     where: {
-      [Op.or]: [
-        { user_id: userId },
-        { assigned_to: userId }
-      ],
-      [Op.or]: [
-        { priority: ['high', 'urgent'] },
+      [Op.and]: [
+        // User filter
         {
-          due_date: {
-            [Op.lt]: new Date(Date.now() + 24 * TIME.HOUR)
+          [Op.or]: [
+            { user_id: userId },
+            { assigned_to: userId }
+          ]
+        },
+        // Status filter
+        {
+          status: {
+            [Op.in]: [TICKET_STATUS.NEW, TICKET_STATUS.OPEN, TICKET_STATUS.PENDING]
           }
+        },
+        // Urgent criteria - combined OR
+        {
+          [Op.or]: [
+            { priority: { [Op.in]: ['high', 'urgent'] } },
+            {
+              due_date: {
+                [Op.lt]: new Date(Date.now() + 24 * TIME.HOUR)
+              }
+            }
+          ]
         }
-      ],
-      status: {
-        [Op.in]: [TICKET_STATUS.NEW, TICKET_STATUS.OPEN, TICKET_STATUS.PENDING]
-      }
+      ]
     },
+    include: [
+    {
+      model: Contact,
+      as: 'contact',
+      attributes: ['fullName', 'first_name', 'last_name', 'email']
+    }
+  ],
     limit: 5,
     order: [
       ['priority', 'DESC'],
       ['due_date', 'ASC']
     ]
-  });
+  }) as (Ticket & {
+    contact: Contact
+  })[];
 
   // Format tasks for display
   const formattedTasks = todaysTasks.map(task => ({

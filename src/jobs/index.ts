@@ -56,13 +56,17 @@ export const triggerJob = async (jobName: string): Promise<any> => {
     case 'backup':
       return await (await import('./backupJob')).createBackup();
     case 'sla':
-      return await (await import('./slaMonitor')).checkActualBreaches();
+       const slaMonitor = await import('./slaMonitor');
+      return await slaMonitor.default.checkActualBreaches();
     case 'digest':
-      return await (await import('./dailyDigest')).sendDailyDigests();
+      const dailyDigest = await import('./dailyDigest');
+      return await dailyDigest.default.sendDailyDigests();
     case 'summary':
-      return await (await import('./weeklySummary')).sendWeeklySummaries();
+      const weeklySummary = await import('./weeklySummary');
+      return await weeklySummary.default.sendWeeklySummaries();
     case 'cleanup':
-      return await (await import('./cleanupJob')).runAllCleanups();
+      const cleanupJob = await import('./cleanupJob');
+      return await cleanupJob.runAllCleanups();
     default:
       throw new Error(`Unknown job: ${jobName}`);
   }

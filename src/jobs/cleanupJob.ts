@@ -12,6 +12,7 @@ import { cleanupOldFiles } from '../services/fileService';
 import { cleanupOldExports } from '../services/exportService';
 import { cleanupOldImports } from '../services/importService';
 import logger from '../config/logger';
+import sequelize from '../config/database';
 
 /**
  * Schedule all cleanup jobs

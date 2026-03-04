@@ -39,7 +39,7 @@ export const scheduleSLAMonitor = (): void => {
   // Run every hour
   cron.schedule('0 * * * *', async () => {
     logger.info('Running SLA monitoring job...');
-    
+
     try {
       await checkApproachingBreaches();
       await checkActualBreaches();
@@ -71,25 +71,37 @@ const checkApproachingBreaches = async (): Promise<void> => {
         as: 'assignedTo'
       }
     ]
-  });
+  }) as (Ticket & {
+    assignedTo?: User
+  })[];
 
   for (const ticket of tickets) {
+    if (!ticket.assignedTo) {
+      continue;
+    }
     const config = slaConfig[ticket.priority as keyof typeof slaConfig];
     if (!config) continue;
 
     const timeElapsed = now.getTime() - ticket.created_at.getTime();
     const progressRatio = timeElapsed / config.resolution_time;
 
-    // Check if ticket is approaching breach (between thresholds)
-    for (const threshold of config.warning_thresholds) {
-      if (progressRatio >= threshold && progressRatio < threshold + 0.1) {
+    // Find the highest threshold that has been reached but not yet notified
+    const sortedThresholds = [...config.warning_thresholds].sort((a, b) => b - a); // Sort descending [0.9, 0.75, 0.5]
+
+    for (const threshold of sortedThresholds) {
+      // If we've reached this threshold
+      if (progressRatio >= threshold) {
         // Check if we haven't sent a notification for this threshold yet
-        const notificationKey = `sla_warning_${threshold}`;
-        if (!ticket[notificationKey]) {
+        if (!ticket.sla_warnings_sent.includes(threshold)) {
           approachingTickets.push(ticket);
-          await sendApproachingBreachNotification(ticket, threshold);
-          break;
+          await sendApproachingBreachNotification(ticket as Ticket & { assignedTo: User }, threshold);
+
+          // Update the ticket with the sent warning
+          const warningsSent = [...ticket.sla_warnings_sent, threshold];
+          await ticket.update({ sla_warnings_sent: warningsSent });
+          break; // Only send the highest threshold notification
         }
+        break; // Already notified for this or higher threshold, skip
       }
     }
   }
@@ -99,23 +111,19 @@ const checkApproachingBreaches = async (): Promise<void> => {
   }
 };
 
+
 /**
  * Check for actual SLA breaches
  */
 const checkActualBreaches = async (): Promise<void> => {
   const now = new Date();
-  
+
   const breachedTickets = await Ticket.findAll({
     where: {
       status: {
         [Op.in]: [TICKET_STATUS.NEW, TICKET_STATUS.OPEN, TICKET_STATUS.PENDING]
       },
       [Op.or]: [
-        {
-          sla_response_due: {
-            [Op.lt]: now
-          }
-        },
         {
           due_date: {
             [Op.lt]: now
@@ -129,12 +137,19 @@ const checkActualBreaches = async (): Promise<void> => {
         as: 'assignedTo'
       }
     ]
-  });
+  }) as (Ticket & {
+    assignedTo?: User;
+  })[];
 
   for (const ticket of breachedTickets) {
     // Check if we've already sent breach notification
     if (!ticket.sla_breach_notified) {
-      await sendBreachNotification(ticket);
+      if (!ticket.assignedTo) {
+        logger.info(`Ticket ${ticket.ticket_number} has no assigned agent, skipping notification`);
+        continue;
+      }
+
+      await sendBreachNotification(ticket as Ticket & { assignedTo: User });
       await ticket.update({ sla_breach_notified: true });
     }
   }
@@ -147,7 +162,7 @@ const checkActualBreaches = async (): Promise<void> => {
 /**
  * Send approaching breach notification
  */
-const sendApproachingBreachNotification = async (ticket: Ticket, threshold: number): Promise<void> => {
+const sendApproachingBreachNotification = async (ticket: Ticket & { assignedTo: User }, threshold: number): Promise<void> => {
   try {
     if (!ticket.assignedTo) return;
 
@@ -178,7 +193,9 @@ const sendApproachingBreachNotification = async (ticket: Ticket, threshold: numb
 /**
  * Send breach notification
  */
-const sendBreachNotification = async (ticket: Ticket): Promise<void> => {
+const sendBreachNotification = async (ticket: Ticket & {
+  assignedTo: User
+}): Promise<void> => {
   try {
     // Notify assigned agent
     if (ticket.assignedTo) {
@@ -232,7 +249,7 @@ const sendSLAReports = async (): Promise<void> => {
   try {
     // Get last 24 hours statistics
     const startDate = new Date(Date.now() - 24 * TIME.HOUR);
-    
+
     const [totalTickets, breachedTickets, resolvedTickets] = await Promise.all([
       Ticket.count({
         where: {
@@ -253,8 +270,8 @@ const sendSLAReports = async (): Promise<void> => {
       })
     ]);
 
-    const complianceRate = totalTickets > 0 
-      ? ((totalTickets - breachedTickets) / totalTickets) * 100 
+    const complianceRate = totalTickets > 0
+      ? ((totalTickets - breachedTickets) / totalTickets) * 100
       : 100;
 
     // Get managers

@@ -68,11 +68,13 @@ export const createBackup = async (): Promise<{ success: boolean; filename?: str
   const filepath = path.join(config.backupPath, filename);
 
   // Create backup record
+   const now = new Date();
   const backup = await Backup.create({
     filename,
     path: filepath,
     size: 0,
-    status: 'pending'
+    status: 'pending',
+    created_at: now
   });
 
   // Set PGPASSWORD environment variable for password authentication
@@ -153,13 +155,14 @@ export const restoreBackup = async (filename: string): Promise<{ success: boolea
 
     logger.info(`Database restored successfully from: ${filename}`);
     
-    // Log restore in audit
+    // Log restore in audit - include timestamps
+    const now = new Date();
     await Backup.create({
       filename: `restore-${filename}`,
       path: filepath,
       size: fs.statSync(filepath).size,
       status: 'completed',
-      completed_at: new Date()
+      created_at: now,
     });
 
     return { success: true };

@@ -14,11 +14,13 @@ export interface TicketAttributes {
   status: TicketStatus;
   due_date: Date | null;
   resolved_at: Date | null;
+  sla_warnings_sent: number[]; // Track which warning thresholds have been sent
+  sla_breach_notified: boolean; // Track if breach notification was sent (you already have this)  
   created_at: Date;
   updated_at: Date;
 }
 
-export interface TicketCreationAttributes extends Optional<TicketAttributes, 'id' | 'ticket_number' | 'assigned_to' | 'due_date' | 'resolved_at' | 'created_at' | 'updated_at'> {}
+export interface TicketCreationAttributes extends Optional<TicketAttributes, 'id' | 'ticket_number' | 'assigned_to' | 'due_date' | 'resolved_at' | 'sla_warnings_sent' | 'sla_breach_notified'| 'created_at' | 'updated_at'> {}
 
 class Ticket extends Model<TicketAttributes, TicketCreationAttributes> implements TicketAttributes {
   public id!: number;
@@ -32,6 +34,8 @@ class Ticket extends Model<TicketAttributes, TicketCreationAttributes> implement
   public status!: TicketStatus;
   public due_date!: Date | null;
   public resolved_at!: Date | null;
+  public sla_warnings_sent!: number[];
+  public sla_breach_notified!: boolean;
   public created_at!: Date;
   public updated_at!: Date;
 
@@ -123,6 +127,16 @@ Ticket.init(
     resolved_at: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    sla_warnings_sent: {
+      type: DataTypes.JSON,
+      allowNull: false,
+      defaultValue: []
+    },
+    sla_breach_notified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     },
     created_at: {
       type: DataTypes.DATE,

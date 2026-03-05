@@ -2,14 +2,12 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
 import { Activity, Contact, Deal, User, AuditLog } from '../models';
-import { 
-  HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, 
-  ACTIVITY_TYPES, ACTIVITY_STATUS, 
-  AUDIT_ACTIONS, ENTITY_TYPES 
+import {
+  HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, ACTIVITY_STATUS,
+  AUDIT_ACTIONS, ENTITY_TYPES
 } from '../config/constants';
 import catchAsync from '../utils/catchAsync';
 import { getPagination, getPagingData } from '../utils/pagination';
-import { sendEmail } from '../services/emailService';
 import { scheduleActivityReminder } from '../services/notificationService';
 
 // @desc    Create activity
@@ -51,7 +49,7 @@ export const createActivity = catchAsync(async (req: Request, res: Response) => 
 
   // Determine owner
   const ownerId = user_id || req.user.id;
-  
+
   // Check permission for assigning to others
   if (user_id && req.user.role !== 'admin' && req.user.role !== 'manager') {
     return res.status(HTTP_STATUS.FORBIDDEN).json({
@@ -106,10 +104,10 @@ export const createActivity = catchAsync(async (req: Request, res: Response) => 
     entity_id: activity.id,
     details: `Created activity: ${activity.subject}`,
     ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    user_agent: req.get('user-agent') || null
   });
 
-  res.status(HTTP_STATUS.CREATED).json({
+  return res.status(HTTP_STATUS.CREATED).json({
     success: true,
     message: SUCCESS_MESSAGES.CREATED('Activity'),
     data: { activity: createdActivity }
@@ -120,12 +118,12 @@ export const createActivity = catchAsync(async (req: Request, res: Response) => 
 // @route   GET /api/activities
 // @access  Private
 export const getActivities = catchAsync(async (req: Request, res: Response) => {
-  const { 
-    page, limit, type, contact_id, deal_id, user_id, 
-    status, date_from, date_to 
+  const {
+    page, limit, type, contact_id, deal_id, user_id,
+    status, date_from, date_to
   } = req.query;
 
-  const { limit: take, offset } = getPagination(page as string, limit as string);
+  const { limit: take, skip } = getPagination(page as string, limit as string);
 
   let whereClause: any = {};
 
@@ -164,7 +162,7 @@ export const getActivities = catchAsync(async (req: Request, res: Response) => {
   const activities = await Activity.findAndCountAll({
     where: whereClause,
     limit: take,
-    offset,
+    offset: skip,
     order: [['scheduled_date', 'ASC']],
     include: [
       {
@@ -234,7 +232,7 @@ export const getActivityById = catchAsync(async (req: Request, res: Response) =>
     });
   }
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: { activity }
   });
@@ -287,10 +285,10 @@ export const updateActivity = catchAsync(async (req: Request, res: Response) => 
     entity_id: activity.id,
     details: `Updated activity: ${activity.subject}`,
     ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    user_agent: req.get('user-agent') || null
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: SUCCESS_MESSAGES.UPDATED('Activity'),
     data: { activity }
@@ -315,7 +313,10 @@ export const completeActivity = catchAsync(async (req: Request, res: Response) =
         as: 'deal'
       }
     ]
-  });
+  }) as Activity & {
+    contact: Contact,
+    deal: Deal
+  };
 
   if (!activity) {
     return res.status(HTTP_STATUS.NOT_FOUND).json({
@@ -360,10 +361,10 @@ export const completeActivity = catchAsync(async (req: Request, res: Response) =
     entity_id: activity.id,
     details: `Completed activity: ${activity.subject}`,
     ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    user_agent: req.get('user-agent') || null
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: 'Activity completed successfully',
     data: { activity }
@@ -403,10 +404,10 @@ export const deleteActivity = catchAsync(async (req: Request, res: Response) => 
     entity_id: parseInt(id),
     details: `Deleted activity: ${activity.subject}`,
     ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    user_agent: req.get('user-agent') || null
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: SUCCESS_MESSAGES.DELETED('Activity')
   });
@@ -420,7 +421,7 @@ export const getTodayActivities = catchAsync(async (req: Request, res: Response)
 
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
-  
+
   const endOfDay = new Date();
   endOfDay.setHours(23, 59, 59, 999);
 
@@ -473,7 +474,7 @@ export const getUpcomingActivities = catchAsync(async (req: Request, res: Respon
 
   const startDate = new Date();
   startDate.setHours(0, 0, 0, 0);
-  
+
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + Number(days));
   endDate.setHours(23, 59, 59, 999);
@@ -505,7 +506,7 @@ export const getUpcomingActivities = catchAsync(async (req: Request, res: Respon
 
   // Group by date
   const groupedByDate: { [key: string]: any[] } = {};
-  
+
   activities.forEach(activity => {
     const dateKey = activity.scheduled_date.toISOString().split('T')[0];
     if (!groupedByDate[dateKey]) {
@@ -514,7 +515,7 @@ export const getUpcomingActivities = catchAsync(async (req: Request, res: Respon
     groupedByDate[dateKey].push(activity);
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: {
       range: {

@@ -196,7 +196,8 @@ export const ENTITY_TYPES = {
   EMAIL_TEMPLATE: 'email_template',
   CAMPAIGN: 'campaign',
   CAMPAIGN_RECIPIENT: 'campaign_recipient',
-  ORGANIZATION: 'organization'
+  ORGANIZATION: 'organization',
+  BACKUP: 'backup'
 } as const;
 
 export type EntityType = typeof ENTITY_TYPES[keyof typeof ENTITY_TYPES];

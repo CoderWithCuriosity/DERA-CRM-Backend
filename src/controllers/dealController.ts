@@ -240,7 +240,7 @@ export const getDeals = catchAsync(async (req: Request, res: Response) => {
     limit as string
   );
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: { ...response, summary }
   });
@@ -305,7 +305,7 @@ export const getDealById = catchAsync(async (req: Request, res: Response) => {
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: { deal }
   });
@@ -359,7 +359,7 @@ export const updateDeal = catchAsync(async (req: Request, res: Response) => {
     amount_change: deal.amount - previousAmount
   };
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: SUCCESS_MESSAGES.UPDATED('Deal'),
     data: {
@@ -413,7 +413,7 @@ export const updateDealStage = catchAsync(async (req: Request, res: Response) =>
   const whereClause = req.user.role === 'agent' ? { user_id: req.user.id } : {};
   const summary = await getDealSummary(whereClause);
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: SUCCESS_MESSAGES.UPDATED('Deal stage'),
     data: {
@@ -495,7 +495,7 @@ export const markDealAsWon = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: 'Deal marked as won',
     data: { deal }
@@ -546,7 +546,7 @@ export const markDealAsLost = catchAsync(async (req: Request, res: Response) => 
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: 'Deal marked as lost',
     data: { deal }
@@ -589,7 +589,7 @@ export const deleteDeal = catchAsync(async (req: Request, res: Response) => {
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: SUCCESS_MESSAGES.DELETED('Deal')
   });

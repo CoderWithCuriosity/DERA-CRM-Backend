@@ -598,7 +598,7 @@ export const getAllTags = catchAsync(async (req: Request, res: Response) => {
 });
 
 // Helper function for async import processing
-async function processImport(filePath: string, importId: string, mapping: any, userId: number, req: any) {
+async function processImport(filePath: string, importId: string, mapping: any, userId: number, _req: any) {
   try {
     const contacts = await parseCSV(filePath);
     const validationResults = await validateContactImport(contacts, mapping, userId);

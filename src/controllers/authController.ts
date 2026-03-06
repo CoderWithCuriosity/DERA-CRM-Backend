@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import { User, RefreshToken, PasswordReset, AuditLog } from '../models';
-import { environment, email as emailConfig } from '../config/environment';
+import { environment } from '../config/environment';
 import { HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, AUDIT_ACTIONS, ENTITY_TYPES } from '../config/constants';
 import catchAsync from '../utils/catchAsync';
 import { sendEmail } from '../services/emailService';

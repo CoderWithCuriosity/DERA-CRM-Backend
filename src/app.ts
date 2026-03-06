@@ -98,7 +98,7 @@ app.use(environment.apiPrefix, apiLimiter);
 // ============================================================================
 
 // Health check endpoint (no rate limit)
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({
     status: 'ok',
     timestamp: new Date().toISOString(),

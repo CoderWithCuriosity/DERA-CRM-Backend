@@ -294,7 +294,7 @@ export const getTicketChart = catchAsync(async (req: Request, res: Response) => 
 });
 
 // Helper functions
-async function getSalesChartData(whereClause: any, period: string = 'month', year: number = new Date().getFullYear()) {
+async function getSalesChartData(whereClause: any, _period: string = 'month', year: number = new Date().getFullYear()) {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   const wonDeals = [];

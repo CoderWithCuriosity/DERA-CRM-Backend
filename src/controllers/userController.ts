@@ -426,7 +426,7 @@ export const updateUserRole = catchAsync(async (req: AuthenticatedRequest, res: 
     user_agent: req.get('user-agent')
   });
 
-  res.status(HTTP_STATUS.OK).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: SUCCESS_MESSAGES.UPDATED('User role'),
     data: { id: user.id, role: user.role, updated_at: user.updated_at }

@@ -64,7 +64,9 @@ export const createTicket = catchAsync(async (req: AuthenticatedRequest, res: Re
 
   // Calculate SLA based on priority
   const slaResponseTime = getSLAResponseTime(priority as string);
+  void slaResponseTime;
   const slaResolutionTime = getSLAResolutionTime(priority as string);
+  void slaResolutionTime;
 
   const ticket = await Ticket.create({
     subject,
@@ -682,6 +684,7 @@ export const addTicketComment = catchAsync(async (req: AuthenticatedRequest, res
   // Send email notification to relevant parties (unless internal)
   if (!is_internal) {
     const contact = await Contact.findByPk(ticket.contact_id);
+    void contact;
     const creator = await User.findByPk(ticket.user_id);
     const assignee = ticket.assigned_to ? await User.findByPk(ticket.assigned_to) : null;
 

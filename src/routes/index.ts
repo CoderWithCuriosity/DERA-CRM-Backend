@@ -11,7 +11,6 @@ import dashboardRoutes from './dashboardRoutes';
 import adminRoutes from './adminRoutes';
 import organizationRoutes from './organizationRoutes';
 import { apiLimiter } from '../config/rateLimit';
-import { environment } from '../config/environment';
 
 const router = Router();
 
@@ -19,7 +18,7 @@ const router = Router();
 router.use(apiLimiter);
 
 // Health check endpoint (no rate limit)
-router.get('/health', (req, res) => {
+router.get('/health', (_req, res) => {
   res.status(200).json({
     status: 'ok',
     timestamp: new Date().toISOString(),

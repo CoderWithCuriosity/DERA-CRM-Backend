@@ -3,6 +3,7 @@ import RedisStore from 'rate-limit-redis';
 import { createClient } from 'redis';
 import { rateLimit as rateLimitConfig } from '../config/environment';
 import { HTTP_STATUS } from '../config/constants';
+import { Request, Response, NextFunction } from 'express';
 
 // Redis client for distributed rate limiting
 let redisClient: any;
@@ -171,14 +172,14 @@ export const concurrentLimiter = (maxConcurrent: number = 5) => {
       }
     });
 
-    next();
+    return next();
   };
 };
 
 /**
  * Rate limit headers middleware
  */
-export const addRateLimitHeaders = (req: Request, res: Response, next: NextFunction) => {
+export const addRateLimitHeaders = (_req: Request, res: Response, next: NextFunction) => {
   const originalJson = res.json;
   
   res.json = function(body) {
@@ -197,5 +198,5 @@ export const addRateLimitHeaders = (req: Request, res: Response, next: NextFunct
     return originalJson.call(this, body);
   };
   
-  next();
+  return next();
 };

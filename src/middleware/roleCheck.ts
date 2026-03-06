@@ -20,7 +20,7 @@ export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
     });
   }
 
-  next();
+  return next();
 };
 
 /**
@@ -41,7 +41,7 @@ export const isManagerOrAdmin = (req: Request, res: Response, next: NextFunction
     });
   }
 
-  next();
+  return next();
 };
 
 /**
@@ -64,7 +64,7 @@ export const isAgentOrHigher = (req: Request, res: Response, next: NextFunction)
     });
   }
 
-  next();
+  return next();
 };
 
 /**
@@ -86,7 +86,7 @@ export const hasRole = (role: string) => {
       });
     }
 
-    next();
+    return next();
   };
 };
 
@@ -109,7 +109,7 @@ export const hasAnyRole = (roles: string[]) => {
       });
     }
 
-    next();
+    return next();
   };
 };
 
@@ -138,7 +138,7 @@ export const isOwnData = (paramName: string = 'userId') => {
       });
     }
 
-    next();
+    return next();
   };
 };
 
@@ -160,7 +160,7 @@ export const canManageUsers = (req: Request, res: Response, next: NextFunction) 
     });
   }
 
-  next();
+  return next();
 };
 
 /**
@@ -181,7 +181,7 @@ export const canDelete = (req: Request, res: Response, next: NextFunction) => {
     });
   }
 
-  next();
+  return next();
 };
 
 /**
@@ -204,7 +204,7 @@ export const canExport = (req: Request, res: Response, next: NextFunction) => {
     });
   }
 
-  next();
+  return next();
 };
 
 /**
@@ -227,5 +227,5 @@ export const canImport = (req: Request, res: Response, next: NextFunction) => {
     });
   }
 
-  next();
+  return next();
 };

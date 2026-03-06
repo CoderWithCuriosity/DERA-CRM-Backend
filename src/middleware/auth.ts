@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models';
 import { environment } from '../config/environment';
 import { HTTP_STATUS, ERROR_MESSAGES, USER_ROLES } from '../config/constants';
-import AppError from '../utils/AppError';
 
 // Extend Express Request type to include user
 declare global {

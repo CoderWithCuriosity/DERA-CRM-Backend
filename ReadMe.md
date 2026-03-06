@@ -1,14 +1,10 @@
-# 📦 DERA CRM Backend - Complete Package Installation
-
-Here's the updated package installation command with all test-related packages removed:
-
-## 🚀 Installation Command 
+## 🚀 Installation Command with rate-limit-redis
 
 ```bash
-npm install express sequelize pg pg-hstore jsonwebtoken bcryptjs dotenv cors helmet express-rate-limit express-validator multer sharp nodemailer ejs csv-parser csv-writer papaparse uuid winston morgan compression express-async-errors xss express-mongo-sanitize redis bull node-cron xlsx json2csv && npm install -D typescript ts-node nodemon eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser @types/node @types/express @types/sequelize @types/jsonwebtoken @types/bcryptjs @types/cors @types/multer @types/nodemailer @types/ejs @types/morgan @types/compression @types/uuid @types/node-cron @types/json2csv @types/papaparse @types/xlsx
+npm install express sequelize pg pg-hstore jsonwebtoken bcryptjs dotenv cors helmet express-rate-limit express-validator multer sharp nodemailer ejs csv-parser csv-writer papaparse uuid winston morgan compression express-async-errors xss express-mongo-sanitize redis bull node-cron xlsx json2csv rate-limit-redis && npm install -D typescript ts-node nodemon eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser @types/node @types/express @types/sequelize @types/jsonwebtoken @types/bcryptjs @types/cors @types/multer @types/nodemailer @types/ejs @types/morgan @types/compression @types/uuid @types/node-cron @types/json2csv @types/papaparse @types/xlsx
 ```
 
-## 📋 Complete Package List (Organized by Purpose)
+## 📋 Updated Package List (Organized by Purpose)
 
 ### 🔧 Core Dependencies (Production)
 
@@ -44,84 +40,31 @@ npm install express sequelize pg pg-hstore jsonwebtoken bcryptjs dotenv cors hel
 | **node-cron** | Scheduled jobs - backups, reports, cleanup |
 | **xlsx** | Excel file processing - import/export Excel |
 | **json2csv** | JSON to CSV conversion - export functionality |
-
-### 🛠️ Dev Dependencies (Development Only)
-
-| Package | Purpose |
-|---------|---------|
-| **typescript** | Static typing for JS - better scalability |
-| **ts-node** | Run TypeScript directly - faster dev workflow |
-| **nodemon** | Auto-restarts server on changes - hot reload |
-| **eslint** | Code linting tool - finds errors & bad patterns |
-| **@typescript-eslint/eslint-plugin** | ESLint rules for TypeScript - better TS code |
-| **@typescript-eslint/parser** | Allows ESLint to read TS files - required for linting |
-| **@types/node** | TypeScript types for Node.js |
-| **@types/express** | TypeScript types for Express |
-| **@types/sequelize** | TypeScript types for Sequelize |
-| **@types/jsonwebtoken** | TypeScript types for JWT |
-| **@types/bcryptjs** | TypeScript types for bcrypt |
-| **@types/cors** | TypeScript types for CORS |
-| **@types/multer** | TypeScript types for Multer |
-| **@types/nodemailer** | TypeScript types for Nodemailer |
-| **@types/ejs** | TypeScript types for EJS |
-| **@types/morgan** | TypeScript types for Morgan |
-| **@types/compression** | TypeScript types for Compression |
-| **@types/uuid** | TypeScript types for UUID |
-| **@types/node-cron** | TypeScript types for node-cron |
-| **@types/json2csv** | TypeScript types for json2csv |
-| **@types/papaparse** | TypeScript types for PapaParse |
-| **@types/xlsx** | TypeScript types for XLSX |
-
-## 📝 Removed Test Packages
-
-The following test-related packages have been **removed** from the installation:
-
-| Package | Purpose |
-|---------|---------|
-| ~~jest~~ | Testing framework |
-| ~~@types/jest~~ | TypeScript types for Jest |
-| ~~ts-jest~~ | Jest + TypeScript support |
-| ~~supertest~~ | API testing tool |
-| ~~@types/supertest~~ | TypeScript types for Supertest |
+| **rate-limit-redis** | Redis store for express-rate-limit - distributed rate limiting across multiple servers |
 
 ## 🎯 Package Installation Summary
 
 ```bash
 # Total packages to install
-# Production: 30 packages
+# Production: 31 packages (+1 for rate-limit-redis)
 # Development: 20 packages
-# Total: 50 packages
+# Total: 51 packages
 
 # Installation size
-# Production: ~80-100 MB
-# Development: ~150-200 MB (including types)
-# Total: ~250-300 MB
+# Production: ~85-105 MB (+5 MB for rate-limit-redis)
+# Development: ~150-200 MB
+# Total: ~255-305 MB
 ```
 
-## 🔍 Why These Packages?
+## 🔍 Why Add rate-limit-redis?
 
-### Essential for CRM Functionality:
-- **Database Layer**: Sequelize + PG for robust data management
-- **Authentication**: JWT + bcrypt for secure user auth
-- **File Handling**: Multer + Sharp for uploads and image processing
-- **Email**: Nodemailer + EJS for all email communications
-- **Data Import/Export**: CSV/Excel parsers and writers
-- **Background Jobs**: Bull + Redis for campaign processing
-- **Scheduling**: node-cron for automated tasks
-- **Security**: Helmet, rate-limit, xss, sanitize for protection
-
-### Development Experience:
-- **TypeScript**: Full type safety
-- **Linting**: ESLint for code quality
-- **Hot Reload**: Nodemon for faster development
-
-## 📦 Alternative: One-Line Installation
-
-If you want to copy-paste the complete installation command:
-
-```bash
-npm install express sequelize pg pg-hstore jsonwebtoken bcryptjs dotenv cors helmet express-rate-limit express-validator multer sharp nodemailer ejs csv-parser csv-writer papaparse uuid winston morgan compression express-async-errors xss express-mongo-sanitize redis bull node-cron xlsx json2csv && npm install -D typescript ts-node nodemon eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser @types/node @types/express @types/sequelize @types/jsonwebtoken @types/bcryptjs @types/cors @types/multer @types/nodemailer @types/ejs @types/morgan @types/compression @types/uuid @types/node-cron @types/json2csv @types/papaparse @types/xlsx
-```
+| Feature | Benefit |
+|---------|---------|
+| **Distributed Rate Limiting** | Works across multiple server instances (load balancing) |
+| **Persistent Counters** | Rate limits survive server restarts |
+| **Shared State** | All servers share the same rate limit counters |
+| **Scalability** | Essential for horizontal scaling with multiple Node.js instances |
+| **Accuracy** | Prevents users from exceeding limits by switching servers |
 
 ## 🚀 Quick Start After Installation
 
@@ -137,10 +80,19 @@ npm run db:create
 npm run db:migrate
 npm run db:seed
 
-# 4. Start development server
+# 4. Make sure Redis is running (required for rate-limit-redis)
+# Using Docker:
+docker run -d -p 6379:6379 redis
+
+# Or install Redis locally:
+# Ubuntu: sudo apt-get install redis-server
+# Mac: brew install redis
+# Then start: redis-server
+
+# 5. Start development server
 npm run dev
 
-# 5. Build for production
+# 6. Build for production
 npm run build
 npm start
 ```

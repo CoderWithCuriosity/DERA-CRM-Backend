@@ -60,7 +60,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
 
       // Attach user to request
       req.user = user;
-      next();
+      return next();
     } catch (error) {
       if (error instanceof jwt.JsonWebTokenError) {
         return res.status(HTTP_STATUS.UNAUTHORIZED).json({
@@ -76,7 +76,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
       throw error;
     }
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
@@ -84,7 +84,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
  * Optional authentication middleware
  * Attaches user if token exists, but doesn't require it
  */
-export const optionalAuth = async (req: Request, res: Response, next: NextFunction) => {
+export const optionalAuth = async (req: Request, _res: Response, next: NextFunction) => {
   try {
     let token;
 
@@ -105,9 +105,9 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
         // Ignore token errors for optional auth
       }
     }
-    next();
+    return next();
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
@@ -133,7 +133,7 @@ export const restrictTo = (...roles: string[]) => {
       });
     }
 
-    next();
+    return next();
   };
 };
 
@@ -179,9 +179,9 @@ export const hasPermission = (permission: string) => {
         });
       }
 
-      next();
+      return next();
     } catch (error) {
-      next(error);
+      return next(error);
     }
   };
 };
@@ -232,9 +232,9 @@ export const checkOwnership = (model: any, paramName: string = 'id') => {
 
       // Attach resource to request for later use
       (req as any).resource = resource;
-      next();
+      return next();
     } catch (error) {
-      next(error);
+      return next(error);
     }
   };
 };
@@ -264,8 +264,8 @@ export const apiKeyAuth = async (req: Request, res: Response, next: NextFunction
       });
     }
 
-    next();
+    return next();
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };

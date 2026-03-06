@@ -3,6 +3,13 @@ import { HTTP_STATUS } from '../config/constants';
 import AppError from '../utils/AppError';
 import logger from '../config/logger';
 
+// Add this interface near the top of your file
+interface MulterError extends Error {
+  code: string;
+  field?: string;
+}
+
+
 /**
  * Global error handling middleware
  */
@@ -90,13 +97,15 @@ export const errorHandler = (
 
   // Handle Multer errors
   if (err.name === 'MulterError') {
-    if (err.code === 'LIMIT_FILE_SIZE') {
+    const multerError = err as MulterError;
+    if (multerError.code === 'LIMIT_FILE_SIZE') {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         message: 'File too large',
         timestamp: new Date().toISOString()
       });
     }
+
     
     return res.status(HTTP_STATUS.BAD_REQUEST).json({
       success: false,
@@ -136,7 +145,7 @@ export const notFound = (req: Request, res: Response, next: NextFunction) => {
     `Cannot ${req.method} ${req.originalUrl}`,
     HTTP_STATUS.NOT_FOUND
   );
-  next(error);
+  return next(error);
 };
 
 /**

@@ -153,13 +153,17 @@ export const multipleUpload = (fieldName: string, maxCount: number = 5) => {
 /**
  * Process image with sharp
  */
+
+// Define the exact formats that have methods (note: 'jpg' is NOT a method)
+type SharpOutputFormat = 'jpeg' | 'png' | 'webp' | 'gif' | 'avif' | 'tiff';
+
 export const processImage = async (
   filePath: string,
   options: {
     width?: number;
     height?: number;
     fit?: keyof sharp.FitEnum;
-    format?: keyof sharp.FormatEnum;
+    format?: SharpOutputFormat;  // Only formats that are actual methods
     quality?: number;
   } = {}
 ): Promise<string> => {
@@ -171,13 +175,17 @@ export const processImage = async (
     quality = 80
   } = options;
 
+  // For file extension, we can use 'jpg' instead of 'jpeg' if desired
+  const fileExtension = format === 'jpeg' ? 'jpg' : format;
+  
   const dir = path.dirname(filePath);
   const filename = path.basename(filePath, path.extname(filePath));
-  const outputPath = path.join(dir, `processed-${filename}.${format}`);
+  const outputPath = path.join(dir, `processed-${filename}.${fileExtension}`);
 
+  // Use the format directly as the method name (always use 'jpeg', never 'jpg')
   await sharp(filePath)
     .resize(width, height, { fit })
-    [format]({ quality })
+    [format]({ quality })  // format is always a valid method name now
     .toFile(outputPath);
 
   // Replace original with processed

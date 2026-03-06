@@ -52,6 +52,7 @@ export const sqlInjectionProtection = mongoSanitize({
  */
 export const sanitizeHtml = (req: Request, res: Response, next: NextFunction) => {
   const allowedTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'strong', 'em', 'u', 'strike', 'ul', 'ol', 'li', 'a', 'img', 'blockquote', 'pre', 'code'];
+  void allowedTags;
   const allowedAttributes = {
     a: ['href', 'title', 'target'],
     img: ['src', 'alt', 'title', 'width', 'height']

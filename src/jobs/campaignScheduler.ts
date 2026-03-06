@@ -11,6 +11,8 @@ import Redis from 'ioredis';
 const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
 const redis = new Redis(redisUrl);
 
+void redis;
+
 // Create queues
 export const campaignQueue = new Queue('campaign sending', redisUrl);
 export const emailQueue = new Queue('email sending', redisUrl);
@@ -299,7 +301,7 @@ export const trackOpen = async (campaignId: number, recipientId: number): Promis
 export const trackClick = async (
   campaignId: number,
   recipientId: number,
-  url: string
+  _url: string
 ): Promise<void> => {
   try {
     const recipient = await CampaignRecipient.findOne({

@@ -22,7 +22,7 @@ const importDir = createUploadDir(FILE_UPLOAD.IMPORT_DIR);
 const exportDir = createUploadDir(FILE_UPLOAD.EXPORT_DIR);
 
 // File filter function
-const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const fileFilter = (_req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   if (fileConfig.allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
@@ -41,10 +41,10 @@ const generateFilename = (prefix: string, originalname: string) => {
 // Avatar upload configuration
 export const avatarUpload = multer({
   storage: multer.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (_req, _file, cb) => {
       cb(null, avatarDir);
     },
-    filename: (req, file, cb) => {
+    filename: (_req, file, cb) => {
       const filename = generateFilename(FILE_UPLOAD.AVATAR_PREFIX, file.originalname);
       cb(null, filename);
     }
@@ -58,10 +58,10 @@ export const avatarUpload = multer({
 // Logo upload configuration
 export const logoUpload = multer({
   storage: multer.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (_req, _file, cb) => {
       cb(null, logoDir);
     },
-    filename: (req, file, cb) => {
+    filename: (_req, file, cb) => {
       const filename = generateFilename(FILE_UPLOAD.LOGO_PREFIX, file.originalname);
       cb(null, filename);
     }
@@ -75,10 +75,10 @@ export const logoUpload = multer({
 // Attachment upload configuration
 export const attachmentUpload = multer({
   storage: multer.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (_req, _file, cb) => {
       cb(null, attachmentDir);
     },
-    filename: (req, file, cb) => {
+    filename: (_req, file, cb) => {
       const filename = generateFilename('attachment', file.originalname);
       cb(null, filename);
     }
@@ -92,15 +92,15 @@ export const attachmentUpload = multer({
 // Import file upload configuration
 export const importUpload = multer({
   storage: multer.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (_req, _file, cb) => {
       cb(null, importDir);
     },
-    filename: (req, file, cb) => {
+    filename: (_req, file, cb) => {
       const filename = generateFilename(FILE_UPLOAD.IMPORT_PREFIX, file.originalname);
       cb(null, filename);
     }
   }),
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_req, file, cb) => {
     const allowedImportTypes = ['text/csv', 'application/vnd.ms-excel'];
     if (allowedImportTypes.includes(file.mimetype)) {
       cb(null, true);
@@ -115,7 +115,7 @@ export const importUpload = multer({
 
 // Get file URL
 export const getFileUrl = (filename: string, type: keyof typeof FILE_UPLOAD) => {
-  const baseUrl = process.env.SERVER_URL || 'http://localhost:5000';
+  const baseUrl = process.env.SERVER_URL || 'http://localhost:3000';
   const dir = FILE_UPLOAD[type];
   return `${baseUrl}/${fileConfig.uploadDir}/${dir}/${filename}`;
 };

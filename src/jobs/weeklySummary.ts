@@ -1,11 +1,11 @@
 import cron from 'node-cron';
 import { Op } from 'sequelize';
 import { User, Activity, Ticket, Deal, Contact } from '../models';
-import { ACTIVITY_STATUS, TICKET_STATUS, DEAL_STAGES, TIME } from '../config/constants';
+import { ACTIVITY_STATUS, TICKET_STATUS, DEAL_STAGES } from '../config/constants';
 import { sendEmail } from '../services/emailService';
 import logger from '../config/logger';
 import {
-  startOfWeek, endOfWeek, startOfDay, endOfDay,
+  startOfWeek, endOfWeek,
   formatDate, diffInDays
 } from '../utils/helpers/dateHelpers';
 

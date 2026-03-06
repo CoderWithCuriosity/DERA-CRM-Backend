@@ -88,6 +88,7 @@ export const createBackup = async (): Promise<{ success: boolean; filename?: str
   try {
     logger.info(`Starting database backup: ${filename}`);
     const { stdout, stderr } = await execPromise(command, { env });
+    void stdout;
 
     if (stderr) {
       logger.warn(`Backup warnings: ${stderr}`);
@@ -148,6 +149,8 @@ export const restoreBackup = async (filename: string): Promise<{ success: boolea
   try {
     logger.info(`Starting database restore from: ${filename}`);
     const { stdout, stderr } = await execPromise(command, { env });
+    void stdout;
+
 
     if (stderr) {
       logger.warn(`Restore warnings: ${stderr}`);

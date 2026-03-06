@@ -27,7 +27,7 @@ const exportDir = createUploadDir(FILE_UPLOAD.EXPORT_DIR);
 /**
  * File filter function
  */
-const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const fileFilter = (_req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   if (fileConfig.allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
@@ -50,10 +50,10 @@ const generateFilename = (prefix: string, originalname: string) => {
  */
 export const avatarUpload = multer({
   storage: multer.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (_req, _file, cb) => {
       cb(null, avatarDir);
     },
-    filename: (req, file, cb) => {
+    filename: (_req, file, cb) => {
       const filename = generateFilename(FILE_UPLOAD.AVATAR_PREFIX, file.originalname);
       cb(null, filename);
     }
@@ -69,10 +69,10 @@ export const avatarUpload = multer({
  */
 export const logoUpload = multer({
   storage: multer.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (_req, _file, cb) => {
       cb(null, logoDir);
     },
-    filename: (req, file, cb) => {
+    filename: (_req, file, cb) => {
       const filename = generateFilename(FILE_UPLOAD.LOGO_PREFIX, file.originalname);
       cb(null, filename);
     }
@@ -88,10 +88,10 @@ export const logoUpload = multer({
  */
 export const attachmentUpload = multer({
   storage: multer.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (_req, _file, cb) => {
       cb(null, attachmentDir);
     },
-    filename: (req, file, cb) => {
+    filename: (_req, file, cb) => {
       const filename = generateFilename('attachment', file.originalname);
       cb(null, filename);
     }
@@ -107,15 +107,15 @@ export const attachmentUpload = multer({
  */
 export const importUpload = multer({
   storage: multer.diskStorage({
-    destination: (req, file, cb) => {
+    destination: (_req, _file, cb) => {
       cb(null, importDir);
     },
-    filename: (req, file, cb) => {
+    filename: (_req, file, cb) => {
       const filename = generateFilename(FILE_UPLOAD.IMPORT_PREFIX, file.originalname);
       cb(null, filename);
     }
   }),
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_req, file, cb) => {
     const allowedImportTypes = ['text/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
     if (allowedImportTypes.includes(file.mimetype)) {
       cb(null, true);
@@ -134,10 +134,10 @@ export const importUpload = multer({
 export const multipleUpload = (fieldName: string, maxCount: number = 5) => {
   return multer({
     storage: multer.diskStorage({
-      destination: (req, file, cb) => {
+      destination: (_req, _file, cb) => {
         cb(null, attachmentDir);
       },
-      filename: (req, file, cb) => {
+      filename: (_req, file, cb) => {
         const filename = generateFilename('multiple', file.originalname);
         cb(null, filename);
       }
@@ -251,7 +251,7 @@ export const cleanupOldFiles = async (type: keyof typeof FILE_UPLOAD, maxAge: nu
 /**
  * File upload error handler
  */
-export const handleUploadError = (err: any, req: Request, res: Response, next: NextFunction) => {
+export const handleUploadError = (err: any, _req: Request, res: Response, next: NextFunction) => {
   if (err instanceof multer.MulterError) {
     if (err.code === 'LIMIT_FILE_SIZE') {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
@@ -280,7 +280,7 @@ export const handleUploadError = (err: any, req: Request, res: Response, next: N
     });
   }
 
-  next(err);
+  return next(err);
 };
 
 /**

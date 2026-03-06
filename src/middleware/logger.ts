@@ -25,7 +25,7 @@ export const addRequestId = (req: Request, res: Response, next: NextFunction) =>
 /**
  * Log request start
  */
-export const logRequestStart = (req: Request, res: Response, next: NextFunction) => {
+export const logRequestStart = (req: Request, _res: Response, next: NextFunction) => {
   req.startTime = Date.now();
   
   logger.info({
@@ -86,7 +86,7 @@ export const morganMiddleware = morgan(
 /**
  * Log error with context
  */
-export const logError = (err: Error, req: Request, res: Response, next: NextFunction) => {
+export const logError = (err: Error, req: Request, _res: Response, next: NextFunction) => {
   logger.error({
     message: err.message,
     stack: err.stack,
@@ -194,7 +194,7 @@ export const logUncaughtException = (err: Error) => {
 /**
  * Log unhandled rejections
  */
-export const logUnhandledRejection = (reason: any, promise: Promise<any>) => {
+export const logUnhandledRejection = (reason: any, _promise: Promise<any>) => {
   logger.error({
     message: 'Unhandled rejection',
     reason: reason?.message || reason,

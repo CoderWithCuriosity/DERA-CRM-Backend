@@ -17,7 +17,7 @@ export const errorHandler = (
   err: Error | AppError,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   // Log error
   logger.error({
@@ -140,7 +140,7 @@ export const errorHandler = (
 /**
  * 404 Not Found handler
  */
-export const notFound = (req: Request, res: Response, next: NextFunction) => {
+export const notFound = (req: Request, _res: Response, next: NextFunction) => {
   const error = new AppError(
     `Cannot ${req.method} ${req.originalUrl}`,
     HTTP_STATUS.NOT_FOUND

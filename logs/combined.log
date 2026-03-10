@@ -1,0 +1,21 @@
+2026-03-06 15:37:00:370 [31merror[39m: [31mError checking scheduled campaigns: relation "campaigns" does not exist[39m
+2026-03-06 15:43:00:430 [31merror[39m: [31mError checking scheduled campaigns: relation "campaigns" does not exist[39m
+2026-03-06 20:31:00:310 [31merror[39m: [31mError checking scheduled campaigns: relation "campaigns" does not exist[39m
+2026-03-06 20:32:00:320 [31merror[39m: [31mError checking scheduled campaigns: relation "campaigns" does not exist[39m
+2026-03-06 20:33:00:330 [31merror[39m: [31mError checking scheduled campaigns: relation "campaigns" does not exist[39m
+2026-03-06 20:34:00:340 [31merror[39m: [31mError checking scheduled campaigns: relation "campaigns" does not exist[39m
+2026-03-06 20:35:00:350 [31merror[39m: [31mError checking scheduled campaigns: relation "campaigns" does not exist[39m
+2026-03-06 20:36:00:360 [31merror[39m: [31mError checking scheduled campaigns: relation "campaigns" does not exist[39m
+2026-03-06 20:37:00:370 [31merror[39m: [31mError checking scheduled campaigns: relation "campaigns" does not exist[39m
+2026-03-06 20:44:22:4422 [33mwarn[39m: [33m⚠️  Running initial database sync in production mode[39m
+2026-03-06 20:44:22:4422 [31merror[39m: [31m❌ Failed to sync database: permission denied for schema public[39m
+2026-03-06 20:50:01:501 [33mwarn[39m: [33m⚠️  Running initial database sync in production mode[39m
+2026-03-06 20:50:01:501 [31merror[39m: [31m❌ Failed to sync database: permission denied for schema public[39m
+2026-03-06 20:52:49:5249 [33mwarn[39m: [33m⚠️  Running initial database sync in production mode[39m
+2026-03-06 21:00:00:00 [31merror[39m: [31mError in SLA monitoring job: User is not associated to Ticket![39m
+2026-03-09 12:03:00:30 [31merror[39m: [31mError checking scheduled campaigns: relation "campaigns" does not exist[39m
+2026-03-09 12:03:31:331 [33mwarn[39m: [33m⚠️  Running initial database sync in production mode[39m
+2026-03-09 12:03:31:331 [31merror[39m: [31m❌ Failed to sync database: permission denied for schema public[39m
+2026-03-09 12:08:03:83 [33mwarn[39m: [33m⚠️  Running initial database sync in production mode[39m
+2026-03-09 12:24:34:2434 [33mwarn[39m: [33m⚠️  Running initial database sync in production mode[39m
+2026-03-09 12:28:56:2856 [33mwarn[39m: [33m⚠️  Running initial database sync in production mode[39m

@@ -24,11 +24,6 @@ const startServer = async (): Promise<void> => {
     await sequelize.authenticate();
     logger.info('Database connection established successfully.');
 
-    // Sync database (in development)
-    if (environment.nodeEnv === 'development') {
-      await sequelize.sync({ alter: true });
-      logger.info('Database synced successfully');
-    }
 
     // Initialize scheduled jobs
     initializeJobs();

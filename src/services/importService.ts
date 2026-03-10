@@ -5,8 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Contact } from '../models';
 import { file as fileConfig } from '../config/environment';
 import { FILE_UPLOAD } from '../config/constants';
-import AppError from '../utils/AppError';
-import { HTTP_STATUS } from '../config/constants';
 import logger from '../config/logger';
 import * as XLSX from 'xlsx';
 
@@ -51,6 +49,22 @@ export const parseExcel = async (filePath: string): Promise<any[]> => {
 /**
  * Validate contact import data
  */
+/**
+ * Safely extract error message from unknown error
+ */
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  if (error && typeof error === 'object' && 'message' in error) {
+    return String(error.message);
+  }
+  return 'Unknown error occurred';
+};
+
 export const validateContactImport = async (
   data: any[],
   mapping: any,
@@ -122,7 +136,7 @@ export const validateContactImport = async (
           result.failed++;
           result.errors.push({
             row: rowNumber,
-            error: error.message
+            error: getErrorMessage(error)
           });
         } finally {
           result.processed++;
@@ -254,7 +268,7 @@ export const generateErrorReport = (errors: Array<{ row: number; error: string }
 export const saveImportResults = async (
   importId: string,
   result: ImportResult
-): Promise<string> {
+): Promise<string> => {
   const resultsDir = path.join(process.cwd(), fileConfig.uploadDir, FILE_UPLOAD.IMPORT_DIR, 'results');
   
   if (!fs.existsSync(resultsDir)) {

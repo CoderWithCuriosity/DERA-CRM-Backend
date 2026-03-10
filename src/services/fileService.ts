@@ -63,22 +63,23 @@ export const saveFile = async (
   type: keyof typeof FILE_UPLOAD,
   options?: {
     prefix?: string;
-    process?: boolean;
+    process?: boolean;  // Keep the option name for API consistency
     width?: number;
     height?: number;
   }
 ): Promise<FileUploadResult> => {
-  const { prefix = 'file', process = false, width, height } = options || {};
+  // Rename 'process' to 'shouldProcess' or 'processImage' when destructuring
+  const { prefix = 'file', process: shouldProcess = false, width, height } = options || {};
 
   const filename = generateFilename(file.originalname, prefix);
   const dir = FILE_UPLOAD[type];
-  const uploadDir = path.join(process.cwd(), fileConfig.uploadDir, dir);
+  const uploadDir = path.join(process.cwd(), fileConfig.uploadDir, dir); // Now 'process' is still the global one
   const filePath = path.join(uploadDir, filename);
 
   ensureDirectoryExists(uploadDir);
 
-  // Process image if requested
-  if (process && file.mimetype.startsWith('image/')) {
+  // Process image if requested - use shouldProcess instead of process
+  if (shouldProcess && file.mimetype.startsWith('image/')) {
     let pipeline = sharp(file.buffer || file.path);
 
     if (width || height) {
@@ -197,6 +198,11 @@ export const listFiles = async (type: keyof typeof FILE_UPLOAD): Promise<any[]> 
 /**
  * Process image
  */
+// Accept both jpeg and jpg as inputs
+type InputFormat = keyof sharp.FormatEnum;
+// But only use these for actual processing
+type ProcessingFormat = 'jpeg' | 'png' | 'webp' | 'gif' | 'avif' | 'tiff';
+
 export const processImage = async (
   inputPath: string,
   outputPath: string,
@@ -204,7 +210,7 @@ export const processImage = async (
     width?: number;
     height?: number;
     fit?: keyof sharp.FitEnum;
-    format?: keyof sharp.FormatEnum;
+    format?: InputFormat;  // Accept any format enum key
     quality?: number;
   } = {}
 ): Promise<string> => {
@@ -222,7 +228,18 @@ export const processImage = async (
     pipeline = pipeline.resize(width, height, { fit });
   }
 
-  pipeline = pipeline[format]({ quality });
+  // Map the input format to an actual processing method
+  const processingFormat: ProcessingFormat = 
+    format === 'jpg' ? 'jpeg' : 
+    format === 'jpeg' ? 'jpeg' :
+    format === 'png' ? 'png' :
+    format === 'webp' ? 'webp' :
+    format === 'gif' ? 'gif' :
+    format === 'avif' ? 'avif' :
+    format === 'tiff' ? 'tiff' : 'jpeg'; // Default to jpeg
+
+  // Use the mapped format
+  pipeline = pipeline[processingFormat]({ quality });
 
   await pipeline.toFile(outputPath);
 

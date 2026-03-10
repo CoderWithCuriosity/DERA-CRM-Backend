@@ -81,6 +81,22 @@ export const generateExport = async (
 /**
  * Generate CSV file
  */
+/**
+ * Safely extract error message from unknown error
+ */
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  if (error && typeof error === 'object' && 'message' in error) {
+    return String(error.message);
+  }
+  return 'Unknown error occurred';
+};
+
 export const generateCSV = async (
   data: any[],
   filePath: string,
@@ -107,7 +123,10 @@ export const generateCSV = async (
     const csv = parser.parse(data);
     await fs.promises.writeFile(filePath, csv);
   } catch (error) {
-    throw new AppError(`Failed to generate CSV: ${error.message}`, HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    throw new AppError(
+      `Failed to generate CSV: ${getErrorMessage(error)}`, 
+      HTTP_STATUS.INTERNAL_SERVER_ERROR
+    );
   }
 };
 

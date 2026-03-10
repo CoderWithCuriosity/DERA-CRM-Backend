@@ -9,7 +9,7 @@ import {
   previewEmailTemplate,
   duplicateEmailTemplate
 } from '../controllers/emailTemplateController';
-import { protect, restrictTo } from '../middleware/auth';
+import { protect } from '../middleware/auth';
 import { validate } from '../middleware/validation';
 
 const router = Router();

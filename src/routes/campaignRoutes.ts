@@ -11,7 +11,7 @@ import {
   getCampaignAnalytics,
   duplicateCampaign
 } from '../controllers/campaignController';
-import { protect, restrictTo } from '../middleware/auth';
+import { protect } from '../middleware/auth';
 import { validate } from '../middleware/validation';
 import { CAMPAIGN_STATUS } from '../config/constants';
 import { campaignLimiter } from '../config/rateLimit';

@@ -19,7 +19,7 @@ Looking at your initial documentation and comparing it with the complete codebas
 
 ### 🔄 **Modified Endpoints:**
 
-1. **Tickets** - Added some SLA tracking fields (`sla_response_due`, `sla_resolution_due`)
+1. **Tickets** - Added SLA tracking fields (`sla_response_due`, `sla_resolution_due`)
 2. **Activities** - Enhanced with better status tracking and outcomes
 3. **Contacts** - Added import/export with column mapping
 4. **Deals** - Enhanced pipeline summary with weighted values
@@ -1843,87 +1843,11 @@ column_mapping: {
 }
 ```
 
+### Support Tickets Endpoints
 
-# 🎫 Support Tickets API Documentation
+#### 1. Create Ticket
+**POST** `/tickets`
 
-## Ticket Model
-
-### Database Fields
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | integer | Primary key |
-| `ticket_number` | string | Unique ticket identifier (format: `TKT-YYYY-XXXX`) |
-| `subject` | string | Ticket subject (max 255 chars) |
-| `description` | text | Detailed ticket description |
-| `contact_id` | integer | Foreign key to contacts table |
-| `user_id` | integer | ID of user who created the ticket |
-| `assigned_to` | integer/null | ID of agent assigned to ticket |
-| `priority` | enum | `low`, `medium`, `high`, `urgent` |
-| `status` | enum | `new`, `open`, `pending`, `resolved`, `closed` |
-| `due_date` | date/null | Resolution deadline (SLA) |
-| `resolved_at` | date/null | Timestamp when ticket was resolved |
-| `sla_warnings_sent` | json | Array of warning thresholds already sent |
-| `sla_breach_notified` | boolean | Whether breach notification was sent |
-| `created_at` | date | Creation timestamp |
-| `updated_at` | date | Last update timestamp |
-
-### ⚠️ Important Note about SLA Fields
-The CRM tracks **Resolution SLA only** using the `due_date` field. 
-Response SLA fields (`sla_response_due`, `sla_resolution_due`) are not stored in the database.
-If these fields are sent in requests, they are automatically ignored.
-
-
-### Virtual/Calculated Fields
-| Field | Type | Description |
-|-------|------|-------------|
-| `responseTime` | number/null | Time to first response in minutes |
-| `resolutionTime` | number/null | Time to resolution in minutes |
-| `isOverdue` | boolean | Whether ticket is past due date |
-
-### Priority Levels
-```javascript
-PRIORITIES = {
-  LOW: 'low',
-  MEDIUM: 'medium',
-  HIGH: 'high',
-  URGENT: 'urgent'
-}
-```
-
-### Ticket Statuses
-```javascript
-TICKET_STATUS = {
-  NEW: 'new',
-  OPEN: 'open',
-  PENDING: 'pending',
-  RESOLVED: 'resolved',
-  CLOSED: 'closed'
-}
-```
-
-### SLA Time Calculations (Internal)
-```javascript
-// Response time targets (not tracked in responses)
-URGENT: 1 hour
-HIGH: 4 hours
-MEDIUM: 8 hours
-LOW: 24 hours
-
-// Resolution time targets (set as due_date)
-URGENT: 4 hours
-HIGH: 24 hours (1 day)
-MEDIUM: 48 hours (2 days)
-LOW: 120 hours (5 days)
-```
-
----
-
-## Ticket Endpoints
-
-### 1. Create Ticket
-**POST** `/api/tickets`
-
-Creates a new support ticket.
 **Headers:** `Authorization: Bearer <token>`
 
 **Request Body:**
@@ -1933,25 +1857,11 @@ Creates a new support ticket.
   "description": "User upgraded to premium but features are still locked",
   "contact_id": 101,
   "priority": "high",
-  "due_date": "2025-11-10",
-  "assigned_to": 3
+  "due_date": "2025-11-10"
 }
 ```
 
-| Field | Required | Type | Description |
-|-------|----------|------|-------------|
-| `subject` | Yes | string | Ticket subject (max 255 chars) |
-| `description` | Yes | string | Detailed description |
-| `contact_id` | Yes | integer | Must reference existing contact |
-| `priority` | No | string | Defaults to `medium` |
-| `due_date` | No | date | ISO date string |
-| `assigned_to` | No | integer | User ID to assign ticket to |
-
-**Validation Rules:**
-- `subject`: Cannot be empty
-- `description`: Cannot be empty
-- `contact_id`: Must exist in contacts table
-- Agents can only create tickets for contacts they own
+**Priority Levels:** `low`, `medium`, `high`, `urgent`
 
 **Response (201 Created):**
 ```json
@@ -1966,77 +1876,49 @@ Creates a new support ticket.
       "description": "User upgraded to premium but features are still locked",
       "contact_id": 101,
       "user_id": 1,
-      "assigned_to": 3,
+      "assigned_to": null,
       "priority": "high",
       "status": "new",
-      "due_date": "2025-11-10T00:00:00.000Z",
+      "due_date": "2025-11-10",
       "resolved_at": null,
-      "sla_warnings_sent": [],
-      "sla_breach_notified": false,
+      "sla_response_due": "2025-11-08T20:00:00.000Z",
+      "sla_resolution_due": "2025-11-10T18:00:00.000Z",
       "created_at": "2025-11-08T18:00:00.000Z",
-      "updated_at": "2025-11-08T18:00:00.000Z",
-      "contact": {
-        "id": 101,
-        "first_name": "Sarah",
-        "last_name": "Johnson",
-        "email": "sarah.johnson@example.com"
-      },
-      "createdBy": {
-        "id": 1,
-        "first_name": "John",
-        "last_name": "Doe"
-      }
-    },
-    "sla": {
-      "response_due": null,
-      "resolution_due": null
+      "updated_at": "2025-11-08T18:00:00.000Z"
     }
   }
 }
 ```
 
-**Email Notification:**
-If `assigned_to` is provided, an email is sent to the assignee using `ticketAssigned` template.
-
----
-
-### 2. Get All Tickets
-**GET** `/api/tickets`
-
-Retrieves a paginated list of tickets with filtering.
+#### 2. Get All Tickets
+**GET** `/tickets`
 
 **Headers:** `Authorization: Bearer <token>`
 
 **Query Parameters:**
-
-| Parameter | Type | Description | Default |
-|-----------|------|-------------|---------|
-| `page` | integer | Page number | 1 |
-| `limit` | integer | Items per page | 20 |
-| `status` | string | Filter by status | - |
-| `priority` | string | Filter by priority | - |
-| `assigned_to` | integer | Filter by assignee ID | - |
-| `contact_id` | integer | Filter by contact ID | - |
-| `search` | string | Search in subject/description/ticket_number | - |
-
-**Access Control:**
-- **Admin/Manager**: Can see all tickets
-- **Agent**: Can only see tickets they created OR are assigned to
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| page | integer | Page number |
+| limit | integer | Items per page |
+| status | string | new/open/pending/resolved/closed |
+| priority | string | low/medium/high/urgent |
+| assigned_to | integer | Filter by assignee |
+| contact_id | integer | Filter by contact |
+| search | string | Search in subject/description |
 
 **Response (200 OK):**
 ```json
 {
   "success": true,
   "data": {
-    "items": [
+    "tickets": [
       {
         "id": 301,
         "ticket_number": "TKT-2025-0001",
         "subject": "Cannot access premium features",
-        "description": "User upgraded to premium but features are still locked",
         "priority": "high",
         "status": "open",
-        "due_date": "2025-11-10T00:00:00.000Z",
+        "due_date": "2025-11-10",
         "created_at": "2025-11-08T18:00:00.000Z",
         "contact": {
           "id": 101,
@@ -2044,7 +1926,7 @@ Retrieves a paginated list of tickets with filtering.
           "last_name": "Johnson",
           "email": "sarah.johnson@example.com"
         },
-        "assignedTo": {
+        "assigned_to": {
           "id": 3,
           "first_name": "Bob",
           "last_name": "Johnson"
@@ -2056,9 +1938,12 @@ Retrieves a paginated list of tickets with filtering.
         "is_overdue": false
       }
     ],
-    "totalItems": 18,
-    "totalPages": 1,
-    "currentPage": 1,
+    "pagination": {
+      "total": 18,
+      "page": 1,
+      "limit": 20,
+      "pages": 1
+    },
     "summary": {
       "by_status": {
         "new": 5,
@@ -2078,21 +1963,10 @@ Retrieves a paginated list of tickets with filtering.
 }
 ```
 
----
-
-### 3. Get Ticket by ID
-**GET** `/api/tickets/:id`
-
-Retrieves a single ticket with all associations.
+#### 3. Get Ticket by ID
+**GET** `/tickets/:id`
 
 **Headers:** `Authorization: Bearer <token>`
-
-**URL Parameters:**
-- `id`: Ticket ID (integer)
-
-**Access Control:**
-- **Admin/Manager**: Can view any ticket
-- **Agent**: Can only view tickets they created OR are assigned to
 
 **Response (200 OK):**
 ```json
@@ -2109,12 +1983,15 @@ Retrieves a single ticket with all associations.
       "assigned_to": 3,
       "priority": "high",
       "status": "open",
-      "due_date": "2025-11-10T00:00:00.000Z",
+      "due_date": "2025-11-10",
       "resolved_at": null,
-      "sla_warnings_sent": [],
-      "sla_breach_notified": false,
+      "sla_response_due": "2025-11-08T20:00:00.000Z",
+      "sla_resolution_due": "2025-11-10T18:00:00.000Z",
       "created_at": "2025-11-08T18:00:00.000Z",
       "updated_at": "2025-11-08T18:30:00.000Z",
+      "response_time": 15,
+      "resolution_time": null,
+      "is_overdue": false,
       "contact": {
         "id": 101,
         "first_name": "Sarah",
@@ -2122,12 +1999,12 @@ Retrieves a single ticket with all associations.
         "email": "sarah.johnson@example.com",
         "phone": "+1234567890"
       },
-      "createdBy": {
+      "created_by": {
         "id": 1,
         "first_name": "John",
         "last_name": "Doe"
       },
-      "assignedTo": {
+      "assigned_to_user": {
         "id": 3,
         "first_name": "Bob",
         "last_name": "Johnson",
@@ -2146,34 +2023,22 @@ Retrieves a single ticket with all associations.
             "avatar": null
           }
         }
-      ]
-    },
-    "sla": {
-      "response_time": 15,
-      "response_due": null,
-      "response_breached": false,
-      "resolution_due": "2025-11-10T00:00:00.000Z",
-      "resolution_breached": false
-    },
-    "time_spent": {
-      "total": null,
-      "breached": false
+      ],
+      "sla": {
+        "response_due": "2025-11-08T20:00:00.000Z",
+        "response_breached": false,
+        "resolution_due": "2025-11-10T18:00:00.000Z",
+        "resolution_breached": false
+      }
     }
   }
 }
 ```
 
----
-
-### 4. Update Ticket
-**PUT** `/api/tickets/:id`
-
-Updates an existing ticket.
+#### 4. Update Ticket
+**PUT** `/tickets/:id`
 
 **Headers:** `Authorization: Bearer <token>`
-
-**URL Parameters:**
-- `id`: Ticket ID (integer)
 
 **Request Body:**
 ```json
@@ -2183,20 +2048,6 @@ Updates an existing ticket.
   "due_date": "2025-11-09"
 }
 ```
-
-**Restrictions:**
-- Cannot update tickets with status `resolved` or `closed`
-- The following fields cannot be updated directly (they are managed by the system):
-  - `ticket_number` (auto-generated)
-  - `user_id` (set at creation)
-  - `created_at` (auto-set)
-  - `resolved_at` (auto-set when status changes to resolved)
-  - `sla_warnings_sent` (managed by SLA monitor)
-  - `sla_breach_notified` (managed by SLA monitor)
-
-**Access Control:**
-- **Admin/Manager**: Can update any ticket
-- **Agent**: Can only update tickets they created OR are assigned to
 
 **Response (200 OK):**
 ```json
@@ -2208,28 +2059,21 @@ Updates an existing ticket.
       "id": 301,
       "subject": "Cannot access premium features - URGENT",
       "priority": "urgent",
-      "due_date": "2025-11-09T00:00:00.000Z",
+      "due_date": "2025-11-09",
       "updated_at": "2025-11-08T18:45:00.000Z"
     },
     "sla": {
-      "response_due": null,
-      "resolution_due": "2025-11-09T00:00:00.000Z"
+      "response_due": "2025-11-08T20:00:00.000Z",
+      "resolution_due": "2025-11-09T18:00:00.000Z"
     }
   }
 }
 ```
 
----
-
-### 5. Update Ticket Status
-**PATCH** `/api/tickets/:id/status`
-
-Updates only the status of a ticket.
+#### 5. Update Ticket Status
+**PATCH** `/tickets/:id/status`
 
 **Headers:** `Authorization: Bearer <token>`
-
-**URL Parameters:**
-- `id`: Ticket ID (integer)
 
 **Request Body:**
 ```json
@@ -2238,26 +2082,6 @@ Updates only the status of a ticket.
   "resolution_notes": "Fixed by upgrading account in billing system"
 }
 ```
-
-| Field | Required | Type | Description |
-|-------|----------|------|-------------|
-| `status` | Yes | string | New status (new/open/pending/resolved/closed) |
-| `resolution_notes` | No | string | Added as internal comment when resolving |
-
-**Behavior:**
-- When status changes to `resolved`, `resolved_at` is automatically set
-- Resolution notes are added as an internal comment
-- Email notification sent to ticket creator using `ticketResolved` template
-- If status is `resolved`, `resolutionTime` virtual field becomes available
-
-**Restrictions:**
-- Cannot change status of tickets that are already `resolved` or `closed`
-- Cannot change status to the current status
-- When changing to `resolved`, the `resolved_at` timestamp is automatically set
-
-**Access Control:**
-- **Admin/Manager**: Can update any ticket
-- **Agent**: Can only update tickets they created OR are assigned to
 
 **Response (200 OK):**
 ```json
@@ -2269,26 +2093,20 @@ Updates only the status of a ticket.
       "id": 301,
       "status": "resolved",
       "resolved_at": "2025-11-08T19:00:00.000Z",
-      "updated_at": "2025-11-08T19:00:00.000Z"
+      "resolution_time": 60
     },
-    "resolution_time": 60
+    "sla": {
+      "resolution_breached": false
+    }
   }
 }
 ```
 
----
+#### 6. Assign Ticket
+**POST** `/tickets/:id/assign`
 
-### 6. Assign Ticket
-**POST** `/api/tickets/:id/assign`
-
-Assigns or unassigns a ticket to a user.
-
-**Headers:** `Authorization: Bearer <token>`
-
+**Headers:** `Authorization: Bearer <token>`  
 **Access:** Admin/Manager only
-
-**URL Parameters:**
-- `id`: Ticket ID (integer)
 
 **Request Body:**
 ```json
@@ -2297,24 +2115,11 @@ Assigns or unassigns a ticket to a user.
 }
 ```
 
-| Field | Required | Type | Description |
-|-------|----------|------|-------------|
-| `assigned_to` | Yes | integer/null | User ID to assign, or `null` to unassign |
-
-**Restrictions:**
-- Only Admin/Manager can assign/unassign tickets
-- Cannot assign tickets that are `resolved` or `closed`
-
-**Behavior:**
-- Internal comment automatically added: "Assigned to [Name]" or "Assigned to unassigned"
-- Email notification sent to new assignee using `ticketAssigned` template
-- Audit log entry created
-
 **Response (200 OK):**
 ```json
 {
   "success": true,
-  "message": "Ticket assignment updated successfully",
+  "message": "Ticket assigned successfully",
   "data": {
     "ticket": {
       "id": 301,
@@ -2331,17 +2136,10 @@ Assigns or unassigns a ticket to a user.
 }
 ```
 
----
-
-### 7. Add Ticket Comment
-**POST** `/api/tickets/:id/comments`
-
-Adds a comment to a ticket.
+#### 7. Add Ticket Comment
+**POST** `/tickets/:id/comments`
 
 **Headers:** `Authorization: Bearer <token>`
-
-**URL Parameters:**
-- `id`: Ticket ID (integer)
 
 **Request Body:**
 ```json
@@ -2350,20 +2148,6 @@ Adds a comment to a ticket.
   "is_internal": false
 }
 ```
-
-| Field | Required | Type | Description |
-|-------|----------|------|-------------|
-| `comment` | Yes | string | Comment text |
-| `is_internal` | No | boolean | If true, only visible to staff (default: false) |
-
-**Behavior:**
-- If ticket status is `new` and comment is **not internal**, status auto-updates to `open`
-- Email notifications sent to relevant parties (creator, assignee) unless comment is internal
-- Internal comments only visible to admin/manager/assigned agent
-
-**Access Control:**
-- **Admin/Manager**: Can add comments to any ticket
-- **Agent**: Can only add comments to tickets they created OR are assigned to
 
 **Response (201 Created):**
 ```json
@@ -2381,32 +2165,20 @@ Adds a comment to a ticket.
       "user": {
         "id": 3,
         "first_name": "Bob",
-        "last_name": "Johnson",
-        "avatar": null
+        "last_name": "Johnson"
       }
     }
   }
 }
 ```
 
----
-
-### 8. Get Ticket Comments
-**GET** `/api/tickets/:id/comments`
-
-Retrieves all comments for a ticket.
+#### 8. Get Ticket Comments
+**GET** `/tickets/:id/comments`
 
 **Headers:** `Authorization: Bearer <token>`
 
-**URL Parameters:**
-- `id`: Ticket ID (integer)
-
 **Query Parameters:**
-- `include_internal`: Set to `"true"` to include internal comments (staff only)
-
-**Access Control:**
-- **Admin/Manager**: Can see all comments
-- **Agent**: Can only see non-internal comments unless they own/are assigned to the ticket
+- `include_internal`: true/false (default: false for non-admin)
 
 **Response (200 OK):**
 ```json
@@ -2425,18 +2197,6 @@ Retrieves all comments for a ticket.
           "last_name": "Johnson",
           "avatar": null
         }
-      },
-      {
-        "id": 502,
-        "comment": "Internal note: escalated to senior team",
-        "is_internal": true,
-        "created_at": "2025-11-08T18:20:00.000Z",
-        "user": {
-          "id": 1,
-          "first_name": "John",
-          "last_name": "Doe",
-          "avatar": null
-        }
       }
     ],
     "total": 3
@@ -2444,23 +2204,11 @@ Retrieves all comments for a ticket.
 }
 ```
 
----
+#### 9. Delete Ticket
+**DELETE** `/tickets/:id`
 
-### 9. Delete Ticket
-**DELETE** `/api/tickets/:id`
-
-Permanently deletes a ticket.
-
-**Headers:** `Authorization: Bearer <token>`
-
+**Headers:** `Authorization: Bearer <token>`  
 **Access:** Admin only
-
-**URL Parameters:**
-- `id`: Ticket ID (integer)
-
-**Behavior:**
-- Cascading delete removes all associated comments
-- Audit log entry created
 
 **Response (200 OK):**
 ```json
@@ -2470,27 +2218,15 @@ Permanently deletes a ticket.
 }
 ```
 
----
+#### 10. Get SLA Report
+**GET** `/tickets/sla/report`
 
-### 10. Get SLA Report
-**GET** `/api/tickets/sla/report`
-
-Generates SLA compliance report for tickets.
-
-**Headers:** `Authorization: Bearer <token>`
-
+**Headers:** `Authorization: Bearer <token>`  
 **Access:** Admin/Manager only
 
 **Query Parameters:**
-| Parameter | Type | Description | Default |
-|-----------|------|-------------|---------|
-| `start_date` | date | Start date (YYYY-MM-DD) | 30 days ago |
-| `end_date` | date | End date (YYYY-MM-DD) | today |
-
-**Important Notes:**
-- **Response SLA** is not tracked (all response metrics show 100% compliance)
-- **Resolution SLA** is tracked using the `due_date` field
-- Resolution breach = ticket with `isOverdue = true`
+- `start_date`: Start date (YYYY-MM-DD)
+- `end_date`: End date (YYYY-MM-DD)
 
 **Response (200 OK):**
 ```json
@@ -2498,17 +2234,17 @@ Generates SLA compliance report for tickets.
   "success": true,
   "data": {
     "period": {
-      "start": "2025-10-09",
+      "start": "2025-11-01",
       "end": "2025-11-08"
     },
     "response_times": {
-      "average": 25.5,
+      "average": 25,
       "median": 15,
       "min": 5,
       "max": 180,
-      "breached": 0,
+      "breached": 2,
       "total": 18,
-      "compliance_rate": 100
+      "compliance_rate": 88.9
     },
     "resolution_times": {
       "average": 180,
@@ -2522,30 +2258,13 @@ Generates SLA compliance report for tickets.
     "by_priority": {
       "urgent": {
         "response_compliance": 100,
-        "resolution_compliance": 100
-      },
-      "high": {
-        "response_compliance": 100,
-        "resolution_compliance": 80
-      },
-      "medium": {
-        "response_compliance": 100,
-        "resolution_compliance": 100
-      },
-      "low": {
-        "response_compliance": 100,
-        "resolution_compliance": 100
+        "resolution_compliance": 95
       }
     },
     "daily_breaches": [
       {
         "date": "2025-11-05",
-        "response_breaches": 0,
-        "resolution_breaches": 1
-      },
-      {
-        "date": "2025-11-06",
-        "response_breaches": 0,
+        "response_breaches": 1,
         "resolution_breaches": 0
       }
     ]
@@ -2553,138 +2272,6 @@ Generates SLA compliance report for tickets.
 }
 ```
 
----
-
-## Email Templates for Tickets
-
-### Ticket Assigned
-**Template:** `ticketAssigned.ejs`
-
-**Variables:**
-```json
-{
-  "first_name": "Bob",
-  "ticket_number": "TKT-2025-0001",
-  "subject": "Cannot access premium features",
-  "priority": "high",
-  "contact_name": "Sarah Johnson",
-  "ticket_url": "https://app.deracrm.com/tickets/301"
-}
-```
-
-### Ticket Resolved
-**Template:** `ticketResolved.ejs`
-
-**Variables:**
-```json
-{
-  "first_name": "John",
-  "ticket_number": "TKT-2025-0001",
-  "subject": "Cannot access premium features",
-  "contact_name": "Sarah Johnson",
-  "resolution_time": 60,
-  "ticket_url": "https://app.deracrm.com/tickets/301"
-}
-```
-
-### New Comment
-**Template:** `ticketComment.ejs`
-
-**Variables:**
-```json
-{
-  "first_name": "John",
-  "ticket_number": "TKT-2025-0001",
-  "subject": "Cannot access premium features",
-  "comment_author": "Bob Johnson",
-  "comment": "Looking into this issue now",
-  "ticket_url": "https://app.deracrm.com/tickets/301"
-}
-```
-
----
-
-## Permission Matrix
-
-| Action | Admin | Manager | Agent (Owner/Assignee) | Agent (Other) |
-|--------|-------|---------|------------------------|---------------|
-| Create Ticket | ✅ | ✅ | ✅ | ✅ |
-| View All Tickets | ✅ | ✅ | ❌ | ❌ |
-| View Own Tickets | ✅ | ✅ | ✅ | ❌ |
-| Update Ticket | ✅ | ✅ | ✅ | ❌ |
-| Update Status | ✅ | ✅ | ✅ | ❌ |
-| Assign Ticket | ✅ | ✅ | ❌ | ❌ |
-| Add Comment | ✅ | ✅ | ✅ | ❌ |
-| View Internal Comments | ✅ | ✅ | ✅* | ❌ |
-| Delete Ticket | ✅ | ❌ | ❌ | ❌ |
-| View SLA Report | ✅ | ✅ | ❌ | ❌ |
-
-*\*Agents can see internal comments only on tickets they own or are assigned to*
-
----
-
-## Error Codes
-
-| Error | Status | Description |
-|-------|--------|-------------|
-| `User not authenticated` | 401 | Missing or invalid token |
-| `Contact not found` | 404 | contact_id doesn't exist |
-| `Ticket not found` | 404 | Ticket ID doesn't exist |
-| `Forbidden` | 403 | User lacks permission |
-| `Cannot update resolved or closed tickets` | 400 | Ticket is in final state |
-| `Validation failed` | 400 | Invalid input data |
-
----
-
-## Audit Logging
-
-All ticket operations are logged to the `AuditLog` table:
-
-| Action | Entity Type | Details Example |
-|--------|-------------|-----------------|
-| CREATE | ticket | "Created ticket: TKT-2025-0001" |
-| UPDATE | ticket | "Updated ticket: TKT-2025-0001" |
-| VIEW | ticket | "Viewed ticket: TKT-2025-0001" |
-| DELETE | ticket | "Deleted ticket: TKT-2025-0001" |
-
----
-
-## Implementation Notes
-
-### Virtual Field Calculations
-```javascript
-// Response time (minutes) - time to first non-internal comment
-get responseTime() {
-  // Implementation depends on first comment tracking
-  return null; // Override based on your logic
-}
-
-// Resolution time (minutes)
-get resolutionTime() {
-  if (!this.resolved_at) return null;
-  return Math.floor((this.resolved_at.getTime() - this.created_at.getTime()) / 60000);
-}
-
-// Overdue check
-get isOverdue(): boolean {
-  if (!this.due_date || this.status === 'resolved' || this.status === 'closed') {
-    return false;
-  }
-  return new Date() > new Date(this.due_date);
-}
-```
-
-### SLA Warning System
-The `sla_warnings_sent` array tracks which warning thresholds have been sent:
-- Thresholds: [0.5, 0.75, 0.9, 1] (50%, 75%, 90%, 100% of time elapsed)
-- Used by background job to prevent duplicate notifications
-
-### Ticket Number Generation
-Format: `TKT-YYYY-XXXX` where:
-- `YYYY` = Current year
-- `XXXX` = Sequential number (padded to 4 digits)
-
-Example: `TKT-2025-0042`
 ### Email Marketing Endpoints
 
 #### 1. Create Email Template

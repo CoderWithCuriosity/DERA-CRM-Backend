@@ -200,7 +200,7 @@ export const getDashboardSummary = async (
  */
 export const getSalesChartData = async (
   whereClause: any = {},
-  period: string = 'month',
+  _period: string = 'month',
   year: number = new Date().getFullYear()
 ): Promise<SalesChartData> => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

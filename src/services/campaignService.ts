@@ -301,7 +301,7 @@ export const trackOpen = async (campaignId: number, recipientId: number): Promis
 export const trackClick = async (
   campaignId: number,
   recipientId: number,
-  url: string
+  _url: string
 ): Promise<void> => {
   const recipient = await CampaignRecipient.findOne({
     where: {

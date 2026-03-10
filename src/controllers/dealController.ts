@@ -114,7 +114,7 @@ export const createDeal = catchAsync(async (req: Request, res: Response) => {
     }
   }
 
-  res.status(HTTP_STATUS.CREATED).json({
+  return res.status(HTTP_STATUS.CREATED).json({
     success: true,
     message: SUCCESS_MESSAGES.CREATED('Deal'),
     data: { deal: createdDeal }

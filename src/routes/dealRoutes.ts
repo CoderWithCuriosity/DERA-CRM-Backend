@@ -12,7 +12,7 @@ import {
   getPipelineSummary,
   getKanbanBoard
 } from '../controllers/dealController';
-import { protect, restrictTo } from '../middleware/auth';
+import { protect } from '../middleware/auth';
 import { validate } from '../middleware/validation';
 import { DEAL_STAGES, DEAL_STATUS } from '../config/constants';
 

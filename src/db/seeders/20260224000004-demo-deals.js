@@ -12,45 +12,46 @@ module.exports = {
     );
 
     const contacts = await queryInterface.sequelize.query(
-      'SELECT id FROM contacts WHERE email = :email',
+      'SELECT id, email FROM contacts WHERE email IN (:emails)',
       {
-        replacements: { email: 'sarah.johnson@example.com' },
+        replacements: { emails: ['sarah.johnson@example.com', 'michael.chen@example.com'] },
         type: queryInterface.sequelize.QueryTypes.SELECT
       }
     );
 
     const userId = users[0]?.id;
-    const contactId = contacts[0]?.id;
+    if (!userId || contacts.length === 0) return;
 
-    if (!userId || !contactId) return;
+    const sarahContact = contacts.find(c => c.email === 'sarah.johnson@example.com');
+    const michaelContact = contacts.find(c => c.email === 'michael.chen@example.com');
 
     const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 30);
+    futureDate.setMonth(futureDate.getMonth() + 1);
 
     await queryInterface.bulkInsert('deals', [
       {
-        name: 'Enterprise Plan - Tech Solutions',
-        contact_id: contactId,
+        name: 'Enterprise Software License',
+        contact_id: sarahContact.id,
         user_id: userId,
         stage: 'negotiation',
-        amount: 16500.00,
-        probability: 80,
+        amount: 50000.00,
+        probability: 75,
         expected_close_date: futureDate,
         status: 'open',
-        notes: 'Added premium support package',
+        notes: 'Interested in 3-year enterprise license',
         created_at: new Date(),
         updated_at: new Date()
       },
       {
-        name: 'Basic Plan - Innovate LLC',
-        contact_id: contactId,
+        name: 'Consulting Services',
+        contact_id: michaelContact.id,
         user_id: userId,
-        stage: 'qualified',
-        amount: 5000.00,
-        probability: 40,
+        stage: 'proposal',
+        amount: 15000.00,
+        probability: 50,
         expected_close_date: futureDate,
         status: 'open',
-        notes: 'Interested in basic features',
+        notes: 'Initial consultation completed, proposal sent',
         created_at: new Date(),
         updated_at: new Date()
       }

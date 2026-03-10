@@ -34,22 +34,12 @@ GRANT CREATE ON SCHEMA public TO deracrm_user;
 
 
 
+In the folder run this command
+npm run db:init
 
-That comman above is all you need but if any issues you can try the command below.
+this will generate all the migration file for the database, then run 
 
--- Grant all privileges on all tables (for existing tables if any)
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO deracrm_user;
+npm run db:migrate
 
--- Grant all privileges on all sequences
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO deracrm_user;
+this will create all the tables from the migrated file.
 
--- Grant all privileges on all functions
-GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO deracrm_user;
-
--- Make these permissions default for future tables
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO deracrm_user;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO deracrm_user;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON FUNCTIONS TO deracrm_user;
-
-
-    

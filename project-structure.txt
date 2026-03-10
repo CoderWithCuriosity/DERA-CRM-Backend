@@ -1,0 +1,206 @@
+backend/
+├── .env
+├── .eslintignore
+├── .eslintrc.json
+├── .gitignore
+├── .prettierignore
+├── .prettierrc
+├── .sequelizerc
+├── backups
+├── docs
+│   ├── API.md
+│   ├── Documentation.md
+│   ├── old.md
+│   ├── old_v2.md
+│   ├── RawCommand.md
+│   ├── structure.md
+│   └── toOwn.md
+├── logs
+│   ├── combined.log
+│   └── error.log
+├── note.md
+├── package-lock.json
+├── package.json
+├── ReadMe.md
+├── scripts
+│   ├── backup.ts
+│   ├── cleanup.ts
+│   ├── createAdmin.ts
+│   ├── migrate.ts
+│   ├── restore.ts
+│   ├── run-migrations.ts
+│   ├── run-seeders.ts
+│   └── triggerJob.ts
+├── src
+│   ├── app.ts
+│   ├── config
+│   │   ├── constants.ts
+│   │   ├── database.ts
+│   │   ├── email.ts
+│   │   ├── environment.ts
+│   │   ├── fileUpload.ts
+│   │   ├── logger.ts
+│   │   └── rateLimit.ts
+│   ├── controllers
+│   │   ├── activityController.ts
+│   │   ├── adminController.ts
+│   │   ├── authController.ts
+│   │   ├── campaignController.ts
+│   │   ├── contactController.ts
+│   │   ├── dashboardController.ts
+│   │   ├── dealController.ts
+│   │   ├── emailTemplateController.ts
+│   │   ├── organizationController.ts
+│   │   ├── ticketController.ts
+│   │   └── userController.ts
+│   ├── db
+│   │   ├── config
+│   │   │   └── config.js
+│   │   ├── generate-migrations.js
+│   │   ├── migrations
+│   │   │   ├── 2026031008522701-create-organizations-table.js
+│   │   │   ├── 2026031008522702-create-users-table.js
+│   │   │   ├── 2026031008522703-create-contacts-table.js
+│   │   │   ├── 2026031008522704-create-deals-table.js
+│   │   │   ├── 2026031008522705-create-activities-table.js
+│   │   │   ├── 2026031008522706-create-tickets-table.js
+│   │   │   ├── 2026031008522707-create-ticket-comments-table.js
+│   │   │   ├── 2026031008522708-create-email-templates-table.js
+│   │   │   ├── 2026031008522709-create-campaigns-table.js
+│   │   │   ├── 2026031008522710-create-campaign-recipients-table.js
+│   │   │   ├── 2026031008522711-create-audit-logs-table.js
+│   │   │   ├── 2026031008522712-create-refresh-tokens-table.js
+│   │   │   ├── 2026031008522713-create-password-resets-table.js
+│   │   │   └── 2026031008522714-create-backups-table.js
+│   │   └── seeders
+│   │       ├── 20260224000001-demo-users.js
+│   │       ├── 20260224000002-demo-contacts.js
+│   │       ├── 20260224000002-demo-organizations.js
+│   │       ├── 20260224000004-demo-deals.js
+│   │       ├── 20260224000004-demo-tickets.js
+│   │       ├── 20260224000005-demo-activities.js
+│   │       ├── 20260224000005-demo-email-templates.js
+│   │       ├── 20260224000007-demo-ticket-comments.js
+│   │       ├── 20260224000009-demo-campaigns.js
+│   │       └── 20260224000010-demo-audit-logs.js
+│   ├── index.ts
+│   ├── jobs
+│   │   ├── backupJob.ts
+│   │   ├── campaignScheduler.ts
+│   │   ├── cleanupJob.ts
+│   │   ├── dailyDigest.ts
+│   │   ├── index.ts
+│   │   ├── notificationJobs.ts
+│   │   ├── slaMonitor.ts
+│   │   └── weeklySummary.ts
+│   ├── middleware
+│   │   ├── auth.ts
+│   │   ├── errorHandler.ts
+│   │   ├── fileUpload.ts
+│   │   ├── logger.ts
+│   │   ├── rateLimiter.ts
+│   │   ├── roleCheck.ts
+│   │   ├── sanitizer.ts
+│   │   └── validation.ts
+│   ├── models
+│   │   ├── Activity.ts
+│   │   ├── AuditLog.ts
+│   │   ├── Backup.ts
+│   │   ├── Campaign.ts
+│   │   ├── CampaignRecipient.ts
+│   │   ├── Contact.ts
+│   │   ├── Deal.ts
+│   │   ├── EmailTemplate.ts
+│   │   ├── index.ts
+│   │   ├── Organization.ts
+│   │   ├── PasswordReset.ts
+│   │   ├── RefreshToken.ts
+│   │   ├── Ticket.ts
+│   │   ├── TicketComment.ts
+│   │   └── User.ts
+│   ├── routes
+│   │   ├── activityRoutes.ts
+│   │   ├── adminRoutes.ts
+│   │   ├── authRoutes.ts
+│   │   ├── campaignRoutes.ts
+│   │   ├── contactRoutes.ts
+│   │   ├── dashboardRoutes.ts
+│   │   ├── dealRoutes.ts
+│   │   ├── emailTemplateRoutes.ts
+│   │   ├── index.ts
+│   │   ├── organizationRoutes.ts
+│   │   ├── ticketRoutes.ts
+│   │   └── userRoutes.ts
+│   ├── services
+│   │   ├── auditService.ts
+│   │   ├── authService.ts
+│   │   ├── backupService.ts
+│   │   ├── campaignService.ts
+│   │   ├── dashboardService.ts
+│   │   ├── emailService.ts
+│   │   ├── exportService.ts
+│   │   ├── fileService.ts
+│   │   ├── importService.ts
+│   │   ├── notificationService.ts
+│   │   ├── slaService.ts
+│   │   └── tokenService.ts
+│   ├── types
+│   │   ├── controllers.d.ts
+│   │   ├── express.d.ts
+│   │   ├── middleware.d.ts
+│   │   ├── models.d.ts
+│   │   └── services.d.ts
+│   └── utils
+│       ├── AppError.ts
+│       ├── catchAsync.ts
+│       ├── constants
+│       │   ├── activityTypes.ts
+│       │   ├── priorities.ts
+│       │   ├── roles.ts
+│       │   ├── stages.ts
+│       │   ├── statuses.ts
+│       │   └── ticketStatuses.ts
+│       ├── filters.ts
+│       ├── helpers
+│       │   ├── arrayHelpers.ts
+│       │   ├── dateHelpers.ts
+│       │   ├── numberHelpers.ts
+│       │   ├── objectHelpers.ts
+│       │   └── stringHelpers.ts
+│       ├── pagination.ts
+│       ├── templates
+│       │   ├── email
+│       │   │   ├── activityReminder.ejs
+│       │   │   ├── assignment.ejs
+│       │   │   ├── campaignSummary.ejs
+│       │   │   ├── dailyDigest.ejs
+│       │   │   ├── dealAssigned.ejs
+│       │   │   ├── passwordReset.ejs
+│       │   │   ├── slaBreach.ejs
+│       │   │   ├── slaBreached.ejs
+│       │   │   ├── slaBreachedManager.ejs
+│       │   │   ├── ticketAssigned.ejs
+│       │   │   ├── ticketResolved.ejs
+│       │   │   ├── userInvitation.ejs
+│       │   │   ├── verification.ejs
+│       │   │   ├── weeklySummary.ejs
+│       │   │   └── welcome.ejs
+│       │   └── reports
+│       │       ├── activityReport.ejs
+│       │       └── salesReport.ejs
+│       └── validators
+│           ├── activityValidators.ts
+│           ├── authValidators.ts
+│           ├── campaignValidators.ts
+│           ├── contactValidators.ts
+│           ├── dealValidators.ts
+│           ├── emailTemplateValidators.ts
+│           ├── ticketValidators.ts
+│           └── userValidators.ts
+├── tsconfig.json
+└── uploads
+    ├── attachments
+    ├── avatars
+    ├── exports
+    ├── imports
+    └── logos

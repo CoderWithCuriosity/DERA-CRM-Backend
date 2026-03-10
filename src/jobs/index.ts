@@ -5,6 +5,7 @@ import { scheduleDailyDigest } from './dailyDigest';
 import { scheduleWeeklySummary } from './weeklySummary';
 import { scheduleCleanupJobs } from './cleanupJob';
 import logger from '../config/logger';
+import { startNotificationJobs } from './notificationJobs';
 
 /**
  * Initialize all scheduled jobs
@@ -34,6 +35,9 @@ export const initializeJobs = (): void => {
     // Schedule cleanup jobs (daily at 3 AM)
     scheduleCleanupJobs();
 
+    // Schedule notification jobs (every hour)
+    startNotificationJobs();
+
     logger.info('All scheduled jobs initialized successfully');
   } catch (error) {
     logger.error('Failed to initialize scheduled jobs:', error);
@@ -47,6 +51,7 @@ export * from './slaMonitor';
 export * from './dailyDigest';
 export * from './weeklySummary';
 export * from './cleanupJob';
+export * from './notificationJobs';
 
 // Export a function to manually trigger jobs (for testing)
 export const triggerJob = async (jobName: string): Promise<any> => {
@@ -67,6 +72,11 @@ export const triggerJob = async (jobName: string): Promise<any> => {
     case 'cleanup':
       const cleanupJob = await import('./cleanupJob');
       return await cleanupJob.runAllCleanups();
+    case 'notification':
+    case 'notifications':
+      const notificationJobs = await import('./notificationJobs');
+      // Assuming you have a function to manually trigger notification checks
+      return await notificationJobs.triggerNotificationCheck?.();
     default:
       throw new Error(`Unknown job: ${jobName}`);
   }

@@ -17,3 +17,15 @@ export const startNotificationJobs = () => {
 
   logger.info('Notification jobs started');
 };
+
+
+export const triggerNotificationCheck = async (): Promise<void> => {
+  logger.info('Manually triggering notification check...');
+  try {
+    await notificationScheduler.checkAndScheduleReminders();
+    logger.info('Manual notification check completed successfully');
+  } catch (error) {
+    logger.error('Manual notification check failed:', error);
+    throw error;
+  }
+};

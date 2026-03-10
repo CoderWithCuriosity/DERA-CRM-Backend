@@ -19,3 +19,24 @@
 2026-03-09 12:08:03:83 [33mwarn[39m: [33m⚠️  Running initial database sync in production mode[39m
 2026-03-09 12:24:34:2434 [33mwarn[39m: [33m⚠️  Running initial database sync in production mode[39m
 2026-03-09 12:28:56:2856 [33mwarn[39m: [33m⚠️  Running initial database sync in production mode[39m
+2026-03-10 10:07:05:75 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-10 10:07:05:75 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-10 10:07:05:75 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-10 10:07:05:75 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-10 10:07:05:75 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-10 10:07:05:75 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-10 10:07:05:75 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-10 10:07:05:75 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-10 10:07:05:75 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-10 10:07:05:75 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-10 10:07:05:75 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:3000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-10 10:07:07:77 [32minfo[39m: [32mEmail transporter ready[39m
+2026-03-10 10:07:09:79 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-03-10 10:07:09:79 [32minfo[39m: [32mHTTP server closed.[39m
+2026-03-10 10:07:09:79 [32minfo[39m: [32mDatabase connection closed.[39m

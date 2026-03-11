@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import { User } from '../src/models';
 import sequelize from '../src/config/database';
 import logger from '../src/config/logger';
+import { USER_ROLES } from '../src/config/constants';
 
 dotenv.config();
 
@@ -21,7 +22,7 @@ const createAdmin = async () => {
       password: process.env.ADMIN_PASSWORD || 'Admin@123456',
       first_name: process.env.ADMIN_FIRST_NAME || 'Super',
       last_name: process.env.ADMIN_LAST_NAME || 'Admin',
-      role: 'admin',
+      role: USER_ROLES.ADMIN,
       is_verified: true
     };
 

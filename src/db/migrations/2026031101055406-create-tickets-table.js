@@ -58,7 +58,7 @@ module.exports = {
           defaultValue: 'medium'
         },
         status: {
-          type: Sequelize.ENUM('new', 'open', 'in_progress', 'resolved', 'closed'),
+          type: Sequelize.ENUM('new', 'open', 'pending', 'resolved', 'closed'),
           allowNull: false,
           defaultValue: 'new'
         },

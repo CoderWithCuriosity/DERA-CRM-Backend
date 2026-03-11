@@ -10,7 +10,7 @@ module.exports = {
           primaryKey: true
         },
         type: {
-          type: Sequelize.ENUM('call', 'email', 'meeting', 'task', 'note'),
+          type: Sequelize.ENUM('call', 'email', 'meeting', 'task', 'note', 'follow-up'),
           allowNull: false
         },
         subject: {
@@ -69,7 +69,7 @@ module.exports = {
           allowNull: true
         },
         status: {
-          type: Sequelize.ENUM('scheduled', 'completed', 'cancelled'),
+          type: Sequelize.ENUM('scheduled', 'completed', 'cancelled', 'overdue'),
           allowNull: false,
           defaultValue: 'scheduled'
         },

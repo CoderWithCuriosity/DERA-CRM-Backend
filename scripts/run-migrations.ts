@@ -12,7 +12,7 @@ if (!fs.existsSync(migrationsDir)) {
 // Generate timestamp for migration files
 const timestamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0].replace('T', '');
 
-// Complete migration templates for all models
+// Complete migration templates for all models with ENUMs matching constants
 const migrations = [
   {
     name: `create-organizations-table`,
@@ -218,7 +218,7 @@ const migrations = [
           defaultValue: 'active'
         },
         source: {
-          type: Sequelize.ENUM('website', 'referral', 'social', 'email', 'call', 'other'),
+          type: Sequelize.ENUM('website', 'referral', 'social', 'email', 'call', 'event', 'other'),
           allowNull: false,
           defaultValue: 'other'
         },
@@ -372,7 +372,7 @@ const migrations = [
           primaryKey: true
         },
         type: {
-          type: Sequelize.ENUM('call', 'email', 'meeting', 'task', 'note'),
+          type: Sequelize.ENUM('call', 'email', 'meeting', 'task', 'note', 'follow-up'),
           allowNull: false
         },
         subject: {
@@ -431,7 +431,7 @@ const migrations = [
           allowNull: true
         },
         status: {
-          type: Sequelize.ENUM('scheduled', 'completed', 'cancelled'),
+          type: Sequelize.ENUM('scheduled', 'completed', 'cancelled', 'overdue'),
           allowNull: false,
           defaultValue: 'scheduled'
         },
@@ -518,7 +518,7 @@ const migrations = [
           defaultValue: 'medium'
         },
         status: {
-          type: Sequelize.ENUM('new', 'open', 'in_progress', 'resolved', 'closed'),
+          type: Sequelize.ENUM('new', 'open', 'pending', 'resolved', 'closed'),
           allowNull: false,
           defaultValue: 'new'
         },
@@ -876,11 +876,11 @@ const migrations = [
           onDelete: 'SET NULL'
         },
         action: {
-          type: Sequelize.ENUM('create', 'update', 'delete', 'view', 'export', 'import', 'login', 'logout'),
+          type: Sequelize.ENUM('CREATE', 'UPDATE', 'DELETE', 'VIEW', 'EXPORT', 'IMPORT', 'LOGIN', 'LOGOUT'),
           allowNull: false
         },
         entity_type: {
-          type: Sequelize.ENUM('contact', 'deal', 'ticket', 'activity', 'campaign', 'user', 'organization', 'email_template'),
+          type: Sequelize.ENUM('user', 'contact', 'deal', 'activity', 'ticket', 'ticket_comment', 'email_template', 'campaign', 'campaign_recipient', 'organization', 'backup'),
           allowNull: false
         },
         entity_id: {

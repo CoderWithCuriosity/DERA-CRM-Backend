@@ -42,7 +42,7 @@ module.exports = {
           defaultValue: 'active'
         },
         source: {
-          type: Sequelize.ENUM('website', 'referral', 'social', 'email', 'call', 'other'),
+          type: Sequelize.ENUM('website', 'referral', 'social', 'email', 'call', 'event', 'other'),
           allowNull: false,
           defaultValue: 'other'
         },

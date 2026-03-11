@@ -40,3 +40,123 @@
 2026-03-10 10:07:09:79 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
 2026-03-10 10:07:09:79 [32minfo[39m: [32mHTTP server closed.[39m
 2026-03-10 10:07:09:79 [32minfo[39m: [32mDatabase connection closed.[39m
+2026-03-10 20:35:15:3515 [32minfo[39m: [32mDatabase connected successfully[39m
+2026-03-10 20:35:15:3515 [32minfo[39m: [32m[39m
+[32m      ✅ Admin user created successfully![39m
+[32m      [39m
+[32m      📧 Email: admin@deracrm.com[39m
+[32m      🔑 Password: Admin@123456[39m
+[32m      👤 Name: Super Admin[39m
+[32m      🎭 Role: admin[39m
+[32m      [39m
+[32m      ⚠️  Please change the password after first login![39m
+[32m    [39m
+2026-03-10 20:37:47:3747 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-10 20:37:47:3747 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-10 20:37:47:3747 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-10 20:37:47:3747 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-10 20:37:47:3747 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-10 20:37:47:3747 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-10 20:37:47:3747 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-10 20:37:47:3747 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-10 20:37:47:3747 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-10 20:37:47:3747 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-10 20:37:47:3747 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-10 20:37:47:3747 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:3000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-10 20:37:48:3748 [32minfo[39m: [32mEmail transporter ready[39m
+2026-03-10 20:46:28:4628 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-03-10 20:46:28:4628 [32minfo[39m: [32mHTTP server closed.[39m
+2026-03-10 20:46:29:4629 [32minfo[39m: [32mDatabase connection closed.[39m
+2026-03-11 01:45:56:4556 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-11 01:45:56:4556 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-11 01:45:56:4556 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-11 01:45:56:4556 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-11 01:45:56:4556 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-11 01:45:56:4556 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-11 01:45:56:4556 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-11 01:45:56:4556 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-11 01:45:56:4556 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-11 01:45:56:4556 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-11 01:45:56:4556 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-11 01:45:56:4556 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:3000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-11 01:45:58:4558 [32minfo[39m: [32mEmail transporter ready[39m
+2026-03-11 01:47:19:4719 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-11 01:47:19:4719 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-11 01:47:19:4719 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-11 01:47:19:4719 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-11 01:47:19:4719 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-11 01:47:19:4719 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-11 01:47:19:4719 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-11 01:47:19:4719 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-11 01:47:19:4719 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-11 01:47:19:4719 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-11 01:47:19:4719 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-11 01:47:19:4719 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:3000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-11 01:47:20:4720 [32minfo[39m: [32mEmail transporter ready[39m
+2026-03-11 01:48:20:4820 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-11 01:48:20:4820 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-11 01:48:20:4820 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-11 01:48:20:4820 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-11 01:48:20:4820 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-11 01:48:20:4820 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-11 01:48:20:4820 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-11 01:48:20:4820 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-11 01:48:20:4820 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-11 01:48:20:4820 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-11 01:48:20:4820 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-11 01:48:20:4820 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-11 01:48:21:4821 [32minfo[39m: [32mEmail transporter ready[39m
+2026-03-11 01:48:26:4826 [32minfo[39m: [32mRequest started[39m
+2026-03-11 01:48:31:4831 [32minfo[39m: [32mRequest started[39m
+2026-03-11 01:48:43:4843 [32minfo[39m: [32mRequest started[39m
+2026-03-11 01:49:55:4955 [32minfo[39m: [32mRequest started[39m
+2026-03-11 01:51:18:5118 [32minfo[39m: [32mRequest started[39m
+2026-03-11 01:51:37:5137 [32minfo[39m: [32mRequest started[39m
+2026-03-11 01:51:37:5137 [31merror[39m: [31minvalid input value for enum enum_audit_logs_action: "CREATE"[39m
+2026-03-11 01:52:00:520 [32minfo[39m: [32mEmail sent successfully: db6e8018-ece4-41be-80be-21a1ef38df41[39m
+2026-03-11 02:00:00:00 [32minfo[39m: [32mRunning scheduled backup job...[39m
+2026-03-11 02:00:00:00 [32minfo[39m: [32mStarting database backup: dera-crm-backup-2026-03-11-020000.sql[39m
+2026-03-11 02:00:00:00 [32minfo[39m: [32mRunning SLA monitoring job...[39m
+2026-03-11 02:00:00:00 [31merror[39m: [31mError in SLA monitoring job: User is not associated to Ticket![39m
+2026-03-11 02:00:00:00 [32minfo[39m: [32mRunning activity reminder check...[39m
+2026-03-11 02:00:00:00 [32minfo[39m: [32mActivity reminder check completed[39m
+2026-03-11 02:00:01:01 [32minfo[39m: [32mBackup completed successfully: dera-crm-backup-2026-03-11-020000.sql (0.07 MB)[39m
+2026-03-11 02:00:01:01 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\backupSuccess.ejs'[39m
+2026-03-11 02:00:01:01 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-03-11 02:00:01:01 [33mwarn[39m: [33mRetrying email 48f624f1-1e28-47bf-baa4-c97828795a56, attempt 1[39m
+2026-03-11 02:00:06:06 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\backupSuccess.ejs'[39m
+2026-03-11 02:00:06:06 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-03-11 02:00:06:06 [33mwarn[39m: [33mRetrying email 48f624f1-1e28-47bf-baa4-c97828795a56, attempt 2[39m
+2026-03-11 02:00:16:016 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\backupSuccess.ejs'[39m
+2026-03-11 02:00:16:016 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-03-11 02:00:16:016 [33mwarn[39m: [33mRetrying email 48f624f1-1e28-47bf-baa4-c97828795a56, attempt 3[39m
+2026-03-11 02:00:31:031 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\backupSuccess.ejs'[39m
+2026-03-11 02:00:31:031 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-03-11 02:00:31:031 [31merror[39m: [31mEmail failed after 3 retries: 48f624f1-1e28-47bf-baa4-c97828795a56 Failed to render email template[39m
+2026-03-11 02:00:55:055 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-03-11 02:00:55:055 [32minfo[39m: [32mHTTP server closed.[39m
+2026-03-11 02:00:55:055 [32minfo[39m: [32mDatabase connection closed.[39m

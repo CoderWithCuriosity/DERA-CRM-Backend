@@ -33,3 +33,17 @@
 2026-03-12 06:49:58:4958 [31merror[39m: [31mError sending email: connect ETIMEDOUT 192.178.223.108:587[39m
 2026-03-12 06:58:35:5835 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 192.178.223.108:587[39m
 2026-03-12 07:00:00:00 [31merror[39m: [31mError in SLA monitoring job: User is not associated to Ticket![39m
+2026-03-12 07:10:15:1015 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 64.233.177.108:587[39m
+2026-03-12 07:20:58:2058 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:21:22:2122 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:21:23:2123 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:21:40:2140 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:21:56:2156 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:22:01:221 [31merror[39m: [31mEmail transporter verification failed: queryA ETIMEOUT smtp.gmail.com[39m
+2026-03-12 07:23:59:2359 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:24:43:2443 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:24:47:2447 [31merror[39m: [31mEmail transporter verification failed: queryA ETIMEOUT smtp.gmail.com[39m
+2026-03-12 07:25:01:251 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:27:34:2734 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:31:15:3115 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:34:54:3454 [31merror[39m: [31mOrganization is not associated to User![39m

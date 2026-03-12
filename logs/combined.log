@@ -528,3 +528,254 @@
 2026-03-12 07:06:06:66 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
 2026-03-12 07:06:06:66 [32minfo[39m: [32mHTTP server closed.[39m
 2026-03-12 07:06:06:66 [32minfo[39m: [32mDatabase connection closed.[39m
+2026-03-12 07:08:20:820 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-12 07:08:20:820 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-12 07:08:20:820 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-12 07:08:20:820 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-12 07:08:20:820 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-12 07:08:20:820 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-12 07:08:20:820 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-12 07:08:20:820 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-12 07:08:20:820 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-12 07:08:20:820 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-12 07:08:20:820 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-12 07:08:21:821 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-12 07:08:24:824 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:24:824 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:24:824 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:24:824 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:26:826 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:26:826 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:26:826 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:26:826 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:26:826 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:26:826 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:26:826 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:27:827 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:28:828 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:28:828 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:28:828 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:28:828 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:28:828 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:28:828 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:28:828 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:28:828 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:08:30:830 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-03-12 07:08:30:830 [32minfo[39m: [32mHTTP server closed.[39m
+2026-03-12 07:08:30:830 [32minfo[39m: [32mDatabase connection closed.[39m
+2026-03-12 07:09:54:954 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-12 07:09:54:954 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-12 07:09:54:954 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-12 07:09:54:954 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-12 07:09:54:954 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-12 07:09:54:954 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-12 07:09:54:954 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-12 07:09:54:954 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-12 07:09:54:954 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-12 07:09:54:954 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-12 07:09:54:954 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-12 07:09:54:954 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-12 07:10:15:1015 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 64.233.177.108:587[39m
+2026-03-12 07:13:22:1322 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:17:22:1722 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:17:24:1724 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:17:27:1727 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-03-12 07:17:27:1727 [32minfo[39m: [32mHTTP server closed.[39m
+2026-03-12 07:17:27:1727 [32minfo[39m: [32mDatabase connection closed.[39m
+2026-03-12 07:17:54:1754 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-12 07:17:54:1754 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-12 07:17:54:1754 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-12 07:17:54:1754 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-12 07:17:54:1754 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-12 07:17:54:1754 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-12 07:17:54:1754 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-12 07:17:54:1754 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-12 07:17:54:1754 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-12 07:17:54:1754 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-12 07:17:54:1754 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-12 07:17:54:1754 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-12 07:17:57:1757 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:17:58:1758 [32minfo[39m: [32mEmail transporter ready[39m
+2026-03-12 07:18:08:188 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:18:12:1812 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-03-12 07:18:12:1812 [32minfo[39m: [32mHTTP server closed.[39m
+2026-03-12 07:18:12:1812 [32minfo[39m: [32mDatabase connection closed.[39m
+2026-03-12 07:20:55:2055 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-12 07:20:55:2055 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-12 07:20:55:2055 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-12 07:20:55:2055 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-12 07:20:55:2055 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-12 07:20:55:2055 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-12 07:20:55:2055 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-12 07:20:55:2055 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-12 07:20:55:2055 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-12 07:20:55:2055 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-12 07:20:55:2055 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-12 07:20:55:2055 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-12 07:20:58:2058 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:20:58:2058 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:21:22:2122 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:21:22:2122 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:21:23:2123 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:21:23:2123 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:21:40:2140 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:21:40:2140 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:21:56:2156 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:21:56:2156 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:22:01:221 [31merror[39m: [31mEmail transporter verification failed: queryA ETIMEOUT smtp.gmail.com[39m
+2026-03-12 07:22:16:2216 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:22:49:2249 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:22:51:2251 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:23:53:2353 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-12 07:23:53:2353 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-12 07:23:53:2353 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-12 07:23:53:2353 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-12 07:23:53:2353 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-12 07:23:53:2353 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-12 07:23:53:2353 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-12 07:23:53:2353 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-12 07:23:53:2353 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-12 07:23:53:2353 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-12 07:23:53:2353 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-12 07:23:53:2353 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-12 07:23:59:2359 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:23:59:2359 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:24:43:2443 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:24:43:2443 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:24:47:2447 [31merror[39m: [31mEmail transporter verification failed: queryA ETIMEOUT smtp.gmail.com[39m
+2026-03-12 07:25:01:251 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:25:01:251 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:26:22:2622 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-12 07:26:22:2622 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-12 07:26:22:2622 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-12 07:26:22:2622 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-12 07:26:22:2622 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-12 07:26:22:2622 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-12 07:26:22:2622 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-12 07:26:22:2622 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-12 07:26:22:2622 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-12 07:26:22:2622 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-12 07:26:22:2622 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-12 07:26:22:2622 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-12 07:26:37:2637 [32minfo[39m: [32mEmail transporter ready[39m
+2026-03-12 07:27:31:2731 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-12 07:27:31:2731 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-12 07:27:31:2731 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-12 07:27:31:2731 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-12 07:27:31:2731 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-12 07:27:31:2731 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-12 07:27:31:2731 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-12 07:27:31:2731 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-12 07:27:31:2731 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-12 07:27:31:2731 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-12 07:27:31:2731 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-12 07:27:31:2731 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-12 07:27:34:2734 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:27:34:2734 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:27:38:2738 [32minfo[39m: [32mEmail transporter ready[39m
+2026-03-12 07:31:12:3112 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-12 07:31:12:3112 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-12 07:31:12:3112 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-12 07:31:12:3112 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-12 07:31:12:3112 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-12 07:31:12:3112 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-12 07:31:12:3112 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-12 07:31:12:3112 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-12 07:31:12:3112 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-12 07:31:12:3112 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-12 07:31:12:3112 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-12 07:31:12:3112 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-12 07:31:15:3115 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:31:15:3115 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 07:31:19:3119 [32minfo[39m: [32mEmail transporter ready[39m
+2026-03-12 07:31:23:3123 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-03-12 07:31:23:3123 [32minfo[39m: [32mHTTP server closed.[39m
+2026-03-12 07:31:23:3123 [32minfo[39m: [32mDatabase connection closed.[39m
+2026-03-12 07:34:36:3436 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-12 07:34:36:3436 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-12 07:34:36:3436 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-12 07:34:36:3436 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-12 07:34:36:3436 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-12 07:34:36:3436 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-12 07:34:36:3436 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-12 07:34:36:3436 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-12 07:34:36:3436 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-12 07:34:36:3436 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-12 07:34:36:3436 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-12 07:34:36:3436 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-12 07:34:38:3438 [32minfo[39m: [32mEmail transporter ready[39m
+2026-03-12 07:34:54:3454 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:34:54:3454 [31merror[39m: [31mOrganization is not associated to User![39m
+2026-03-12 07:35:37:3537 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-12 07:35:37:3537 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-12 07:35:37:3537 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-12 07:35:37:3537 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-12 07:35:37:3537 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-12 07:35:37:3537 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-12 07:35:37:3537 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-12 07:35:37:3537 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-12 07:35:37:3537 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-12 07:35:37:3537 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-12 07:35:37:3537 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-12 07:35:37:3537 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-12 07:35:39:3539 [32minfo[39m: [32mEmail transporter ready[39m

@@ -9,26 +9,30 @@ import { errorHandler, notFound } from './middleware/errorHandler';
 import { 
   xssProtection, 
   sqlInjectionProtection, 
-  securityHeaders,
+  // securityHeaders,
   validateContentType 
 } from './middleware/sanitizer';
 import { addRequestId, logRequestStart, logRequestComplete } from './middleware/logger';
-import { apiLimiter } from './middleware/rateLimiter';
+// import { apiLimiter } from './middleware/rateLimiter';
 import logger from './config/logger';
+import { setupAssociations } from './models';
 
 /**
  * Initialize Express application
  */
 const app: Application = express();
 
+// Initialize associations
+setupAssociations();
+
 // ============================================================================
 // Security Middleware
 // ============================================================================
 
 // Helmet for security headers
-if (security.helmetEnabled) {
-  app.use(securityHeaders);
-}
+// if (security.helmetEnabled) {
+//   app.use(securityHeaders);
+// }
 
 // CORS configuration
 app.use(cors({
@@ -91,7 +95,7 @@ app.use('/public', express.static(path.join(process.cwd(), 'public')));
 // ============================================================================
 
 // Apply rate limiting to all API routes
-app.use(environment.apiPrefix, apiLimiter);
+// app.use(environment.apiPrefix, apiLimiter);
 
 // ============================================================================
 // API Routes

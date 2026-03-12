@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
-import { User, RefreshToken, PasswordReset, AuditLog } from '../models';
+import { User, RefreshToken, PasswordReset, AuditLog, Organization } from '../models';
 import { environment } from '../config/environment';
 import { HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, AUDIT_ACTIONS, ENTITY_TYPES } from '../config/constants';
 import catchAsync from '../utils/catchAsync';
@@ -32,19 +32,44 @@ export const register = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
-  // Create user
+  // Find the organization (should exist from initial setup)
+  const organization = await Organization.findOne();
+  
+  // If no organization exists, prevent registration
+  if (!organization) {
+    return res.status(HTTP_STATUS.SERVICE_UNAVAILABLE).json({
+      success: false,
+      message: 'System not initialized. Please contact administrator.',
+      error: 'NO_ORGANIZATION_FOUND'
+    });
+  }
+
+  // Create user with the found organization_id
   const user = await User.create({
     email,
     password,
     first_name,
     last_name,
     role: 'agent',
-    is_verified: false
+    is_verified: false,
+    organization_id: organization.id
   });
+
+  // Fetch the created user with organization included (like in login)
+  const createdUser = await User.findByPk(user.id, {
+    include: ['organization']
+  });
+
+  if (!createdUser) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: 'Error fetching created user'
+    });
+  }
 
   // Generate verification token
   const verificationToken = jwt.sign(
-    { userId: user.id, email: user.email },
+    { userId: createdUser.id, email: createdUser.email },
     environment.jwtSecret,
     { expiresIn: '24h' }
   );
@@ -52,27 +77,27 @@ export const register = catchAsync(async (req: Request, res: Response) => {
   // Send verification email
   const verificationUrl = `${environment.frontendUrl}/verify-email?token=${verificationToken}`;
   await sendEmail({
-    to: user.email,
+    to: createdUser.email,
     subject: 'Verify Your Email Address',
     template: 'verification',
     data: {
-      first_name: user.first_name,
+      first_name: createdUser.first_name,
       verification_url: verificationUrl,
-      company_name: 'DERA CRM'
+      company_name: organization.company_name || 'DERA CRM'
     }
   });
 
   // Generate auth token
-  const token = generateAccessToken (user);
-  const refreshToken = await generateRefreshToken(user.id);
+  const token = generateAccessToken(createdUser);
+  const refreshToken = await generateRefreshToken(createdUser.id);
 
   // Log audit
   await AuditLog.create({
-    user_id: user.id,
+    user_id: createdUser.id,
     action: AUDIT_ACTIONS.CREATE,
     entity_type: ENTITY_TYPES.USER,
-    entity_id: user.id,
-    details: `User registered: ${user.email}`,
+    entity_id: createdUser.id,
+    details: `User registered: ${createdUser.email} for organization: ${organization.company_name}`,
     ip_address: req.ip,
     user_agent: req.get('user-agent')
   });
@@ -81,7 +106,7 @@ export const register = catchAsync(async (req: Request, res: Response) => {
     success: true,
     message: SUCCESS_MESSAGES.REGISTER_SUCCESS,
     data: {
-      user: user.toJSON(),
+      user: createdUser.toJSON(), // This will now include the organization
       token,
       refreshToken: refreshToken.token
     }

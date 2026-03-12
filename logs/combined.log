@@ -160,3 +160,371 @@
 2026-03-11 02:00:55:055 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
 2026-03-11 02:00:55:055 [32minfo[39m: [32mHTTP server closed.[39m
 2026-03-11 02:00:55:055 [32minfo[39m: [32mDatabase connection closed.[39m
+2026-03-11 02:09:38:938 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-11 02:09:38:938 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-11 02:09:38:938 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-11 02:09:38:938 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-11 02:09:38:938 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-11 02:09:38:938 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-11 02:09:38:938 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-11 02:09:38:938 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-11 02:09:38:938 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-11 02:09:38:938 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-11 02:09:38:938 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-11 02:09:38:938 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-11 02:09:39:939 [32minfo[39m: [32mEmail transporter ready[39m
+2026-03-11 02:09:51:951 [32minfo[39m: [32mRequest started[39m
+2026-03-11 02:09:54:954 [32minfo[39m: [32mEmail sent successfully: b182b759-feaf-4776-9ca2-124a018da774[39m
+2026-03-11 02:09:57:957 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-03-11 02:09:57:957 [32minfo[39m: [32mHTTP server closed.[39m
+2026-03-11 02:09:57:957 [32minfo[39m: [32mDatabase connection closed.[39m
+2026-03-12 06:24:30:2430 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-12 06:24:30:2430 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-12 06:24:30:2430 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-12 06:24:30:2430 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-12 06:24:30:2430 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-12 06:24:30:2430 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-12 06:24:30:2430 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-12 06:24:30:2430 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-12 06:24:30:2430 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-12 06:24:30:2430 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-12 06:24:30:2430 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-12 06:24:30:2430 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-12 06:24:51:2451 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 64.233.177.108:587[39m
+2026-03-12 06:29:30:2930 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-12 06:29:30:2930 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-12 06:29:30:2930 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-12 06:29:30:2930 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-12 06:29:30:2930 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-12 06:29:30:2930 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-12 06:29:30:2930 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-12 06:29:30:2930 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-12 06:29:30:2930 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-12 06:29:30:2930 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-12 06:29:30:2930 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-12 06:29:30:2930 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-12 06:29:50:2950 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 192.178.223.109:587[39m
+2026-03-12 06:29:56:2956 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:29:56:2956 [31merror[39m: [31mCannot POST /auth/login[39m
+2026-03-12 06:30:26:3026 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:30:26:3026 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 06:30:51:3051 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-03-12 06:30:51:3051 [32minfo[39m: [32mHTTP server closed.[39m
+2026-03-12 06:30:51:3051 [32minfo[39m: [32mDatabase connection closed.[39m
+2026-03-12 06:47:40:4740 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-12 06:47:40:4740 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-12 06:47:40:4740 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-12 06:47:40:4740 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-12 06:47:40:4740 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-12 06:47:40:4740 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-12 06:47:40:4740 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-12 06:47:40:4740 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-12 06:47:40:4740 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-12 06:47:40:4740 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-12 06:47:40:4740 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-12 06:47:40:4740 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-12 06:48:07:487 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 192.178.223.108:587[39m
+2026-03-12 06:48:08:488 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:48:27:4827 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-03-12 06:48:27:4827 [32minfo[39m: [32mHTTP server closed.[39m
+2026-03-12 06:48:27:4827 [32minfo[39m: [32mDatabase connection closed.[39m
+2026-03-12 06:48:57:4857 [32minfo[39m: [32mDatabase connected successfully[39m
+2026-03-12 06:48:57:4857 [32minfo[39m: [32m✅ Organization created: DERA CRM[39m
+2026-03-12 06:48:57:4857 [32minfo[39m: [32m[39m
+[32m      ======================================[39m
+[32m      ✅ Admin user created successfully![39m
+[32m      ======================================[39m
+[32m      [39m
+[32m      📧 Email: admin@deracrm.com[39m
+[32m      🔑 Password: Admin@123456[39m
+[32m      👤 Name: Super Admin[39m
+[32m      🎭 Role: admin[39m
+[32m      🏢 Organization: DERA CRM[39m
+[32m      🆔 Organization ID: 1[39m
+[32m      [39m
+[32m      ======================================[39m
+[32m      ⚠️  Please change the password after first login![39m
+[32m      ======================================[39m
+[32m    [39m
+2026-03-12 06:49:30:4930 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-12 06:49:30:4930 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-12 06:49:30:4930 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-12 06:49:30:4930 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-12 06:49:30:4930 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-12 06:49:30:4930 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-12 06:49:30:4930 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-12 06:49:30:4930 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-12 06:49:30:4930 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-12 06:49:30:4930 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-12 06:49:30:4930 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-12 06:49:30:4930 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-12 06:49:36:4936 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:37:4937 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:37:4937 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:37:4937 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:37:4937 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:37:4937 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:37:4937 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:38:4938 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:38:4938 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:39:4939 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:39:4939 [31merror[39m: [31mUser is not associated to RefreshToken![39m
+2026-03-12 06:49:41:4941 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:41:4941 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:41:4941 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:42:4942 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:42:4942 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:42:4942 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:42:4942 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:42:4942 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:44:4944 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:44:4944 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:44:4944 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:44:4944 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:44:4944 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:44:4944 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:44:4944 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:44:4944 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:46:4946 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:46:4946 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:46:4946 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:46:4946 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:46:4946 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:46:4946 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:46:4946 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:46:4946 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:48:4948 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:48:4948 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:48:4948 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:48:4948 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:48:4948 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:48:4948 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:49:4949 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:49:4949 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:51:4951 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:51:4951 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:51:4951 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:51:4951 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:51:4951 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:51:4951 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:51:4951 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:51:4951 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:51:4951 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 192.178.223.108:587[39m
+2026-03-12 06:49:53:4953 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:53:4953 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:53:4953 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:53:4953 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:53:4953 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:53:4953 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:53:4953 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:53:4953 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:55:4955 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:55:4955 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:55:4955 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:56:4956 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:56:4956 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:56:4956 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:56:4956 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:56:4956 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:49:58:4958 [31merror[39m: [31mError sending email: connect ETIMEDOUT 192.178.223.108:587[39m
+2026-03-12 06:49:58:4958 [33mwarn[39m: [33mRetrying email f1b26768-0287-4959-b9fb-623eaab9ad80, attempt 1[39m
+2026-03-12 06:50:02:502 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-03-12 06:50:02:502 [32minfo[39m: [32mHTTP server closed.[39m
+2026-03-12 06:50:02:502 [32minfo[39m: [32mDatabase connection closed.[39m
+2026-03-12 06:58:15:5815 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-03-12 06:58:15:5815 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-03-12 06:58:15:5815 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-03-12 06:58:15:5815 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-03-12 06:58:15:5815 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-03-12 06:58:15:5815 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-03-12 06:58:15:5815 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-03-12 06:58:15:5815 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-03-12 06:58:15:5815 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-03-12 06:58:15:5815 [32minfo[39m: [32mNotification jobs started[39m
+2026-03-12 06:58:15:5815 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-03-12 06:58:15:5815 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-03-12 06:58:35:5835 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 192.178.223.108:587[39m
+2026-03-12 06:59:04:594 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:04:594 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:04:594 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:05:595 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:05:595 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:05:595 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:05:595 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:05:595 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:05:595 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:05:595 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:05:595 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:05:595 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:05:595 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:05:595 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:06:596 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:06:596 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:06:596 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:06:596 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:06:596 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:06:596 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:06:596 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:06:596 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:07:597 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:07:597 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:07:597 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:07:597 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:07:597 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:07:597 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:07:597 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:07:597 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:07:597 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:07:597 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:07:597 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:07:597 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:07:597 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:08:598 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:08:598 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:08:598 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:08:598 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:08:598 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:08:598 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:08:598 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:08:598 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:08:598 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:08:598 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:08:598 [32minfo[39m: [32mRequest started[39m
+2026-03-12 06:59:38:5938 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:00:00:00 [32minfo[39m: [32mRunning SLA monitoring job...[39m
+2026-03-12 07:00:00:00 [31merror[39m: [31mError in SLA monitoring job: User is not associated to Ticket![39m
+2026-03-12 07:00:00:00 [32minfo[39m: [32mRunning activity reminder check...[39m
+2026-03-12 07:00:00:00 [32minfo[39m: [32mActivity reminder check completed[39m
+2026-03-12 07:00:08:08 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:00:38:038 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:01:08:18 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:01:38:138 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:02:08:28 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:02:48:248 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:48:348 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:50:350 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:50:350 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:50:350 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:50:350 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:50:350 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:50:350 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:50:350 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:50:350 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:52:352 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:52:352 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:52:352 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:52:352 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:52:352 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:52:352 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:52:352 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:52:352 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:54:354 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:54:354 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:54:354 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:54:354 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:54:354 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:54:354 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:54:354 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:54:354 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:56:356 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:56:356 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:56:356 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:56:356 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:56:356 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:56:356 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:56:356 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:56:356 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:57:357 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:57:357 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:57:357 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:57:357 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:57:357 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:57:357 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:57:357 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:57:357 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:59:359 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:59:359 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:59:359 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:59:359 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:59:359 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:59:359 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:59:359 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:03:59:359 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:01:41 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:01:41 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:01:41 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:01:41 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:01:41 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:01:41 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:01:41 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:01:41 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:03:43 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:03:43 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:03:43 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:03:43 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:03:43 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:03:43 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:03:43 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:03:43 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:05:45 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:05:45 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:05:45 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:05:45 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:05:45 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:05:45 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:05:45 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:05:45 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:07:47 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:07:47 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:07:47 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:07:47 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:07:47 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:07:47 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:07:47 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:07:47 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:04:37:437 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:05:07:57 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:05:37:537 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:06:01:61 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:06:01:61 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:06:01:61 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:06:01:61 [32minfo[39m: [32mRequest started[39m
+2026-03-12 07:06:06:66 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-03-12 07:06:06:66 [32minfo[39m: [32mHTTP server closed.[39m
+2026-03-12 07:06:06:66 [32minfo[39m: [32mDatabase connection closed.[39m

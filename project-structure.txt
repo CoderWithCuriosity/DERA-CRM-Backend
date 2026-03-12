@@ -7,26 +7,21 @@ backend/
 ├── .prettierrc
 ├── .sequelizerc
 ├── backups
+│   └── dera-crm-backup-2026-03-11-020000.sql
 ├── docs
-│   ├── API.md
 │   ├── Documentation.md
-│   ├── old.md
-│   ├── old_v2.md
-│   ├── RawCommand.md
-│   ├── structure.md
-│   └── toOwn.md
+│   └── RawCommand.md
 ├── logs
 │   ├── combined.log
 │   └── error.log
-├── note.md
 ├── package-lock.json
 ├── package.json
-├── ReadMe.md
+├── project-structure.txt
+├── README.md
 ├── scripts
 │   ├── backup.ts
 │   ├── cleanup.ts
 │   ├── createAdmin.ts
-│   ├── migrate.ts
 │   ├── restore.ts
 │   ├── run-migrations.ts
 │   ├── run-seeders.ts
@@ -56,22 +51,21 @@ backend/
 │   ├── db
 │   │   ├── config
 │   │   │   └── config.js
-│   │   ├── generate-migrations.js
 │   │   ├── migrations
-│   │   │   ├── 2026031008522701-create-organizations-table.js
-│   │   │   ├── 2026031008522702-create-users-table.js
-│   │   │   ├── 2026031008522703-create-contacts-table.js
-│   │   │   ├── 2026031008522704-create-deals-table.js
-│   │   │   ├── 2026031008522705-create-activities-table.js
-│   │   │   ├── 2026031008522706-create-tickets-table.js
-│   │   │   ├── 2026031008522707-create-ticket-comments-table.js
-│   │   │   ├── 2026031008522708-create-email-templates-table.js
-│   │   │   ├── 2026031008522709-create-campaigns-table.js
-│   │   │   ├── 2026031008522710-create-campaign-recipients-table.js
-│   │   │   ├── 2026031008522711-create-audit-logs-table.js
-│   │   │   ├── 2026031008522712-create-refresh-tokens-table.js
-│   │   │   ├── 2026031008522713-create-password-resets-table.js
-│   │   │   └── 2026031008522714-create-backups-table.js
+│   │   │   ├── 2026031101055401-create-organizations-table.js
+│   │   │   ├── 2026031101055402-create-users-table.js
+│   │   │   ├── 2026031101055403-create-contacts-table.js
+│   │   │   ├── 2026031101055404-create-deals-table.js
+│   │   │   ├── 2026031101055405-create-activities-table.js
+│   │   │   ├── 2026031101055406-create-tickets-table.js
+│   │   │   ├── 2026031101055407-create-ticket-comments-table.js
+│   │   │   ├── 2026031101055408-create-email-templates-table.js
+│   │   │   ├── 2026031101055409-create-campaigns-table.js
+│   │   │   ├── 2026031101055410-create-campaign-recipients-table.js
+│   │   │   ├── 2026031101055411-create-audit-logs-table.js
+│   │   │   ├── 2026031101055412-create-refresh-tokens-table.js
+│   │   │   ├── 2026031101055413-create-password-resets-table.js
+│   │   │   └── 2026031101055414-create-backups-table.js
 │   │   └── seeders
 │   │       ├── 20260224000001-demo-users.js
 │   │       ├── 20260224000002-demo-contacts.js

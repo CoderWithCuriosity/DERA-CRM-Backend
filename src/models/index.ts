@@ -31,6 +31,10 @@ export const setupAssociations = () => {
   User.hasMany(AuditLog, { as: 'auditLogs', foreignKey: 'user_id' });
   User.hasMany(RefreshToken, { as: 'refreshTokens', foreignKey: 'user_id' });
   User.hasMany(PasswordReset, { as: 'passwordResets', foreignKey: 'user_id' });
+  User.belongsTo(Organization, {
+    as: 'organization',
+    foreignKey: 'organization_id'
+  });
 
   // Contact associations
   Contact.belongsTo(User, { as: 'createdBy', foreignKey: 'user_id' });

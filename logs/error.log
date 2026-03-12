@@ -23,3 +23,13 @@
 2026-03-11 02:00:31:031 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\backupSuccess.ejs'[39m
 2026-03-11 02:00:31:031 [31merror[39m: [31mError sending email: Failed to render email template[39m
 2026-03-11 02:00:31:031 [31merror[39m: [31mEmail failed after 3 retries: 48f624f1-1e28-47bf-baa4-c97828795a56 Failed to render email template[39m
+2026-03-12 06:24:51:2451 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 64.233.177.108:587[39m
+2026-03-12 06:29:50:2950 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 192.178.223.109:587[39m
+2026-03-12 06:29:56:2956 [31merror[39m: [31mCannot POST /auth/login[39m
+2026-03-12 06:30:26:3026 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
+2026-03-12 06:48:07:487 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 192.178.223.108:587[39m
+2026-03-12 06:49:39:4939 [31merror[39m: [31mUser is not associated to RefreshToken![39m
+2026-03-12 06:49:51:4951 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 192.178.223.108:587[39m
+2026-03-12 06:49:58:4958 [31merror[39m: [31mError sending email: connect ETIMEDOUT 192.178.223.108:587[39m
+2026-03-12 06:58:35:5835 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 192.178.223.108:587[39m
+2026-03-12 07:00:00:00 [31merror[39m: [31mError in SLA monitoring job: User is not associated to Ticket![39m

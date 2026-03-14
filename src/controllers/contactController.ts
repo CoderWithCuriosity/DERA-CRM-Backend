@@ -5,10 +5,14 @@ import { Contact, Deal, Ticket, Activity, AuditLog, User } from '../models';
 import { HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, CONTACT_STATUS, AUDIT_ACTIONS, ENTITY_TYPES } from '../config/constants';
 import catchAsync from '../utils/catchAsync';
 import { getPagination, getPagingData } from '../utils/pagination';
-import { parseCSV, validateContactImport } from '../services/importService';
+import { parseCSV } from '../services/importService';
 import { generateExport } from '../services/exportService';
 import { v4 as uuidv4 } from 'uuid';
 import { ExportFormat, ExportOptions } from '../services/exportService';
+import { importRedisService } from '../services/importRedisService';
+import fs from 'fs/promises';
+
+
 
 // @desc    Create contact
 // @route   POST /api/contacts
@@ -388,15 +392,31 @@ export const importContacts = catchAsync(async (req: Request, res: Response) => 
 
   const importId = uuidv4();
 
+  // Initialize import status in Redis
+  await importRedisService.setImportStatus(importId, {
+    status: 'pending',
+    total: 0,
+    processed: 0,
+    successful: 0,
+    failed: 0,
+    errors: []
+  });
+
   // Start import process asynchronously
-  processImport(req.file.path, importId, mapping, req.user.id, req).catch(console.error);
+  processImport(req.file.path, importId, mapping, req.user.id, req).catch(async (error) => {
+    console.error(`Import ${importId} failed:`, error);
+    await importRedisService.updateImportProgress(importId, {
+      status: 'failed',
+      errors: [{ row: 0, error: error.message || 'Import failed' }]
+    });
+  });
 
   return res.status(HTTP_STATUS.ACCEPTED).json({
     success: true,
     message: SUCCESS_MESSAGES.IMPORT_STARTED,
     data: {
       import_id: importId,
-      total_rows: 0, // Will be updated during processing
+      total_rows: 0,
       estimated_time: '30 seconds'
     }
   });
@@ -408,23 +428,18 @@ export const importContacts = catchAsync(async (req: Request, res: Response) => 
 export const getImportStatus = catchAsync(async (req: Request, res: Response) => {
   const { import_id } = req.params;
 
-  // In a real implementation, you'd store import status in Redis or database
-  // For now, return mock data
-  res.status(HTTP_STATUS.OK).json({
+  const status = await importRedisService.getImportStatus(import_id);
+
+  if (!status) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      success: false,
+      message: 'Import not found'
+    });
+  }
+
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
-    data: {
-      import_id,
-      status: 'completed',
-      total: 150,
-      processed: 150,
-      successful: 145,
-      failed: 5,
-      errors: [
-        { row: 12, error: 'Invalid email format' },
-        { row: 45, error: 'Missing required field' }
-      ],
-      completed_at: new Date().toISOString()
-    }
+    data: status
   });
 });
 
@@ -600,16 +615,154 @@ export const getAllTags = catchAsync(async (req: Request, res: Response) => {
 // Helper function for async import processing
 async function processImport(filePath: string, importId: string, mapping: any, userId: number, _req: any) {
   try {
+    // Update status to processing
+    await importRedisService.updateImportProgress(importId, {
+      status: 'processing'
+    });
+
+    // Parse CSV file
     const contacts = await parseCSV(filePath);
-    const validationResults = await validateContactImport(contacts, mapping, userId);
+    const totalRows = contacts.length;
+    
+    // Update total rows
+    await importRedisService.updateImportProgress(importId, {
+      total: totalRows
+    });
 
-    // Store results (in production, use Redis or database)
-    // For now, just log
-    console.log(`Import ${importId} completed:`, validationResults);
+    // Process in batches to avoid memory issues
+    const batchSize = 50;
+    const results = {
+      successful: 0,
+      failed: 0,
+      errors: [] as Array<{ row: number; error: string }>
+    };
 
-    // Send notification email
-    // await sendImportCompletionEmail(userId, importId, validationResults);
+    for (let i = 0; i < contacts.length; i += batchSize) {
+      const batch = contacts.slice(i, i + batchSize);
+      
+      // Process each contact in the batch
+      for (let j = 0; j < batch.length; j++) {
+        const contact = batch[j];
+        const rowNumber = i + j + 2; // +2 because row 1 is header
+        
+        try {
+          // Validate and create contact
+          await validateAndCreateContact(contact, mapping, userId);
+          results.successful++;
+        } catch (error: any) {
+          results.failed++;
+          results.errors.push({
+            row: rowNumber,
+            error: error.message || 'Validation failed'
+          });
+        }
+
+        // Update progress every 10 records
+        if ((i + j + 1) % 10 === 0) {
+          await importRedisService.updateImportProgress(importId, {
+            processed: i + j + 1,
+            successful: results.successful,
+            failed: results.failed,
+            errors: results.errors
+          });
+        }
+      }
+
+      // Small delay to prevent database overload
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    // Final update with completion status
+    await importRedisService.updateImportProgress(importId, {
+      status: 'completed',
+      processed: totalRows,
+      successful: results.successful,
+      failed: results.failed,
+      errors: results.errors,
+      completed_at: new Date().toISOString()
+    });
+
+    // Clean up the uploaded file
+    await fs.unlink(filePath).catch(console.error);
+
+    console.log(`Import ${importId} completed:`, {
+      total: totalRows,
+      successful: results.successful,
+      failed: results.failed
+    });
+
+    // Send notification email (optional)
+    // await sendImportCompletionEmail(userId, importId, results);
+
   } catch (error) {
+    const err = error as Error;
     console.error(`Import ${importId} failed:`, error);
+    
+    // Update status to failed
+    await importRedisService.updateImportProgress(importId, {
+      status: 'failed',
+      errors: [{ row: 0, error: err.message || 'Import failed' }]
+    });
   }
+}
+
+// Helper function to validate and create a single contact
+async function validateAndCreateContact(contactData: any, mapping: any, userId: number) {
+  // Apply column mapping if provided
+  const mappedData = mapping ? mapContactFields(contactData, mapping) : contactData;
+
+  // Validate required fields
+  if (!mappedData.first_name || !mappedData.last_name || !mappedData.email) {
+    throw new Error('Missing required fields: first_name, last_name, and email are required');
+  }
+
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(mappedData.email)) {
+    throw new Error('Invalid email format');
+  }
+
+  // Check for existing contact
+  const existingContact = await Contact.findOne({ 
+    where: { email: mappedData.email } 
+  });
+  
+  if (existingContact) {
+    throw new Error(`Contact with email ${mappedData.email} already exists`);
+  }
+
+  // Parse tags (handle semicolon-separated tags)
+  let tags: string[] = [];
+  if (mappedData.tags) {
+    tags = mappedData.tags.split(';').map((tag: string) => tag.trim()).filter(Boolean);
+  }
+
+  await Contact.create({
+    first_name: mappedData.first_name,
+    last_name: mappedData.last_name,
+    email: mappedData.email,
+    phone: mappedData.phone || null,
+    company: mappedData.company || null,
+    job_title: mappedData.job_title || null,
+    status: mappedData.status || 'active',
+    source: mappedData.source || 'import',
+    notes: mappedData.notes || null, 
+    tags: tags,
+    user_id: userId
+  });
+}
+
+// Helper function to map CSV columns to database fields
+function mapContactFields(data: any, mapping: Record<string, string>): any {
+  const mapped: any = {};
+  
+  for (const [dbField, csvField] of Object.entries(mapping)) {
+    mapped[dbField] = data[csvField] || data[dbField] || null;
+  }
+  
+  // Include any unmapped fields that match directly
+  return {
+    ...data,
+    ...mapped
+  };
 }

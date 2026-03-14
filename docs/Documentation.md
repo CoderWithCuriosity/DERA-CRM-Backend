@@ -149,7 +149,7 @@ Registers a new user and sends verification email.
   "email": "john@example.com",
   "password": "SecurePass123!",
   "first_name": "John",
-  "last_name": "Doe"
+  "last_name": "Doe"  
 }
 ```
 

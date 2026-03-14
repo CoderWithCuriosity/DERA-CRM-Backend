@@ -47,3 +47,6 @@
 2026-03-12 07:27:34:2734 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
 2026-03-12 07:31:15:3115 [31merror[39m: [31mAssociation with alias "organization" does not exist on User[39m
 2026-03-12 07:34:54:3454 [31merror[39m: [31mOrganization is not associated to User![39m
+2026-03-12 08:00:00:00 [31merror[39m: [31mFailed to send digest to user 2: column contact.fullName does not exist[39m
+2026-03-12 08:00:00:00 [31merror[39m: [31mFailed to send digest to user 1: column contact.fullName does not exist[39m
+2026-03-13 09:59:31:5931 [31merror[39m: [31mmissing FROM-clause entry for table "email_template"[39m

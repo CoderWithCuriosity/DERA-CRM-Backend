@@ -135,7 +135,7 @@ export const toNumber = (fields: string[]) => {
       if (req.body && req.body[field] && !isNaN(req.body[field])) {
         req.body[field] = parseFloat(req.body[field]);
       }
-      
+
       // Fix: Convert to number first, then check if it's NaN
       if (req.query && req.query[field]) {
         const numValue = parseFloat(req.query[field] as string);
@@ -143,7 +143,7 @@ export const toNumber = (fields: string[]) => {
           (req.query as Record<string, string | number | boolean | Date>)[field] = numValue;
         }
       }
-      
+
       // Fix: Same for params
       if (req.params && req.params[field]) {
         const numValue = parseFloat(req.params[field]);
@@ -262,13 +262,13 @@ export const securityHeaders = helmet({
  */
 export const preventParameterPollution = (req: Request, _res: Response, next: NextFunction) => {
   const singleParamFields = ['id', 'userId', 'contactId', 'dealId', 'ticketId'];
-  
+
   singleParamFields.forEach(field => {
     if (req.query[field] && Array.isArray(req.query[field])) {
       req.query[field] = req.query[field][0];
     }
   });
-  
+
   return next();
 };
 
@@ -277,14 +277,20 @@ export const preventParameterPollution = (req: Request, _res: Response, next: Ne
  */
 export const validateContentType = (req: Request, res: Response, next: NextFunction) => {
   const allowedMethods = ['POST', 'PUT', 'PATCH'];
-  
+
+  // Skip validation for file upload routes
+  const fileUploadRoutes = ['/contacts/import', '/users/avatar', '/organization/logo'];
+  if (fileUploadRoutes.some(route => req.path.includes(route))) {
+    return next();
+  }
+
   if (allowedMethods.includes(req.method) && !req.is('application/json')) {
     return res.status(415).json({
       success: false,
       message: 'Content-Type must be application/json'
     });
   }
-  
+
   return next();
 };
 

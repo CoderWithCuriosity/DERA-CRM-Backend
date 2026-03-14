@@ -144,6 +144,7 @@ export const CONTACT_SOURCES = {
   EMAIL: 'email',
   CALL: 'call',
   EVENT: 'event',
+  IMPORT: 'import',
   OTHER: 'other'
 } as const;
 

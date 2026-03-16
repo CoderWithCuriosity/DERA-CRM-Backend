@@ -11,6 +11,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { ExportFormat, ExportOptions } from '../services/exportService';
 import { importRedisService } from '../services/importRedisService';
 import fs from 'fs/promises';
+import path from 'path';
+import { deleteFile, getFileUrl } from '../config/fileUpload';
+import { ContactAttributes } from '../models';
 
 
 
@@ -108,10 +111,10 @@ export const getContacts = catchAsync(async (req: Request, res: Response) => {
 
   // Fix: Properly type the order array
   let order: Order = [['created_at', 'DESC']];
-  
+
   if (sort_by) {
     order = [[
-      sort_by as string, 
+      sort_by as string,
       (sort_order as string)?.toUpperCase() === 'ASC' ? 'ASC' : 'DESC'
     ]];
   }
@@ -156,7 +159,7 @@ export const getContacts = catchAsync(async (req: Request, res: Response) => {
   const enhancedContacts = rows.map(contact => {
     const contactData = contact.toJSON();
     const activities = contact.activities || [];
-    
+
     return {
       ...contactData,
       deals_count: contact.deals?.length || 0,
@@ -450,7 +453,7 @@ export const exportContacts = catchAsync(async (req: Request, res: Response) => 
   const { format = 'csv', fields, ...filters } = req.query;
 
   // Build where clause based on filters
-  let whereClause: any = {};
+  const whereClause: any = {};
 
   if (filters.status) {
     whereClause.status = filters.status;
@@ -465,7 +468,9 @@ export const exportContacts = catchAsync(async (req: Request, res: Response) => 
     whereClause.user_id = (req.user as any).id;
   }
 
-  const contacts = await Contact.findAll({
+  type ContactWithUser = Contact & { createdBy?: User };
+
+  const contacts: ContactWithUser[] = await Contact.findAll({
     where: whereClause,
     include: [
       {
@@ -477,18 +482,34 @@ export const exportContacts = catchAsync(async (req: Request, res: Response) => 
     order: [['created_at', 'DESC']]
   });
 
-  // Parse fields to export - ensure it's never null
-  const exportFields = fields ? (fields as string).split(',') : undefined;
-
-  // Create properly typed options object
-  const exportOptions: ExportOptions = {
-    format: format as ExportFormat, // Cast to the correct enum/type
-    fields: exportFields // Now this is string[] | undefined, not null
+  type PlainContact = Omit<ContactAttributes, 'id' | 'createdBy'> & {
+    createdByFirstName?: string;
+    createdByLastName?: string;
   };
 
-  const exportData = await generateExport(contacts, exportOptions);
+const plainContacts: PlainContact[] = contacts.map(contact => {
+  const { id, createdBy, createdAt, updatedAt, ...plain } = contact.get({ plain: true }) as ContactAttributes & {
+    createdBy?: { first_name: string; last_name: string };
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
 
-  // Log audit
+  return {
+    ...plain,
+    createdByFirstName: createdBy?.first_name,
+    createdByLastName: createdBy?.last_name
+  };
+});
+
+  const exportFields = fields ? (fields as string).split(',') : undefined;
+
+  const exportOptions: ExportOptions = {
+    format: format as ExportFormat,
+    fields: exportFields
+  };
+
+  const exportData = await generateExport(plainContacts, exportOptions);
+
   await AuditLog.create({
     user_id: (req.user as any).id,
     action: AUDIT_ACTIONS.EXPORT,
@@ -623,7 +644,7 @@ async function processImport(filePath: string, importId: string, mapping: any, u
     // Parse CSV file
     const contacts = await parseCSV(filePath);
     const totalRows = contacts.length;
-    
+
     // Update total rows
     await importRedisService.updateImportProgress(importId, {
       total: totalRows
@@ -639,12 +660,12 @@ async function processImport(filePath: string, importId: string, mapping: any, u
 
     for (let i = 0; i < contacts.length; i += batchSize) {
       const batch = contacts.slice(i, i + batchSize);
-      
+
       // Process each contact in the batch
       for (let j = 0; j < batch.length; j++) {
         const contact = batch[j];
         const rowNumber = i + j + 2; // +2 because row 1 is header
-        
+
         try {
           // Validate and create contact
           await validateAndCreateContact(contact, mapping, userId);
@@ -697,7 +718,7 @@ async function processImport(filePath: string, importId: string, mapping: any, u
   } catch (error) {
     const err = error as Error;
     console.error(`Import ${importId} failed:`, error);
-    
+
     // Update status to failed
     await importRedisService.updateImportProgress(importId, {
       status: 'failed',
@@ -723,10 +744,10 @@ async function validateAndCreateContact(contactData: any, mapping: any, userId: 
   }
 
   // Check for existing contact
-  const existingContact = await Contact.findOne({ 
-    where: { email: mappedData.email } 
+  const existingContact = await Contact.findOne({
+    where: { email: mappedData.email }
   });
-  
+
   if (existingContact) {
     throw new Error(`Contact with email ${mappedData.email} already exists`);
   }
@@ -746,7 +767,7 @@ async function validateAndCreateContact(contactData: any, mapping: any, userId: 
     job_title: mappedData.job_title || null,
     status: mappedData.status || 'active',
     source: mappedData.source || 'import',
-    notes: mappedData.notes || null, 
+    notes: mappedData.notes || null,
     tags: tags,
     user_id: userId
   });
@@ -755,14 +776,124 @@ async function validateAndCreateContact(contactData: any, mapping: any, userId: 
 // Helper function to map CSV columns to database fields
 function mapContactFields(data: any, mapping: Record<string, string>): any {
   const mapped: any = {};
-  
+
   for (const [dbField, csvField] of Object.entries(mapping)) {
     mapped[dbField] = data[csvField] || data[dbField] || null;
   }
-  
+
   // Include any unmapped fields that match directly
   return {
     ...data,
     ...mapped
   };
 }
+
+// @desc    Upload contact avatar
+// @route   POST /api/contacts/:id/avatar
+// @access  Private
+export const uploadContactAvatar = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!req.file) {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      message: 'No file uploaded'
+    });
+  }
+
+  const contact = await Contact.findByPk(id);
+
+  if (!contact) {
+    // Delete uploaded file if contact not found
+    await fs.unlink(req.file.path).catch(console.error);
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      success: false,
+      message: ERROR_MESSAGES.NOT_FOUND('Contact')
+    });
+  }
+
+  // Check permission
+  if (req.user.role === 'agent' && contact.user_id !== req.user.id) {
+    // Delete uploaded file if not authorized
+    await fs.unlink(req.file.path).catch(console.error);
+    return res.status(HTTP_STATUS.FORBIDDEN).json({
+      success: false,
+      message: ERROR_MESSAGES.FORBIDDEN
+    });
+  }
+
+  // Delete old avatar if exists
+  if (contact.avatar) {
+    const oldFilename = path.basename(contact.avatar);
+    await deleteFile(oldFilename, 'AVATAR_DIR').catch(console.error);
+  }
+
+  // Update contact with new avatar URL
+  const filename = req.file.filename;
+  const avatarUrl = getFileUrl(filename, 'AVATAR_DIR');
+
+  await contact.update({ avatar: avatarUrl });
+
+  // Log audit
+  await AuditLog.create({
+    user_id: req.user.id,
+    action: AUDIT_ACTIONS.UPDATE,
+    entity_type: ENTITY_TYPES.CONTACT,
+    entity_id: contact.id,
+    details: `Updated contact avatar: ${contact.fullName}`,
+    ip_address: req.ip,
+    user_agent: req.get('user-agent')
+  });
+
+  return res.status(HTTP_STATUS.OK).json({
+    success: true,
+    message: 'Avatar uploaded successfully',
+    data: { avatar: avatarUrl }
+  });
+});
+
+// @desc    Delete contact avatar
+// @route   DELETE /api/contacts/:id/avatar
+// @access  Private
+export const deleteContactAvatar = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const contact = await Contact.findByPk(id);
+
+  if (!contact) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      success: false,
+      message: ERROR_MESSAGES.NOT_FOUND('Contact')
+    });
+  }
+
+  // Check permission
+  if (req.user.role === 'agent' && contact.user_id !== req.user.id) {
+    return res.status(HTTP_STATUS.FORBIDDEN).json({
+      success: false,
+      message: ERROR_MESSAGES.FORBIDDEN
+    });
+  }
+
+  if (contact.avatar) {
+    const filename = path.basename(contact.avatar);
+    await deleteFile(filename, 'AVATAR_DIR');
+    await contact.update({ avatar: null });
+  }
+
+  // Log audit
+  await AuditLog.create({
+    user_id: req.user.id,
+    action: AUDIT_ACTIONS.UPDATE,
+    entity_type: ENTITY_TYPES.CONTACT,
+    entity_id: contact.id,
+    details: `Deleted contact avatar: ${contact.fullName}`,
+    ip_address: req.ip,
+    user_agent: req.get('user-agent')
+  });
+
+  return res.status(HTTP_STATUS.OK).json({
+    success: true,
+    message: 'Avatar deleted successfully'
+  });
+});

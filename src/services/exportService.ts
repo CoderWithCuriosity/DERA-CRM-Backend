@@ -39,10 +39,14 @@ export const generateExport = async (
     delimiter = ','
   } = options;
 
+  const fileExtension = format === 'excel' ? 'xlsx' : format;
+
   // Generate filename
   const timestamp = Date.now();
   const uniqueId = uuidv4().split('-')[0];
-  const filename = customFilename || `export-${timestamp}-${uniqueId}.${format}`;
+  const filename = customFilename || `export-${timestamp}-${uniqueId}.${fileExtension}`;
+
+  console.log(filename);
   
   // Ensure export directory exists
   const exportDir = path.join(process.cwd(), fileConfig.uploadDir, FILE_UPLOAD.EXPORT_DIR);

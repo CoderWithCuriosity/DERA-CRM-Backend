@@ -280,15 +280,24 @@ export const validateContentType = (req: Request, res: Response, next: NextFunct
 
   // Skip validation for file upload routes
   const fileUploadRoutes = ['/contacts/import', '/users/avatar', '/organization/logo'];
-  if (fileUploadRoutes.some(route => req.path.includes(route))) {
+  
+  // Check if it's a contact avatar upload route (ends with /avatar)
+  const isContactAvatarRoute = req.path.includes('/contacts/') && req.path.endsWith('/avatar');
+  
+  if (fileUploadRoutes.some(route => req.path.includes(route)) || isContactAvatarRoute) {
     return next();
   }
 
-  if (allowedMethods.includes(req.method) && !req.is('application/json')) {
-    return res.status(415).json({
-      success: false,
-      message: 'Content-Type must be application/json'
-    });
+  if (allowedMethods.includes(req.method)) {
+    const contentType = req.headers['content-type'];
+    
+    // Check if content-type header exists and includes application/json
+    if (!contentType || !contentType.includes('application/json')) {
+      return res.status(415).json({
+        success: false,
+        message: 'Content-Type must be application/json'
+      });
+    }
   }
 
   return next();

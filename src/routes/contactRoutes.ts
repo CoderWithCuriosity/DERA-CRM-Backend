@@ -18,11 +18,29 @@ import { validate } from '../middleware/validation';
 import { importUpload } from '../config/fileUpload';
 import { CONTACT_STATUS, CONTACT_SOURCES } from '../config/constants';
 import { uploadLimiter, exportLimiter } from '../config/rateLimit';
+import { avatarUpload } from '../config/fileUpload';
+import { uploadContactAvatar, deleteContactAvatar } from '../controllers/contactController';
 
 const router = Router();
 
 // All routes require authentication
 router.use(protect);
+
+
+// Avatar upload (single file)
+router.post(
+  '/:id/avatar',
+  protect,
+  avatarUpload.single('avatar'),
+  uploadContactAvatar
+);
+
+// Delete avatar
+router.delete(
+  '/:id/avatar',
+  protect,
+  deleteContactAvatar
+);
 
 /**
  * @route   POST /api/contacts

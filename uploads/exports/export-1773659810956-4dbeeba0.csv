@@ -1,0 +1,6 @@
+"first_name","last_name","email","phone","company","job_title","status","source","notes","tags","user_id","avatar","created_at","updated_at","createdByFirstName","createdByLastName"
+"Laura","Bell","laura.bell@email.com","+1234567037","Delos Inc","Host Technician","inactive","import",,"[""former"",""vip""]",1,,"2026-03-14T14:36:13.796Z","2026-03-14T14:36:13.796Z","Super","Admin"
+"Michelle","Evans","michelle.e@email.com","+1234567029","Virtucon","Financial Analyst","inactive","import",,"[""former""]",1,,"2026-03-14T14:36:13.749Z","2026-03-14T14:36:13.749Z","Super","Admin"
+"Karen","Wright","karen.w@email.com","+1234567013","Delos Inc","Operations Manager","inactive","import",,"[""former"",""vip""]",1,,"2026-03-14T14:36:13.652Z","2026-03-14T14:36:13.652Z","Super","Admin"
+"Patricia","Robinson","pat.robinson@email.com","+1234567005","Virtucon","Accountant","inactive","import",,"[""former""]",1,,"2026-03-14T14:36:13.615Z","2026-03-14T14:36:13.615Z","Super","Admin"
+"Emily","Brown","emily.b@email.com","+1555666777","Wayne Enterprises","Analyst","inactive","import",,"[""former""]",1,,"2026-03-14T14:36:13.566Z","2026-03-14T14:36:13.566Z","Super","Admin"

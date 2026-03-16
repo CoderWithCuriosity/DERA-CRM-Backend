@@ -50,3 +50,37 @@
 2026-03-12 08:00:00:00 [31merror[39m: [31mFailed to send digest to user 2: column contact.fullName does not exist[39m
 2026-03-12 08:00:00:00 [31merror[39m: [31mFailed to send digest to user 1: column contact.fullName does not exist[39m
 2026-03-13 09:59:31:5931 [31merror[39m: [31mmissing FROM-clause entry for table "email_template"[39m
+2026-03-14 19:25:37:2537 [31merror[39m: [31mFailed to generate CSV: Converting circular structure to JSON[39m
+[31m    --> starting at object with constructor 'Array'[39m
+[31m    |     index 0 -> object with constructor 'Object'[39m
+[31m    |     property 'parent' -> object with constructor 'Object'[39m
+[31m    --- property 'include' closes the circle[39m
+2026-03-14 19:25:49:2549 [31merror[39m: [31mCannot GET /favicon.ico[39m
+2026-03-14 19:28:41:2841 [31merror[39m: [31mUnrecognized bookType |excel|[39m
+2026-03-14 19:45:20:4520 [31merror[39m: [31mFailed to generate CSV: Converting circular structure to JSON[39m
+[31m    --> starting at object with constructor 'Array'[39m
+[31m    |     index 0 -> object with constructor 'Object'[39m
+[31m    |     property 'parent' -> object with constructor 'Object'[39m
+[31m    --- property 'include' closes the circle[39m
+2026-03-14 20:39:41:3941 [31merror[39m: [31mFailed to generate CSV: Converting circular structure to JSON[39m
+[31m    --> starting at object with constructor 'Array'[39m
+[31m    |     index 0 -> object with constructor 'Object'[39m
+[31m    |     property 'parent' -> object with constructor 'Object'[39m
+[31m    --- property 'include' closes the circle[39m
+2026-03-14 20:47:32:4732 [31merror[39m: [31mFailed to generate CSV: Converting circular structure to JSON[39m
+[31m    --> starting at object with constructor 'Array'[39m
+[31m    |     index 0 -> object with constructor 'Object'[39m
+[31m    |     property 'parent' -> object with constructor 'Object'[39m
+[31m    --- property 'include' closes the circle[39m
+2026-03-16 10:15:47:1547 [31merror[39m: [31mUnrecognized bookType |excel|[39m
+2026-03-16 10:27:07:277 [31merror[39m: [31mCannot GET /favicon.ico[39m
+2026-03-16 10:35:09:359 [31merror[39m: [31mFailed to generate CSV: Converting circular structure to JSON[39m
+[31m    --> starting at object with constructor 'Array'[39m
+[31m    |     index 0 -> object with constructor 'Object'[39m
+[31m    |     property 'parent' -> object with constructor 'Object'[39m
+[31m    --- property 'include' closes the circle[39m
+2026-03-16 10:43:26:4326 [31merror[39m: [31mFailed to generate CSV: Converting circular structure to JSON[39m
+[31m    --> starting at object with constructor 'Array'[39m
+[31m    |     index 0 -> object with constructor 'Object'[39m
+[31m    |     property 'parent' -> object with constructor 'Object'[39m
+[31m    --- property 'include' closes the circle[39m

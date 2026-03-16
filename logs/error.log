@@ -84,3 +84,12 @@
 [31m    |     index 0 -> object with constructor 'Object'[39m
 [31m    |     property 'parent' -> object with constructor 'Object'[39m
 [31m    --- property 'include' closes the circle[39m
+2026-03-16 13:52:09:529 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\dealWon.ejs'[39m
+2026-03-16 13:52:09:529 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-03-16 13:52:14:5214 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\dealWon.ejs'[39m
+2026-03-16 13:52:14:5214 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-03-16 13:52:24:5224 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\dealWon.ejs'[39m
+2026-03-16 13:52:24:5224 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-03-16 13:52:39:5239 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\dealWon.ejs'[39m
+2026-03-16 13:52:39:5239 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-03-16 13:52:39:5239 [31merror[39m: [31mEmail failed after 3 retries: 8414ca15-5d57-4262-9fe8-f770227a98e1 Failed to render email template[39m

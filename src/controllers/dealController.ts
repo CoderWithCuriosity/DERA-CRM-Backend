@@ -224,8 +224,6 @@ export const getDeals = catchAsync(async (req: Request, res: Response) => {
 
     return {
       ...deal.toJSON(),
-      // Fix 4: Access virtual fields safely
-      weighted_amount: (deal as any).weightedAmount || 0,
       activities_count: activities.length,
       is_overdue: (deal as any).isOverdue || false
     };

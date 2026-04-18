@@ -134,6 +134,7 @@ backend/
 │   │   ├── emailService.ts
 │   │   ├── exportService.ts
 │   │   ├── fileService.ts
+│   │   ├── importRedisService.ts
 │   │   ├── importService.ts
 │   │   ├── notificationService.ts
 │   │   ├── slaService.ts
@@ -195,6 +196,25 @@ backend/
 └── uploads
     ├── attachments
     ├── avatars
+    │   └── user-1773509864561-90e845ea.jpg
     ├── exports
+    │   ├── export-1773652498891-277bd841.csv
+    │   ├── export-1773652509931-50bd2ab0.csv
+    │   ├── export-1773652524679-1b82eb2d.csv
+    │   ├── export-1773653179912-8c907ca9.xlsx
+    │   ├── export-1773653350684-73d7e9ec.xlsx
+    │   ├── export-1773653712921-aa8f0150.xlsx
+    │   ├── export-1773653744535-30d122ec.xlsx
+    │   ├── export-1773653781782-d0a6f5a7.xlsx
+    │   ├── export-1773653816271-cc1ab644.xlsx
+    │   ├── export-1773653989757-136b90be.xlsx
+    │   ├── export-1773655049388-3e89e892.csv
+    │   ├── export-1773655416463-db801b41.xlsx
+    │   ├── export-1773657804480-b53d3624.xlsx
+    │   ├── export-1773657825616-2ec4097c.csv
+    │   ├── export-1773659810956-4dbeeba0.csv
+    │   └── export-1773659830045-d4ac914b.xlsx
     ├── imports
+    │   ├── import-1773495996412-1ff178e2.csv
+    │   └── import-1773496170921-96511ca3.csv
     └── logos

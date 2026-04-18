@@ -6,7 +6,7 @@ import { environment } from '../config/environment';
 import { HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, AUDIT_ACTIONS, ENTITY_TYPES } from '../config/constants';
 import catchAsync from '../utils/catchAsync';
 import { sendEmail } from '../services/emailService';
-import { generateAccessToken , generateRefreshToken, verifyRefreshToken } from '../services/tokenService';
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../services/tokenService';
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -34,7 +34,7 @@ export const register = catchAsync(async (req: Request, res: Response) => {
 
   // Find the organization (should exist from initial setup)
   const organization = await Organization.findOne();
-  
+
   // If no organization exists, prevent registration
   if (!organization) {
     return res.status(HTTP_STATUS.SERVICE_UNAVAILABLE).json({
@@ -129,7 +129,7 @@ export const login = catchAsync(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   // Find user
-  const user = await User.findOne({ 
+  const user = await User.findOne({
     where: { email },
     include: ['organization']
   });
@@ -162,7 +162,7 @@ export const login = catchAsync(async (req: Request, res: Response) => {
   await user.updateLastLogin();
 
   // Generate tokens
-  const token = generateAccessToken (user);
+  const token = generateAccessToken(user);
   const refreshToken = await generateRefreshToken(user.id);
 
   // Log audit
@@ -216,7 +216,7 @@ export const refreshToken = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
-  const token = generateAccessToken (user);
+  const token = generateAccessToken(user);
   const newRefreshToken = await generateRefreshToken(user.id);
 
   return res.status(HTTP_STATUS.OK).json({
@@ -330,6 +330,12 @@ export const forgotPassword = catchAsync(async (req: Request, res: Response) => 
     expires_at: expiresAt
   });
 
+  // Get IP address - using socket instead of connection (deprecated)
+  const ipAddress = req.ip ||
+    req.socket.remoteAddress ||
+    (req.headers['x-forwarded-for'] as string)?.split(',')[0] ||
+    'Unknown';
+
   // Send reset email
   const resetUrl = `${environment.frontendUrl}/reset-password?token=${passwordReset.token}`;
   await sendEmail({
@@ -340,7 +346,9 @@ export const forgotPassword = catchAsync(async (req: Request, res: Response) => 
       first_name: user.first_name,
       reset_url: resetUrl,
       company_name: 'DERA CRM',
-      expires_in: '1 hour'
+      expires_in: '1 hour',
+      ip_address: ipAddress,  // Use the enhanced IP detection
+      user_agent: req.headers['user-agent'] || 'Unknown'
     }
   });
 
@@ -368,7 +376,7 @@ export const resetPassword = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
- // Fetch the user separately
+  // Fetch the user separately
   const user = await User.findByPk(passwordReset.user_id);
 
   if (!user) {
@@ -401,6 +409,29 @@ export const resetPassword = catchAsync(async (req: Request, res: Response) => {
     ip_address: req.ip,
     user_agent: req.get('user-agent')
   });
+
+   // Check if verified
+  if (!user.is_verified) {
+     // Generate new verification token
+    const verificationToken = jwt.sign(
+      { userId: user.id, email: user.email },
+      environment.jwtSecret,
+      { expiresIn: '24h' }
+    );
+
+    // Send verification email
+    const verificationUrl = `${environment.frontendUrl}/verify-email?token=${verificationToken}`;
+    await sendEmail({
+      to: user.email,
+      subject: 'Verify Your Email Address',
+      template: 'verification',
+      data: {
+        first_name: user.first_name,
+        verification_url: verificationUrl,
+        company_name: 'DERA CRM'
+      }
+    });
+  }
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,

@@ -3,6 +3,8 @@
 
 import fs from "fs";
 import path from "path";
+// const fs = require('fs');
+// const path = require('path');
 
 const IGNORE_FOLDERS = ["node_modules", ".git", "generate-file-tree.ts"];
 

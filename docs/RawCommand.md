@@ -36,8 +36,13 @@ Connect to your database and set up schema permissions:
 \c deracrm_prod;
 
 -- Grant schema permissions
-GRANT USAGE ON SCHEMA public TO deracrm_user;
-GRANT CREATE ON SCHEMA public TO deracrm_user;
+-- GRANT USAGE ON SCHEMA public TO deracrm_user;
+-- GRANT CREATE ON SCHEMA public TO deracrm_user;
+
+-- use this instead
+
+GRANT ALL ON SCHEMA public TO crm_manager;
+ALTER DATABASE crm OWNER TO crm_manager;
 ```
 
 Exit PostgreSQL shell:

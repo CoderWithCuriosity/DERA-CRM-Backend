@@ -94,3 +94,137 @@
 2026-04-19 14:28:53:2853 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
 2026-04-19 14:28:53:2853 [32minfo[39m: [32mHTTP server closed.[39m
 2026-04-19 14:28:53:2853 [32minfo[39m: [32mDatabase connection closed.[39m
+2026-04-20 17:17:51:1751 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-20 17:17:51:1751 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-20 17:17:51:1751 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-20 17:17:51:1751 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-20 17:17:51:1751 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-20 17:17:51:1751 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-20 17:17:51:1751 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-20 17:17:51:1751 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-20 17:17:51:1751 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-20 17:17:51:1751 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-20 17:17:51:1751 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-20 17:17:51:1751 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-20 17:17:52:1752 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-20 21:18:04:184 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-20 21:18:04:184 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-20 21:18:04:184 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-20 21:18:04:184 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-20 21:18:04:184 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-20 21:18:04:184 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-20 21:18:04:184 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-20 21:18:04:184 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-20 21:18:04:184 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-20 21:18:04:184 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-20 21:18:04:184 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-20 21:18:04:184 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-20 21:18:06:186 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-20 21:18:15:1815 [32minfo[39m: [32mRequest started[39m
+2026-04-20 21:18:15:1815 [32minfo[39m: [32mRequest started[39m
+2026-04-20 21:18:15:1815 [32minfo[39m: [32mRequest started[39m
+2026-04-20 21:18:18:1818 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:00:00:00 [32minfo[39m: [32mRunning SLA monitoring job...[39m
+2026-04-20 22:00:00:00 [32minfo[39m: [32mRunning activity reminder check...[39m
+2026-04-20 22:00:00:00 [32minfo[39m: [32mActivity reminder check completed[39m
+2026-04-20 22:00:00:00 [32minfo[39m: [32mSent daily SLA reports to managers[39m
+2026-04-20 22:04:59:459 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:05:05:55 [32minfo[39m: [32mEmail sent successfully: 615d6289-20c3-4bcc-bd1a-e0c7bad12605[39m
+2026-04-20 22:08:37:837 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:08:57:857 [32minfo[39m: [32mEmail sent successfully: dcc9cc88-5a3f-4fdf-ab0b-d0662d1b7dbc[39m
+2026-04-20 22:10:54:1054 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:10:54:1054 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:10:54:1054 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:10:54:1054 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:10:54:1054 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:10:54:1054 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:10:54:1054 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:10:54:1054 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:10:54:1054 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:11:25:1125 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:11:25:1125 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:11:25:1125 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:11:55:1155 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:11:55:1155 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:11:55:1155 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:12:25:1225 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:12:25:1225 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:12:25:1225 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:19:24:1924 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:19:24:1924 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:19:24:1924 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:19:26:1926 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:20:09:209 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:21:25:2125 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:21:28:2128 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:22:23:2223 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:22:24:2224 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:22:24:2224 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:22:25:2225 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:23:01:231 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:23:02:232 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:23:15:2315 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:28:47:2847 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:30:04:304 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-20 22:30:04:304 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-20 22:30:04:304 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-20 22:30:04:304 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-20 22:30:04:304 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-20 22:30:04:304 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-20 22:30:04:304 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-20 22:30:04:304 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-20 22:30:04:304 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-20 22:30:04:304 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-20 22:30:04:304 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-20 22:30:04:304 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-20 22:30:17:3017 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-20 22:35:41:3541 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-20 22:35:41:3541 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-20 22:35:41:3541 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-20 22:35:41:3541 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-20 22:35:41:3541 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-20 22:35:41:3541 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-20 22:35:41:3541 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-20 22:35:41:3541 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-20 22:35:41:3541 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-20 22:35:41:3541 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-20 22:35:41:3541 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-20 22:35:41:3541 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-20 22:35:44:3544 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-20 22:36:33:3633 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:36:38:3638 [32minfo[39m: [32mEmail sent successfully: 8f2e3941-420f-4911-ad8c-fa504902a9a5[39m
+2026-04-20 22:37:05:375 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:37:11:3711 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:37:11:3711 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:37:11:3711 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:37:11:3711 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:37:12:3712 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:37:15:3715 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:37:15:3715 [32minfo[39m: [32mRequest started[39m
+2026-04-20 22:38:00:380 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-04-20 22:38:00:380 [32minfo[39m: [32mHTTP server closed.[39m
+2026-04-20 22:38:00:380 [32minfo[39m: [32mDatabase connection closed.[39m

@@ -1,7 +1,7 @@
+// config/rateLimiter.ts
 import rateLimit from 'express-rate-limit';
 import RedisStore from 'rate-limit-redis';
 import { createClient } from 'redis';
-import { rateLimit as rateLimitConfig } from '../config/environment';
 import { HTTP_STATUS } from '../config/constants';
 import { Request, Response, NextFunction } from 'express';
 
@@ -12,6 +12,32 @@ if (process.env.REDIS_URL) {
   redisClient = createClient({ url: process.env.REDIS_URL });
   redisClient.connect().catch(console.error);
 }
+
+// Rate limit configuration from environment variables
+const rateLimitConfig = {
+  // General rate limits
+  windowMs: (parseInt(process.env.RATE_LIMIT_WINDOW || '30') || 30) * 60 * 1000, // Convert minutes to milliseconds
+  max: parseInt(process.env.RATE_LIMIT_MAX || '200') || 200,
+  
+  // Auth rate limits
+  authWindowMs: (parseInt(process.env.AUTH_RATE_LIMIT_WINDOW || '15') || 15) * 60 * 1000,
+  authMax: parseInt(process.env.AUTH_RATE_LIMIT_MAX || '10') || 10,
+  
+  // Campaign rate limits
+  campaignWindowMs: (parseInt(process.env.CAMPAIGN_RATE_LIMIT_WINDOW || '60') || 60) * 60 * 1000,
+  campaignMax: parseInt(process.env.CAMPAIGN_RATE_LIMIT_MAX || '50') || 50,
+  
+  // Upload rate limits
+  uploadWindowMs: (parseInt(process.env.UPLOAD_RATE_LIMIT_WINDOW || '60') || 60) * 60 * 1000,
+  uploadMax: parseInt(process.env.UPLOAD_RATE_LIMIT_MAX || '20') || 20,
+};
+
+console.log('Rate limit configuration:', {
+  general: `${rateLimitConfig.max} requests per ${rateLimitConfig.windowMs / 1000 / 60} minutes`,
+  auth: `${rateLimitConfig.authMax} requests per ${rateLimitConfig.authWindowMs / 1000 / 60} minutes`,
+  campaign: `${rateLimitConfig.campaignMax} requests per ${rateLimitConfig.campaignWindowMs / 1000 / 60} minutes`,
+  upload: `${rateLimitConfig.uploadMax} requests per ${rateLimitConfig.uploadWindowMs / 1000 / 60} minutes`,
+});
 
 /**
  * General API rate limiter

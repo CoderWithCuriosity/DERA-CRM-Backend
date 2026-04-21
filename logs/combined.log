@@ -450,3 +450,333 @@
 2026-04-20 23:04:55:455 [32minfo[39m: [32mRequest started[39m
 2026-04-20 23:04:55:455 [32minfo[39m: [32mRequest started[39m
 2026-04-20 23:04:55:455 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:20:05:205 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-21 10:20:05:205 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-21 10:20:05:205 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-21 10:20:05:205 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-21 10:20:05:205 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-21 10:20:05:205 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-21 10:20:05:205 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-21 10:20:05:205 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-21 10:20:05:205 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-21 10:20:05:205 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-21 10:20:05:205 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-21 10:20:05:205 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-21 10:20:09:209 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-21 10:20:36:2036 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:20:36:2036 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:20:36:2036 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:20:38:2038 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:20:41:2041 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:20:45:2045 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:20:45:2045 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:20:45:2045 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:20:45:2045 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:20:46:2046 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:20:50:2050 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:20:50:2050 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:20:56:2056 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:20:56:2056 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:20:56:2056 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:21:05:215 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:21:13:2113 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:21:17:2117 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:21:17:2117 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:21:17:2117 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:21:22:2122 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:21:29:2129 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:21:31:2131 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:21:31:2131 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:21:31:2131 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:21:36:2136 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:21:40:2140 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:21:40:2140 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:21:40:2140 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:24:03:243 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:24:03:243 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:24:03:243 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:24:05:245 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:24:10:2410 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:24:10:2410 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:24:10:2410 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:24:13:2413 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:24:46:2446 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:24:56:2456 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:25:22:2522 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:32:20:3220 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:33:56:3356 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:33:56:3356 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:33:56:3356 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:33:57:3357 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:43:55:4355 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:43:55:4355 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:44:16:4416 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:44:20:4420 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:44:20:4420 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:44:21:4421 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:44:25:4425 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:44:25:4425 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:45:14:4514 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:45:14:4514 [31merror[39m: [31mnotNull Violation: Ticket.ticket_number cannot be null[39m
+2026-04-21 10:49:03:493 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-21 10:49:03:493 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-21 10:49:03:493 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-21 10:49:03:493 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-21 10:49:03:493 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-21 10:49:03:493 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-21 10:49:03:493 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-21 10:49:03:493 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-21 10:49:03:493 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-21 10:49:03:493 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-21 10:49:03:493 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-21 10:49:03:493 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-21 10:49:04:494 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-21 10:51:34:5134 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-21 10:51:34:5134 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-21 10:51:34:5134 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-21 10:51:34:5134 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-21 10:51:34:5134 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-21 10:51:34:5134 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-21 10:51:34:5134 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-21 10:51:34:5134 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-21 10:51:34:5134 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-21 10:51:34:5134 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-21 10:51:34:5134 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-21 10:51:34:5134 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-21 10:51:37:5137 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-21 10:54:00:540 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-21 10:54:00:540 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-21 10:54:00:540 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-21 10:54:00:540 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-21 10:54:00:540 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-21 10:54:00:540 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-21 10:54:00:540 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-21 10:54:00:540 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-21 10:54:00:540 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-21 10:54:00:540 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-21 10:54:00:540 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-21 10:54:00:540 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-21 10:54:07:547 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-21 10:55:05:555 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-21 10:55:05:555 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-21 10:55:05:555 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-21 10:55:05:555 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-21 10:55:05:555 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-21 10:55:05:555 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-21 10:55:05:555 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-21 10:55:05:555 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-21 10:55:05:555 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-21 10:55:05:555 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-21 10:55:05:555 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-21 10:55:05:555 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-21 10:55:07:557 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-21 10:55:51:5551 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:55:51:5551 [31merror[39m: [31mnotNull Violation: Ticket.ticket_number cannot be null[39m
+2026-04-21 10:56:24:5624 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-21 10:56:24:5624 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-21 10:56:24:5624 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-21 10:56:24:5624 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-21 10:56:24:5624 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-21 10:56:24:5624 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-21 10:56:24:5624 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-21 10:56:24:5624 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-21 10:56:24:5624 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-21 10:56:24:5624 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-21 10:56:24:5624 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-21 10:56:24:5624 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-21 10:56:27:5627 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-21 10:56:32:5632 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:56:32:5632 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:57:39:5739 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-21 10:57:39:5739 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-21 10:57:39:5739 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-21 10:57:39:5739 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-21 10:57:39:5739 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-21 10:57:39:5739 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-21 10:57:39:5739 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-21 10:57:39:5739 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-21 10:57:39:5739 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-21 10:57:39:5739 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-21 10:57:39:5739 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-21 10:57:39:5739 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-21 10:57:41:5741 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-21 10:58:45:5845 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:58:45:5845 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:58:45:5845 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:58:45:5845 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:58:59:5859 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:58:59:5859 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:58:59:5859 [32minfo[39m: [32mRequest started[39m
+2026-04-21 10:59:04:594 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:00:00:00 [32minfo[39m: [32mRunning SLA monitoring job...[39m
+2026-04-21 11:00:00:00 [32minfo[39m: [32mRunning activity reminder check...[39m
+2026-04-21 11:00:00:00 [32minfo[39m: [32mActivity reminder check completed[39m
+2026-04-21 11:00:00:00 [32minfo[39m: [32mTicket TKT-2026-0001 has no assigned agent, skipping notification[39m
+2026-04-21 11:00:00:00 [32minfo[39m: [32mFound 1 tickets with SLA breach[39m
+2026-04-21 11:00:00:00 [32minfo[39m: [32mSent daily SLA reports to managers[39m
+2026-04-21 11:01:35:135 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:01:54:154 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:02:52:252 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:03:01:31 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:03:05:35 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:03:06:36 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:03:27:327 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:03:27:327 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:03:27:327 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:03:28:328 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:03:30:330 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:03:30:330 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:07:55:755 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:07:55:755 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:08:10:810 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:08:10:810 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:08:56:856 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:08:56:856 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:09:05:95 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:09:05:95 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:09:25:925 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:10:12:1012 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:10:12:1012 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:10:12:1012 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:11:39:1139 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:11:45:1145 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:11:45:1145 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:22:1322 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:22:1322 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:24:1324 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:24:1324 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:24:1324 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:30:1330 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:30:1330 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\ticketAssigned.ejs:147[39m
+[31m    145|                 <div class="detail-row">[39m
+[31m    146|                     <div class="detail-label">Description:</div>[39m
+[31m >> 147|                     <div class="detail-value"><%= description %></div>[39m
+[31m    148|                 </div>[39m
+[31m    149|                 [39m
+[31m    150|                 <div class="detail-row">[39m
+
+[31mdescription is not defined[39m
+2026-04-21 11:13:30:1330 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-21 11:13:30:1330 [33mwarn[39m: [33mRetrying email 32dc1d57-7ce7-4615-9523-9e0b4b4c7864, attempt 1[39m
+2026-04-21 11:13:30:1330 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:30:1330 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:30:1330 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:30:1330 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:35:1335 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\ticketAssigned.ejs:147[39m
+[31m    145|                 <div class="detail-row">[39m
+[31m    146|                     <div class="detail-label">Description:</div>[39m
+[31m >> 147|                     <div class="detail-value"><%= description %></div>[39m
+[31m    148|                 </div>[39m
+[31m    149|                 [39m
+[31m    150|                 <div class="detail-row">[39m
+
+[31mdescription is not defined[39m
+2026-04-21 11:13:35:1335 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-21 11:13:35:1335 [33mwarn[39m: [33mRetrying email 32dc1d57-7ce7-4615-9523-9e0b4b4c7864, attempt 2[39m
+2026-04-21 11:13:35:1335 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:36:1336 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:36:1336 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:39:1339 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:40:1340 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:40:1340 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:45:1345 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\ticketAssigned.ejs:147[39m
+[31m    145|                 <div class="detail-row">[39m
+[31m    146|                     <div class="detail-label">Description:</div>[39m
+[31m >> 147|                     <div class="detail-value"><%= description %></div>[39m
+[31m    148|                 </div>[39m
+[31m    149|                 [39m
+[31m    150|                 <div class="detail-row">[39m
+
+[31mdescription is not defined[39m
+2026-04-21 11:13:45:1345 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-21 11:13:45:1345 [33mwarn[39m: [33mRetrying email 32dc1d57-7ce7-4615-9523-9e0b4b4c7864, attempt 3[39m
+2026-04-21 11:13:51:1351 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:51:1351 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:53:1353 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:53:1353 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:53:1353 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:13:53:1353 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:14:00:140 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\ticketAssigned.ejs:147[39m
+[31m    145|                 <div class="detail-row">[39m
+[31m    146|                     <div class="detail-label">Description:</div>[39m
+[31m >> 147|                     <div class="detail-value"><%= description %></div>[39m
+[31m    148|                 </div>[39m
+[31m    149|                 [39m
+[31m    150|                 <div class="detail-row">[39m
+
+[31mdescription is not defined[39m
+2026-04-21 11:14:00:140 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-21 11:14:00:140 [31merror[39m: [31mEmail failed after 3 retries: 32dc1d57-7ce7-4615-9523-9e0b4b4c7864 Failed to render email template[39m
+2026-04-21 11:14:23:1423 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:14:53:1453 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:15:14:1514 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:15:14:1514 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:15:14:1514 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:15:20:1520 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:15:23:1523 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:15:25:1525 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:15:51:1551 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:15:51:1551 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:05:165 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:05:165 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:08:168 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:14:1614 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:15:1615 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:16:1616 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:16:1616 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:19:1619 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:24:1624 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:24:1624 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:26:1626 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:26:1626 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:26:1626 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:32:1632 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:32:1632 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:36:1636 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:37:1637 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:16:38:1638 [32minfo[39m: [32mRequest started[39m
+2026-04-21 11:28:00:280 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-04-21 11:28:00:280 [32minfo[39m: [32mHTTP server closed.[39m
+2026-04-21 11:28:00:280 [32minfo[39m: [32mDatabase connection closed.[39m

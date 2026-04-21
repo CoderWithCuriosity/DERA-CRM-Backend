@@ -1,1 +1,44 @@
 2026-04-20 22:51:20:5120 [31merror[39m: [31mCannot GET /favicon.ico[39m
+2026-04-21 10:45:14:4514 [31merror[39m: [31mnotNull Violation: Ticket.ticket_number cannot be null[39m
+2026-04-21 10:55:51:5551 [31merror[39m: [31mnotNull Violation: Ticket.ticket_number cannot be null[39m
+2026-04-21 11:13:30:1330 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\ticketAssigned.ejs:147[39m
+[31m    145|                 <div class="detail-row">[39m
+[31m    146|                     <div class="detail-label">Description:</div>[39m
+[31m >> 147|                     <div class="detail-value"><%= description %></div>[39m
+[31m    148|                 </div>[39m
+[31m    149|                 [39m
+[31m    150|                 <div class="detail-row">[39m
+
+[31mdescription is not defined[39m
+2026-04-21 11:13:30:1330 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-21 11:13:35:1335 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\ticketAssigned.ejs:147[39m
+[31m    145|                 <div class="detail-row">[39m
+[31m    146|                     <div class="detail-label">Description:</div>[39m
+[31m >> 147|                     <div class="detail-value"><%= description %></div>[39m
+[31m    148|                 </div>[39m
+[31m    149|                 [39m
+[31m    150|                 <div class="detail-row">[39m
+
+[31mdescription is not defined[39m
+2026-04-21 11:13:35:1335 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-21 11:13:45:1345 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\ticketAssigned.ejs:147[39m
+[31m    145|                 <div class="detail-row">[39m
+[31m    146|                     <div class="detail-label">Description:</div>[39m
+[31m >> 147|                     <div class="detail-value"><%= description %></div>[39m
+[31m    148|                 </div>[39m
+[31m    149|                 [39m
+[31m    150|                 <div class="detail-row">[39m
+
+[31mdescription is not defined[39m
+2026-04-21 11:13:45:1345 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-21 11:14:00:140 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\ticketAssigned.ejs:147[39m
+[31m    145|                 <div class="detail-row">[39m
+[31m    146|                     <div class="detail-label">Description:</div>[39m
+[31m >> 147|                     <div class="detail-value"><%= description %></div>[39m
+[31m    148|                 </div>[39m
+[31m    149|                 [39m
+[31m    150|                 <div class="detail-row">[39m
+
+[31mdescription is not defined[39m
+2026-04-21 11:14:00:140 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-21 11:14:00:140 [31merror[39m: [31mEmail failed after 3 retries: 32dc1d57-7ce7-4615-9523-9e0b4b4c7864 Failed to render email template[39m

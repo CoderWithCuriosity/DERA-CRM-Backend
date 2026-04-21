@@ -155,12 +155,6 @@ Ticket.init(
     timestamps: true,
     underscored: true,
     hooks: {
-      beforeCreate: async (ticket: Ticket) => {
-        // Generate ticket number
-        const year = new Date().getFullYear();
-        const count = await Ticket.count() + 1;
-        ticket.ticket_number = `TKT-${year}-${count.toString().padStart(4, '0')}`;
-      },
       beforeUpdate: (ticket: Ticket) => {
         ticket.updated_at = new Date();
         

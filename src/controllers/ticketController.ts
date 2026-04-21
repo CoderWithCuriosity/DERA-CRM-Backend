@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
-import sequelize from '../config/database'; // Add this import
+import sequelize from '../config/database';
 import { Ticket, TicketComment, Contact, User, AuditLog } from '../models';
 import {
   HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES,
@@ -68,7 +68,21 @@ export const createTicket = catchAsync(async (req: AuthenticatedRequest, res: Re
   const slaResolutionTime = getSLAResolutionTime(priority as string);
   void slaResolutionTime;
 
+    // Generate ticket number
+  const year = new Date().getFullYear();
+  const [countResult] = await sequelize.query(
+    `SELECT COUNT(*) as count FROM tickets WHERE EXTRACT(YEAR FROM created_at) = :year`,
+    {
+      replacements: { year },
+      type: 'SELECT'
+    }
+  );
+  const count = parseInt((countResult as any).count) || 0;
+  const nextNumber = count + 1;
+  const ticketNumber = `TKT-${year}-${nextNumber.toString().padStart(4, '0')}`;
+
   const ticket = await Ticket.create({
+    ticket_number: ticketNumber,
     subject,
     description,
     contact_id,

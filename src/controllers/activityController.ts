@@ -23,7 +23,13 @@ export const createActivity = catchAsync(async (req: Request, res: Response) => 
     });
   }
 
-  const { type, subject, description, contact_id, deal_id, scheduled_date, duration, user_id } = req.body;
+  let { type, subject, description, contact_id, deal_id, scheduled_date, duration, user_id } = req.body;
+
+  // AUTO-SET FOR NOTES
+  if (type === 'note') {
+    scheduled_date = new Date(); // Set to current time
+    duration = null; // Clear duration
+  }
 
   // Check if contact exists if provided
   if (contact_id) {
@@ -58,6 +64,10 @@ export const createActivity = catchAsync(async (req: Request, res: Response) => 
     });
   }
 
+  // Determine status - notes are completed immediately
+  const activityStatus = type === 'note' ? ACTIVITY_STATUS.COMPLETED : ACTIVITY_STATUS.SCHEDULED;
+  const completedDate = type === 'note' ? new Date() : null;
+
   const activity = await Activity.create({
     type,
     subject,
@@ -67,7 +77,8 @@ export const createActivity = catchAsync(async (req: Request, res: Response) => 
     user_id: ownerId,
     scheduled_date,
     duration,
-    status: ACTIVITY_STATUS.SCHEDULED
+    status: activityStatus,
+    completed_date: completedDate
   });
 
   // Fetch created activity with associations
@@ -91,8 +102,8 @@ export const createActivity = catchAsync(async (req: Request, res: Response) => 
     ]
   });
 
-  // Schedule reminder if activity is in the future
-  if (new Date(scheduled_date) > new Date()) {
+  // Schedule reminder ONLY if it's not a note and is in the future
+  if (type !== 'note' && new Date(scheduled_date) > new Date()) {
     await scheduleActivityReminder(activity.id, scheduled_date, ownerId);
   }
 
@@ -102,7 +113,7 @@ export const createActivity = catchAsync(async (req: Request, res: Response) => 
     action: AUDIT_ACTIONS.CREATE,
     entity_type: ENTITY_TYPES.ACTIVITY,
     entity_id: activity.id,
-    details: `Created activity: ${activity.subject}`,
+    details: `Created ${type}: ${activity.subject}`,
     ip_address: req.ip,
     user_agent: req.get('user-agent') || null
   });
@@ -243,7 +254,7 @@ export const getActivityById = catchAsync(async (req: Request, res: Response) =>
 // @access  Private
 export const updateActivity = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const updates = req.body;
+  let updates = req.body;
 
   const activity = await Activity.findByPk(id);
 
@@ -262,8 +273,16 @@ export const updateActivity = catchAsync(async (req: Request, res: Response) => 
     });
   }
 
-  // Can't update completed activities
-  if (activity.status === ACTIVITY_STATUS.COMPLETED) {
+  // If updating to note type, auto-complete it
+  if (updates.type === 'note') {
+    updates.scheduled_date = new Date();
+    updates.duration = null;
+    updates.status = ACTIVITY_STATUS.COMPLETED;
+    updates.completed_date = new Date();
+  }
+
+  // Can't update already completed activities (except notes are already completed)
+  if (activity.status === ACTIVITY_STATUS.COMPLETED && activity.type !== 'note') {
     return res.status(HTTP_STATUS.BAD_REQUEST).json({
       success: false,
       message: 'Cannot update completed activities'
@@ -272,8 +291,8 @@ export const updateActivity = catchAsync(async (req: Request, res: Response) => 
 
   await activity.update(updates);
 
-  // Reschedule reminder if date changed
-  if (updates.scheduled_date && new Date(updates.scheduled_date) > new Date()) {
+  // Reschedule reminder ONLY if it's not a note and date changed
+  if (updates.scheduled_date && activity.type !== 'note' && new Date(updates.scheduled_date) > new Date()) {
     await scheduleActivityReminder(activity.id, updates.scheduled_date, activity.user_id);
   }
 
@@ -283,7 +302,7 @@ export const updateActivity = catchAsync(async (req: Request, res: Response) => 
     action: AUDIT_ACTIONS.UPDATE,
     entity_type: ENTITY_TYPES.ACTIVITY,
     entity_id: activity.id,
-    details: `Updated activity: ${activity.subject}`,
+    details: `Updated ${activity.type}: ${activity.subject}`,
     ip_address: req.ip,
     user_agent: req.get('user-agent') || null
   });

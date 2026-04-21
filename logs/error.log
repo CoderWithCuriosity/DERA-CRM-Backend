@@ -42,3 +42,28 @@
 [31mdescription is not defined[39m
 2026-04-21 11:14:00:140 [31merror[39m: [31mError sending email: Failed to render email template[39m
 2026-04-21 11:14:00:140 [31merror[39m: [31mEmail failed after 3 retries: 32dc1d57-7ce7-4615-9523-9e0b4b4c7864 Failed to render email template[39m
+2026-04-21 18:00:00:00 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaWarning.ejs'[39m
+2026-04-21 18:00:00:00 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-21 18:00:00:00 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaBreached.ejs:201[39m
+[31m    199|                 <div class="detail-row">[39m
+[31m    200|                     <div class="detail-label">Customer:</div>[39m
+[31m >> 201|                     <div class="detail-value"><%= contact_name %></div>[39m
+[31m    202|                 </div>[39m
+[31m    203|                 [39m
+[31m    204|                 <div class="detail-row">[39m
+
+[31mcontact_name is not defined[39m
+2026-04-21 18:00:00:00 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-21 18:00:05:05 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaWarning.ejs'[39m
+2026-04-21 18:00:05:05 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-21 18:00:05:05 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaBreached.ejs:201[39m
+[31m    199|                 <div class="detail-row">[39m
+[31m    200|                     <div class="detail-label">Customer:</div>[39m
+[31m >> 201|                     <div class="detail-value"><%= contact_name %></div>[39m
+[31m    202|                 </div>[39m
+[31m    203|                 [39m
+[31m    204|                 <div class="detail-row">[39m
+
+[31mcontact_name is not defined[39m
+2026-04-21 18:00:05:05 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-21 19:16:09:169 [31merror[39m: [31mCannot GET /favicon.ico[39m

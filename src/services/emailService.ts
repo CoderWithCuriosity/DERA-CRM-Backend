@@ -288,6 +288,9 @@ export const sendDealAssignmentEmail = async (
   assignee: any,
   assignedBy: any
 ): Promise<void> => {
+  const contactFullName = deal.contact 
+    ? `${deal.contact.first_name || ''} ${deal.contact.last_name || ''}`.trim()
+    : 'Unknown Contact';
   await sendEmail({
     to: assignee.email,
     subject: 'New Deal Assigned',
@@ -295,7 +298,7 @@ export const sendDealAssignmentEmail = async (
     data: {
       first_name: assignee.first_name,
       deal_name: deal.name,
-      contact_name: deal.contact?.fullName,
+      contact_name: contactFullName,
       amount: deal.amount,
       stage: deal.stage,
       assigned_by: `${assignedBy.first_name} ${assignedBy.last_name}`,

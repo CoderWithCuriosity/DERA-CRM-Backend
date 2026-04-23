@@ -67,3 +67,7 @@
 [31mcontact_name is not defined[39m
 2026-04-21 18:00:05:05 [31merror[39m: [31mError sending email: Failed to render email template[39m
 2026-04-21 19:16:09:169 [31merror[39m: [31mCannot GET /favicon.ico[39m
+2026-04-23 08:00:01:01 [31merror[39m: [31mFailed to send digest to user 3: column contact.fullName does not exist[39m
+2026-04-23 08:00:01:01 [31merror[39m: [31mFailed to send digest to user 2: column contact.fullName does not exist[39m
+2026-04-23 08:00:01:01 [31merror[39m: [31mFailed to send digest to user 1: column contact.fullName does not exist[39m
+2026-04-23 08:31:29:3129 [31merror[39m: [31mmissing FROM-clause entry for table "email_template"[39m

@@ -1283,3 +1283,231 @@
 2026-04-23 08:33:08:338 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
 2026-04-23 08:33:08:338 [32minfo[39m: [32mHTTP server closed.[39m
 2026-04-23 08:33:08:338 [32minfo[39m: [32mDatabase connection closed.[39m
+2026-04-23 11:40:58:4058 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-23 11:40:58:4058 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-23 11:40:58:4058 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-23 11:40:58:4058 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-23 11:40:58:4058 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-23 11:40:58:4058 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-23 11:40:58:4058 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-23 11:40:58:4058 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-23 11:40:58:4058 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-23 11:40:58:4058 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-23 11:40:58:4058 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-23 11:40:58:4058 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-23 11:41:07:417 [32minfo[39m: [32mRequest started[39m
+2026-04-23 11:41:07:417 [32minfo[39m: [32mRequest started[39m
+2026-04-23 11:41:07:417 [32minfo[39m: [32mRequest started[39m
+2026-04-23 11:41:08:418 [32minfo[39m: [32mRequest started[39m
+2026-04-23 11:41:20:4120 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-23 11:41:37:4137 [32minfo[39m: [32mRequest started[39m
+2026-04-23 11:41:51:4151 [32minfo[39m: [32mRequest started[39m
+2026-04-23 11:41:52:4152 [32minfo[39m: [32mRequest started[39m
+2026-04-23 11:41:56:4156 [32minfo[39m: [32mRequest started[39m
+2026-04-23 11:42:01:421 [32minfo[39m: [32mRequest started[39m
+2026-04-23 11:42:12:4212 [32minfo[39m: [32mRequest started[39m
+2026-04-23 11:42:12:4212 [32minfo[39m: [32mRequest started[39m
+2026-04-23 11:42:12:4212 [32minfo[39m: [32mRequest started[39m
+2026-04-23 11:42:14:4214 [32minfo[39m: [32mRequest started[39m
+2026-04-23 11:42:14:4214 [32minfo[39m: [32mRequest started[39m
+2026-04-23 11:42:17:4217 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:00:00:00 [32minfo[39m: [32mRunning SLA monitoring job...[39m
+2026-04-23 12:00:00:00 [32minfo[39m: [32mRunning activity reminder check...[39m
+2026-04-23 12:00:00:00 [32minfo[39m: [32mActivity reminder check completed[39m
+2026-04-23 12:00:00:00 [32minfo[39m: [32mFound 1 tickets with SLA breach[39m
+2026-04-23 12:00:00:00 [32minfo[39m: [32mSent daily SLA reports to managers[39m
+2026-04-23 12:13:47:1347 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:13:48:1348 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:13:49:1349 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:23:40:2340 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:23:41:2341 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:23:50:2350 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:23:50:2350 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:24:16:2416 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:24:18:2418 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:24:18:2418 [31merror[39m: [31mmissing FROM-clause entry for table "email_template"[39m
+2026-04-23 12:28:47:2847 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:28:51:2851 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:28:53:2853 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:28:53:2853 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:32:38:3238 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:32:41:3241 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:32:41:3241 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:32:41:3241 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:32:42:3242 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:32:43:3243 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:32:44:3244 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:32:44:3244 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:33:04:334 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:33:08:338 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:33:09:339 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:34:14:3414 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:34:14:3414 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:43:32:4332 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:43:33:4333 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:44:10:4410 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:48:01:481 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:48:04:484 [32minfo[39m: [32mRequest started[39m
+2026-04-23 12:58:52:5852 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:00:00:00 [32minfo[39m: [32mRunning SLA monitoring job...[39m
+2026-04-23 13:00:00:00 [32minfo[39m: [32mFound 1 tickets with SLA breach[39m
+2026-04-23 13:00:00:00 [32minfo[39m: [32mSent daily SLA reports to managers[39m
+2026-04-23 13:00:00:00 [32minfo[39m: [32mRunning activity reminder check...[39m
+2026-04-23 13:00:00:00 [32minfo[39m: [32mActivity reminder check completed[39m
+2026-04-23 13:00:43:043 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:01:17:117 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:06:03:63 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:06:18:618 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:06:24:624 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:07:01:71 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:07:59:759 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:07:59:759 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:07:59:759 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:08:00:80 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:08:01:81 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:08:04:84 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:08:04:84 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:09:21:921 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:09:21:921 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:09:21:921 [31merror[39m: [31mmissing FROM-clause entry for table "email_template"[39m
+2026-04-23 13:09:41:941 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:09:41:941 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:09:41:941 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:09:42:942 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:09:43:943 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:09:52:952 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:09:52:952 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:09:52:952 [31merror[39m: [31mmissing FROM-clause entry for table "email_template"[39m
+2026-04-23 13:13:26:1326 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-23 13:13:26:1326 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-23 13:13:26:1326 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-23 13:13:26:1326 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-23 13:13:26:1326 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-23 13:13:26:1326 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-23 13:13:26:1326 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-23 13:13:26:1326 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-23 13:13:26:1326 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-23 13:13:26:1326 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-23 13:13:26:1326 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-23 13:13:26:1326 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-23 13:13:26:1326 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:13:36:1336 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:13:36:1336 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:13:48:1348 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-23 13:15:51:1551 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:15:51:1551 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:15:57:1557 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:16:01:161 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:16:01:161 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:16:28:1628 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:16:28:1628 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:16:29:1629 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:16:29:1629 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:18:23:1823 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:18:23:1823 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:18:31:1831 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:18:31:1831 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:18:48:1848 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:18:48:1848 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:18:59:1859 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:18:59:1859 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:19:39:1939 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:19:41:1941 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:19:41:1941 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:19:49:1949 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:19:51:1951 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:20:15:2015 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:20:16:2016 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:20:17:2017 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:20:22:2022 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:20:23:2023 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:20:24:2024 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:20:28:2028 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:20:29:2029 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:20:29:2029 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:20:29:2029 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:20:59:2059 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:21:29:2129 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:21:59:2159 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:22:29:2229 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:22:59:2259 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:23:29:2329 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:23:34:2334 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:23:34:2334 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:23:34:2334 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:23:34:2334 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:24:03:243 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:24:05:245 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:24:05:245 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:24:07:247 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:24:09:249 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:35:18:3518 [32minfo[39m: [32mRequest started[39m
+2026-04-23 13:50:39:5039 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-23 13:50:39:5039 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-23 13:50:39:5039 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-23 13:50:39:5039 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-23 13:50:39:5039 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-23 13:50:39:5039 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-23 13:50:39:5039 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-23 13:50:39:5039 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-23 13:50:39:5039 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-23 13:50:39:5039 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-23 13:50:39:5039 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-23 13:50:39:5039 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-23 13:50:40:5040 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-23 13:53:10:5310 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-23 13:53:10:5310 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-23 13:53:10:5310 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-23 13:53:10:5310 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-23 13:53:10:5310 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-23 13:53:10:5310 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-23 13:53:10:5310 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-23 13:53:10:5310 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-23 13:53:10:5310 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-23 13:53:10:5310 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-23 13:53:10:5310 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-23 13:53:10:5310 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-23 13:53:11:5311 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-23 14:00:00:00 [32minfo[39m: [32mRunning SLA monitoring job...[39m
+2026-04-23 14:00:00:00 [32minfo[39m: [32mRunning activity reminder check...[39m
+2026-04-23 14:00:00:00 [32minfo[39m: [32mActivity reminder check completed[39m
+2026-04-23 14:00:00:00 [32minfo[39m: [32mFound 1 tickets with SLA breach[39m
+2026-04-23 14:00:00:00 [32minfo[39m: [32mSent daily SLA reports to managers[39m
+2026-04-23 14:50:39:5039 [32minfo[39m: [32mRequest started[39m
+2026-04-23 14:50:42:5042 [32minfo[39m: [32mRequest started[39m
+2026-04-23 14:50:43:5043 [32minfo[39m: [32mRequest started[39m
+2026-04-23 14:50:43:5043 [32minfo[39m: [32mRequest started[39m
+2026-04-23 14:50:50:5050 [32minfo[39m: [32mRequest started[39m
+2026-04-23 14:50:53:5053 [32minfo[39m: [32mRequest started[39m
+2026-04-23 15:00:00:00 [32minfo[39m: [32mRunning activity reminder check...[39m
+2026-04-23 15:00:00:00 [32minfo[39m: [32mActivity reminder check completed[39m
+2026-04-23 15:00:00:00 [32minfo[39m: [32mRunning SLA monitoring job...[39m
+2026-04-23 15:00:00:00 [32minfo[39m: [32mFound 1 tickets with SLA breach[39m
+2026-04-23 15:00:00:00 [32minfo[39m: [32mSent daily SLA reports to managers[39m
+2026-04-23 15:45:50:4550 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-04-23 15:45:50:4550 [32minfo[39m: [32mHTTP server closed.[39m
+2026-04-23 15:45:50:4550 [32minfo[39m: [32mDatabase connection closed.[39m

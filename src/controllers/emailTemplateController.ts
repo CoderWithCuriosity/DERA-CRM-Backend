@@ -113,7 +113,7 @@ export const getEmailTemplates = catchAsync(async (req: Request, res: Response) 
           sequelize.literal(`(
             SELECT COUNT(*)
             FROM campaigns
-            WHERE campaigns.template_id = email_template.id
+            WHERE campaigns.template_id = "EmailTemplate".id
           )`),
           'campaigns_count'
         ]

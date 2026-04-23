@@ -71,3 +71,6 @@
 2026-04-23 08:00:01:01 [31merror[39m: [31mFailed to send digest to user 2: column contact.fullName does not exist[39m
 2026-04-23 08:00:01:01 [31merror[39m: [31mFailed to send digest to user 1: column contact.fullName does not exist[39m
 2026-04-23 08:31:29:3129 [31merror[39m: [31mmissing FROM-clause entry for table "email_template"[39m
+2026-04-23 12:24:18:2418 [31merror[39m: [31mmissing FROM-clause entry for table "email_template"[39m
+2026-04-23 13:09:21:921 [31merror[39m: [31mmissing FROM-clause entry for table "email_template"[39m
+2026-04-23 13:09:52:952 [31merror[39m: [31mmissing FROM-clause entry for table "email_template"[39m

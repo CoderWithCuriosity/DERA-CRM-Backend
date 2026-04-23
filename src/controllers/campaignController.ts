@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { Op, Order } from 'sequelize';
-import { Campaign, EmailTemplate, Contact, CampaignRecipient, AuditLog, User } from '../models';
+import { Campaign, EmailTemplate, Contact, CampaignRecipient, AuditLog, User, Organization } from '../models';
 import { 
   HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, 
   CAMPAIGN_STATUS, AUDIT_ACTIONS, ENTITY_TYPES, CAMPAIGN_RECIPIENT_STATUS
@@ -534,17 +534,52 @@ export const sendTestEmail = catchAsync(async (req: Request, res: Response) => {
 
   const template = campaign.get('template') as EmailTemplate | undefined;
   
+  // Get organization info
+  const organization = await Organization.findByPk((req.user as any).organization_id);
+  
+  // Prepare test data with all available variables
+  const fullTestData = {
+    // Test contact data
+    first_name: test_data?.first_name || 'Test',
+    last_name: test_data?.last_name || 'User',
+    full_name: `${test_data?.first_name || 'Test'} ${test_data?.last_name || 'User'}`.trim(),
+    email: test_email,
+    phone: test_data?.phone || '+1 (555) 123-4567',
+    company: test_data?.company || 'Test Company',
+    job_title: test_data?.job_title || 'Test User',
+    status: 'active',
+    
+    // Campaign info
+    campaign_name: campaign.name,
+    campaign_id: campaign.id,
+    sent_date: new Date().toLocaleDateString(),
+    sent_time: new Date().toLocaleTimeString(),
+    
+    // Organization info
+    company_name: organization?.company_name || 'Dera CRM',
+    company_email: organization?.company_email || 'support@deracrm.com',
+    company_phone: organization?.company_phone || '',
+    company_website: organization?.website || 'https://deracrm.com',
+    
+    // Test links
+    unsubscribe_link: '#test-unsubscribe-link',
+    tracking_pixel: '#test-tracking-pixel',
+    
+    // Any additional test data passed
+    ...test_data
+  };
+  
   // Render email with test data
-  const preview = template?.renderPreview(test_data || {}) || { subject: '', body: '' };
+  const preview = template?.renderPreview(fullTestData) || { subject: '', body: '' };
 
-  // Send test email using the existing sendEmail function
+  // Send test email
   const emailId = await sendEmail({
     to: test_email,
     subject: `[TEST] ${preview.subject}`,
-    template: 'campaign-test', // You need to create this template
+    template: 'campaign-test',
     data: {
       content: preview.body,
-      ...test_data
+      ...fullTestData
     }
   });
 
@@ -714,6 +749,7 @@ export const duplicateCampaign = catchAsync(async (req: Request, res: Response) 
 });
 
 // Helper function to process campaign sending
+// Helper function to process campaign sending
 async function processCampaign(campaignId: number) {
   const campaign = await Campaign.findByPk(campaignId, {
     include: [
@@ -747,25 +783,52 @@ async function processCampaign(campaignId: number) {
     try {
       const template = campaign.get('template') as EmailTemplate | undefined;
       
-      // Render email with contact data
-      const preview = template?.renderPreview({
-        first_name: recipient.contact?.first_name,
-        last_name: recipient.contact?.last_name,
-        email: recipient.contact?.email,
-        company: recipient.contact?.company
-      }) || { subject: '', body: '' };
+      // Get organization info for company variables
+      const organization = await Organization.findByPk((recipient.contact as any)?.organization_id);
+      
+      // Prepare ALL available variables for the template
+      const templateData = {
+        // Contact Information
+        first_name: recipient.contact?.first_name || '',
+        last_name: recipient.contact?.last_name || '',
+        full_name: `${recipient.contact?.first_name || ''} ${recipient.contact?.last_name || ''}`.trim(),
+        email: recipient.contact?.email || '',
+        phone: recipient.contact?.phone || '',
+        company: recipient.contact?.company || '',
+        job_title: recipient.contact?.job_title || '',
+        status: recipient.contact?.status || '',
+        
+        // Campaign Information
+        campaign_name: campaign.name,
+        campaign_id: campaign.id,
+        sent_date: new Date().toLocaleDateString(),
+        sent_time: new Date().toLocaleTimeString(),
+        
+        // Organization/Company Information
+        company_name: organization?.company_name || 'Our Company',
+        company_email: organization?.company_email || 'support@company.com',
+        company_phone: organization?.company_phone || '',
+        company_website: organization?.website || '',
+        
+        // Tracking Links
+        unsubscribe_link: `${process.env.FRONTEND_URL}/unsubscribe?email=${recipient.contact?.email}&campaign=${campaign.id}`,
+        tracking_pixel: `${process.env.API_URL}/api/tracking/open/${recipient.id}`,
+        
+        // Dynamic fields (if you add custom_fields to Contact model)
+        ...((recipient.contact as any)?.custom_fields || {})
+      };
+
+      // Render email with all contact data
+      const preview = template?.renderPreview(templateData) || { subject: '', body: '' };
 
       // Send email using the existing sendEmail function
       await sendEmail({
         to: recipient.contact?.email || recipient.email,
         subject: preview.subject,
-        template: 'campaign', // You need to create this template
+        template: 'campaign',
         data: {
           content: preview.body,
-          first_name: recipient.contact?.first_name,
-          last_name: recipient.contact?.last_name,
-          email: recipient.contact?.email,
-          company: recipient.contact?.company,
+          ...templateData,
           campaign_id: campaign.id,
           recipient_id: recipient.id,
           track_opens: true,

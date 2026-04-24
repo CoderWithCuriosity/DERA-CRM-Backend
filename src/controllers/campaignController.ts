@@ -805,8 +805,8 @@ async function processCampaign(campaignId: number) {
         sent_time: new Date().toLocaleTimeString(),
         
         // Organization/Company Information
-        company_name: organization?.company_name || 'Our Company',
-        company_email: organization?.company_email || 'support@company.com',
+        company_name: organization?.company_name || '',
+        company_email: organization?.company_email || '',
         company_phone: organization?.company_phone || '',
         company_website: organization?.website || '',
         

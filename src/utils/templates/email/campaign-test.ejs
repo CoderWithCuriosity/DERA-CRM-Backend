@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[TEST] <%= typeof subject !== 'undefined' ? subject : 'Test Email' %></title>
+    <style>
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .test-badge {
+            background-color: #ff9800;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .email-header h1 {
+            color: white;
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .email-content {
+            background: white;
+            padding: 30px;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .test-info {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .email-footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #eee;
+            margin-top: 20px;
+        }
+        
+        @media only screen and (max-width: 600px) {
+            .email-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 20px; background-color: #f4f4f4;">
+    <div class="email-container">
+        <div class="test-badge">
+            ⚡ TEST EMAIL - SENT AT <%= sent_time || new Date().toLocaleString() %> ⚡
+        </div>
+        
+        <% if (typeof company_name !== 'undefined' && company_name) { %>
+        <div class="email-header">
+            <h1><%= company_name %></h1>
+        </div>
+        <% } %>
+        
+        <div class="email-content">
+            <div class="test-info">
+                <strong>📧 Test Information:</strong><br>
+                <% if (typeof campaign_name !== 'undefined' && campaign_name) { %>
+                Campaign: <%= campaign_name %><br>
+                <% } %>
+                Recipient: <%= email || 'test@example.com' %><br>
+                This is a preview of how the email will appear to recipients.
+            </div>
+            
+            <% if (typeof content !== 'undefined' && content) { %>
+                <%- content %>
+            <% } %>
+        </div>
+        
+        <div class="email-footer">
+            <p>© <%= new Date().getFullYear() %> <% if (typeof company_name !== 'undefined' && company_name) { %><%= company_name %><% } else { %>DERA CRM<% } %>. All rights reserved.</p>
+            <p style="color: #ff9800;">This is a test email - no tracking or analytics are applied.</p>
+        </div>
+    </div>
+</body>
+</html>

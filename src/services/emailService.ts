@@ -110,7 +110,11 @@ const emailQueue = new EmailQueue();
 export const renderTemplate = async (template: string, data: any): Promise<string> => {
   try {
     const templatePath = path.join(__dirname, '../utils/templates/email', `${template}.ejs`);
-    return await ejs.renderFile(templatePath, data);
+    const templateData = {
+      ...data,
+      subject: data.subject
+    };
+    return await ejs.renderFile(templatePath, templateData);
   } catch (error) {
     logger.error('Error rendering email template:', error);
     throw new AppError('Failed to render email template', HTTP_STATUS.INTERNAL_SERVER_ERROR);

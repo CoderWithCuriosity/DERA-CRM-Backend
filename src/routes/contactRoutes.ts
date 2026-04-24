@@ -52,7 +52,7 @@ router.post(
   [
     body('first_name').notEmpty().trim().withMessage('First name is required'),
     body('last_name').notEmpty().trim().withMessage('Last name is required'),
-    body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
+    body('email').isEmail().withMessage('Please provide a valid email'),
     body('phone').optional().isMobilePhone('any').withMessage('Please provide a valid phone number'),
     body('company').optional().trim(),
     body('job_title').optional().trim(),
@@ -164,7 +164,7 @@ router.put(
     param('id').isInt().withMessage('Invalid contact ID'),
     body('first_name').optional().trim().notEmpty().withMessage('First name cannot be empty'),
     body('last_name').optional().trim().notEmpty().withMessage('Last name cannot be empty'),
-    body('email').optional().isEmail().normalizeEmail(),
+    body('email').optional().isEmail(),
     body('phone').optional().isMobilePhone('any'),
     body('company').optional().trim(),
     body('job_title').optional().trim(),

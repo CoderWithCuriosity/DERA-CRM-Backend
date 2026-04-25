@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { body, param, query } from 'express-validator';
 import {
   getProfile,
@@ -16,6 +16,14 @@ import { validate } from '../middleware/validation';
 import { avatarUpload } from '../config/fileUpload';
 import { USER_ROLES } from '../config/constants';
 import { uploadLimiter } from '../config/rateLimit';
+
+// Check if rate limiting is enabled
+const ENABLE_RATE_LIMIT = process.env.ENABLE_RATE_LIMIT === 'true';
+
+// Helper function for better readability
+const maybeUploadRateLimit = ENABLE_RATE_LIMIT 
+  ? uploadLimiter 
+  : (_req: Request, _res: Response, next: NextFunction) => next();
 
 const router = Router();
 
@@ -71,7 +79,7 @@ router.put(
  */
 router.post(
   '/avatar',
-  uploadLimiter,
+  maybeUploadRateLimit,
   avatarUpload.single('avatar'),
   uploadAvatar
 );

@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { body, query } from 'express-validator';
 import {
   getOrganizationSettings,
@@ -16,6 +16,14 @@ import { USER_ROLES } from '../config/constants';
 import { uploadLimiter } from '../config/rateLimit';
 
 const router = Router();
+
+// Check if rate limiting is enabled
+const ENABLE_RATE_LIMIT = process.env.ENABLE_RATE_LIMIT === 'true';
+
+// Helper function for better readability
+const maybeUploadRateLimit = ENABLE_RATE_LIMIT 
+  ? uploadLimiter 
+  : (_req: Request, _res: Response, next: NextFunction) => next();
 
 // All routes require authentication
 router.use(protect);
@@ -57,7 +65,7 @@ router.put(
 router.post(
   '/logo',
   restrictTo('admin'),
-  uploadLimiter,
+  maybeUploadRateLimit,
   logoUpload.single('logo'),
   uploadCompanyLogo
 );

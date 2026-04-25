@@ -521,6 +521,11 @@ export const sendTestEmail = catchAsync(async (req: Request, res: Response) => {
       {
         model: EmailTemplate,
         as: 'template'
+      },
+      {
+        model: User,
+        as: 'createdBy',
+        attributes: ['id', 'organization_id', 'first_name', 'last_name', 'email']
       }
     ]
   });
@@ -534,36 +539,60 @@ export const sendTestEmail = catchAsync(async (req: Request, res: Response) => {
 
   const template = campaign.get('template') as EmailTemplate | undefined;
   
-  // Get organization info
-  const organization = await Organization.findByPk((req.user as any).organization_id);
+  // Get the user/agent who created the campaign
+  const campaignUser = campaign.get('createdBy') as User | undefined;
+  
+  // Get organization info from the user's organization_id
+  let organization = null;
+  if (campaignUser?.organization_id) {
+    organization = await Organization.findByPk(campaignUser.organization_id);
+  }
   
   // Prepare test data with all available variables
   const fullTestData = {
-    // Test contact data
+    // ========== CONTACT INFORMATION (Test recipient) ==========
     first_name: test_data?.first_name || 'Test',
     last_name: test_data?.last_name || 'User',
     full_name: `${test_data?.first_name || 'Test'} ${test_data?.last_name || 'User'}`.trim(),
     email: test_email,
     phone: test_data?.phone || '+1 (555) 123-4567',
-    company: test_data?.company || 'Test Company',
-    job_title: test_data?.job_title || 'Test User',
-    status: 'active',
     
-    // Campaign info
+    // Contact's company information (where they work)
+    contact_company: test_data?.contact_company || 'Test Company',
+    contact_job_title: test_data?.contact_job_title || 'Marketing Manager',
+    contact_status: 'active',
+    
+    // ========== SENDER/ORGANIZATION INFORMATION (Your company) ==========
+    company_name: organization?.company_name || 'Dera CRM',
+    company_email: organization?.company_email || 'support@deracrm.com',
+    company_phone: organization?.company_phone || '+1 (555) 987-6543',
+    company_website: organization?.website || 'https://deracrm.com',
+    company_address: organization?.company_address || '123 Business Ave, Suite 100',
+    
+    // Sender/Agency info
+    agency_name: organization?.company_name || 'Dera CRM',
+    agency_email: organization?.company_email || 'support@deracrm.com',
+    agency_phone: organization?.company_phone || '+1 (555) 987-6543',
+    
+    // Agent info (who created the campaign)
+    agent_name: campaignUser ? `${campaignUser.first_name} ${campaignUser.last_name}` : 'Support Agent',
+    agent_email: campaignUser?.email || 'support@deracrm.com',
+    
+    // ========== CAMPAIGN INFORMATION ==========
     campaign_name: campaign.name,
     campaign_id: campaign.id,
     sent_date: new Date().toLocaleDateString(),
     sent_time: new Date().toLocaleTimeString(),
     
-    // Organization info
-    company_name: organization?.company_name || 'Dera CRM',
-    company_email: organization?.company_email || 'support@deracrm.com',
-    company_phone: organization?.company_phone || '',
-    company_website: organization?.website || 'https://deracrm.com',
-    
-    // Test links
+    // ========== TRACKING LINKS (test) ==========
     unsubscribe_link: '#test-unsubscribe-link',
     tracking_pixel: '#test-tracking-pixel',
+    
+    // ========== ADDITIONAL USEFUL VARIABLES ==========
+    current_year: new Date().getFullYear(),
+    current_date: new Date().toLocaleDateString(),
+    current_time: new Date().toLocaleTimeString(),
+    name: test_data?.first_name ? `${test_data.first_name} ${test_data.last_name || 'User'}` : 'Test User',
     
     // Any additional test data passed
     ...test_data
@@ -749,7 +778,6 @@ export const duplicateCampaign = catchAsync(async (req: Request, res: Response) 
 });
 
 // Helper function to process campaign sending
-// Helper function to process campaign sending
 async function processCampaign(campaignId: number) {
   const campaign = await Campaign.findByPk(campaignId, {
     include: [
@@ -766,6 +794,11 @@ async function processCampaign(campaignId: number) {
             as: 'contact'
           }
         ]
+      },
+      {
+        model: User,
+        as: 'createdBy',
+        attributes: ['id', 'organization_id', 'first_name', 'last_name']
       }
     ]
   });
@@ -776,6 +809,15 @@ async function processCampaign(campaignId: number) {
 
   let sentCount = 0;
   const recipients = (campaign.get('recipients') as (CampaignRecipient & { contact?: Contact })[]) || [];
+  
+  // Get the user/agent who created this campaign
+  const campaignUser = campaign.get('createdBy') as User | undefined;
+  
+  // Get organization info from the user's organization_id (your company)
+  let organization = null;
+  if (campaignUser?.organization_id) {
+    organization = await Organization.findByPk(campaignUser.organization_id);
+  }
 
   for (const recipient of recipients) {
     if (recipient.status !== CAMPAIGN_RECIPIENT_STATUS.PENDING) continue;
@@ -783,39 +825,58 @@ async function processCampaign(campaignId: number) {
     try {
       const template = campaign.get('template') as EmailTemplate | undefined;
       
-      // Get organization info for company variables
-      const organization = await Organization.findByPk((recipient.contact as any)?.organization_id);
-      
       // Prepare ALL available variables for the template
       const templateData = {
-        // Contact Information
+        // ========== CONTACT INFORMATION (The recipient) ==========
         first_name: recipient.contact?.first_name || '',
         last_name: recipient.contact?.last_name || '',
         full_name: `${recipient.contact?.first_name || ''} ${recipient.contact?.last_name || ''}`.trim(),
         email: recipient.contact?.email || '',
         phone: recipient.contact?.phone || '',
-        company: recipient.contact?.company || '',
-        job_title: recipient.contact?.job_title || '',
-        status: recipient.contact?.status || '',
         
-        // Campaign Information
+        // Contact's company information (where they work)
+        contact_company: recipient.contact?.company || '',
+        contact_job_title: recipient.contact?.job_title || '',
+        contact_status: recipient.contact?.status || '',
+        
+        // Contact's custom fields (if any)
+        ...((recipient.contact as any)?.custom_fields || {}),
+        
+        // ========== SENDER/ORGANIZATION INFORMATION (Your company) ==========
+        // Company info (your agency/company)
+        company_name: organization?.company_name || '',
+        company_email: organization?.company_email || '',
+        company_phone: organization?.company_phone || '',
+        company_website: organization?.website || '',
+        company_address: organization?.company_address || '',
+        
+        // Sender/Agency info
+        agency_name: organization?.company_name || '',
+        agency_email: organization?.company_email || '',
+        agency_phone: organization?.company_phone || '',
+        
+        // Agent info (who created the campaign)
+        agent_name: campaignUser ? `${campaignUser.first_name} ${campaignUser.last_name}` : '',
+        agent_email: campaignUser?.email || '',
+        
+        // ========== CAMPAIGN INFORMATION ==========
         campaign_name: campaign.name,
         campaign_id: campaign.id,
         sent_date: new Date().toLocaleDateString(),
         sent_time: new Date().toLocaleTimeString(),
         
-        // Organization/Company Information
-        company_name: organization?.company_name || '',
-        company_email: organization?.company_email || '',
-        company_phone: organization?.company_phone || '',
-        company_website: organization?.website || '',
-        
-        // Tracking Links
+        // ========== TRACKING LINKS ==========
         unsubscribe_link: `${process.env.FRONTEND_URL}/unsubscribe?email=${recipient.contact?.email}&campaign=${campaign.id}`,
         tracking_pixel: `${process.env.API_URL}/api/tracking/open/${recipient.id}`,
         
-        // Dynamic fields (if you add custom_fields to Contact model)
-        ...((recipient.contact as any)?.custom_fields || {})
+        // ========== ADDITIONAL USEFUL VARIABLES ==========
+        // Current date/time in different formats
+        current_year: new Date().getFullYear(),
+        current_date: new Date().toLocaleDateString(),
+        current_time: new Date().toLocaleTimeString(),
+        
+        // Contact fallbacks
+        name: `${recipient.contact?.first_name || ''} ${recipient.contact?.last_name || ''}`.trim() || 'Valued Customer',
       };
 
       // Render email with all contact data

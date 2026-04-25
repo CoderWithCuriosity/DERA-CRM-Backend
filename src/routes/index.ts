@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import authRoutes from './authRoutes';
 import userRoutes from './userRoutes';
 import contactRoutes from './contactRoutes';
@@ -14,8 +14,18 @@ import { apiLimiter } from '../config/rateLimit';
 
 const router = Router();
 
+// ============================================================================
+// Rate Limiting
+// ============================================================================
 // Apply rate limiting to all routes
-router.use(apiLimiter);
+// Check if rate limiting is enabled
+const ENABLE_RATE_LIMIT = process.env.ENABLE_RATE_LIMIT === 'true';
+
+// Helper function for better readability
+const maybeAllAPIRateLimit = ENABLE_RATE_LIMIT 
+  ? apiLimiter 
+  : (_req: Request, _res: Response, next: NextFunction) => next();
+router.use(maybeAllAPIRateLimit);
 
 // Health check endpoint (no rate limit)
 router.get('/health', (_req, res) => {

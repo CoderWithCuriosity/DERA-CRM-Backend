@@ -2095,3 +2095,330 @@
 [32m      ################################################[39m
 [32m      [39m
 2026-04-24 23:06:40:640 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-24 23:08:29:829 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-24 23:08:29:829 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-24 23:08:29:829 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-24 23:08:29:829 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-24 23:08:29:829 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-24 23:08:29:829 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-24 23:08:29:829 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-24 23:08:29:829 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-24 23:08:29:829 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-24 23:08:29:829 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-24 23:08:29:829 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-24 23:08:29:829 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-24 23:08:29:829 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:08:31:831 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:08:31:831 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-24 23:08:32:832 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:08:32:832 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:08:33:833 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:08:33:833 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:08:37:837 [32minfo[39m: [32mEmail sent successfully: 57e94b77-23bb-439a-ac2c-3ae26053d1da[39m
+2026-04-24 23:09:13:913 [32minfo[39m: [32mSIGINT received. Starting graceful shutdown...[39m
+2026-04-24 23:09:23:923 [31merror[39m: [31mCould not close connections in time, forcefully shutting down[39m
+2026-04-24 23:15:33:1533 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-24 23:15:33:1533 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-24 23:15:33:1533 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-24 23:15:33:1533 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-24 23:15:33:1533 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-24 23:15:33:1533 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-24 23:15:33:1533 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-24 23:15:33:1533 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-24 23:15:33:1533 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-24 23:15:33:1533 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-24 23:15:33:1533 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-24 23:15:33:1533 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-24 23:15:35:1535 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-24 23:22:32:2232 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:22:34:2234 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:22:42:2242 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:22:51:2251 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:23:08:238 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:28:19:2819 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-24 23:28:19:2819 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-24 23:28:19:2819 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-24 23:28:19:2819 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-24 23:28:19:2819 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-24 23:28:19:2819 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-24 23:28:19:2819 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-24 23:28:19:2819 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-24 23:28:19:2819 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-24 23:28:19:2819 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-24 23:28:19:2819 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-24 23:28:19:2819 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-24 23:28:20:2820 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-24 23:30:54:3054 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:31:00:310 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:31:02:312 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:31:09:319 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:31:29:3129 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:32:45:3245 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:32:48:3248 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:42:3742 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:54:3754 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:55:3755 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:55:3755 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:55:3755 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:56:3756 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:56:3756 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:56:3756 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:56:3756 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:56:3756 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:56:3756 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:56:3756 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:56:3756 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:56:3756 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:56:3756 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:56:3756 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:56:3756 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:56:3756 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:56:3756 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:57:3757 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:58:3758 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:37:59:3759 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:00:380 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:01:381 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:02:382 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:03:383 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:04:384 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:25:3825 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:25:3825 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:25:3825 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:25:3825 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:38:56:3856 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:39:26:3926 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:39:56:3956 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:40:26:4026 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:40:56:4056 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:41:26:4126 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:42:54:4254 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:43:54:4354 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:44:26:4426 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:44:56:4456 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:45:54:4554 [32minfo[39m: [32mRequest started[39m
+2026-04-24 23:46:54:4654 [32minfo[39m: [32mRequest started[39m
+2026-04-25 21:09:38:938 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-25 21:09:38:938 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-25 21:09:38:938 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-25 21:09:38:938 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-25 21:09:38:938 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-25 21:09:38:938 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-25 21:09:38:938 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-25 21:09:38:938 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-25 21:09:38:938 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-25 21:09:38:938 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-25 21:09:38:938 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-25 21:09:38:938 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-25 21:09:39:939 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-25 21:10:20:1020 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-25 21:10:20:1020 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-25 21:10:20:1020 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-25 21:10:20:1020 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-25 21:10:20:1020 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-25 21:10:20:1020 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-25 21:10:20:1020 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-25 21:10:20:1020 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-25 21:10:20:1020 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-25 21:10:20:1020 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-25 21:10:20:1020 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-25 21:10:20:1020 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-25 21:10:22:1022 [32minfo[39m: [32mEmail transporter ready[39m

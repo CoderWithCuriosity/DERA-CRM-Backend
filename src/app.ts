@@ -13,7 +13,6 @@ import {
   validateContentType 
 } from './middleware/sanitizer';
 import { addRequestId, logRequestStart, logRequestComplete } from './middleware/logger';
-// import { apiLimiter } from './middleware/rateLimiter';
 import logger from './config/logger';
 import { setupAssociations } from './models';
 
@@ -89,13 +88,6 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Serve public files
 app.use('/public', express.static(path.join(process.cwd(), 'public')));
-
-// ============================================================================
-// Rate Limiting
-// ============================================================================
-
-// Apply rate limiting to all API routes
-// app.use(environment.apiPrefix, apiLimiter);
 
 // ============================================================================
 // API Routes

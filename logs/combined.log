@@ -1863,3 +1863,24 @@
 2026-04-26 20:13:25:1325 [31merror[39m: [31mcolumn reference "id" is ambiguous[39m
 2026-04-26 20:13:56:1356 [32minfo[39m: [32mRequest started[39m
 2026-04-26 20:13:56:1356 [31merror[39m: [31mcolumn reference "id" is ambiguous[39m
+2026-04-26 20:16:07:167 [32minfo[39m: [32mDatabase connection established successfully.[39m
+2026-04-26 20:16:07:167 [32minfo[39m: [32mInitializing scheduled jobs...[39m
+2026-04-26 20:16:07:167 [32minfo[39m: [32mCampaign queues initialized[39m
+2026-04-26 20:16:07:167 [32minfo[39m: [32mBackup job scheduled for 2 AM daily[39m
+2026-04-26 20:16:07:167 [32minfo[39m: [32mCampaign scheduler started (checking every minute)[39m
+2026-04-26 20:16:07:167 [32minfo[39m: [32mSLA monitor scheduled (every hour)[39m
+2026-04-26 20:16:08:168 [32minfo[39m: [32mDaily digest scheduled for 8 AM daily[39m
+2026-04-26 20:16:08:168 [32minfo[39m: [32mWeekly summary scheduled for Monday at 9 AM[39m
+2026-04-26 20:16:08:168 [32minfo[39m: [32mCleanup jobs scheduled for 3 AM daily[39m
+2026-04-26 20:16:08:168 [32minfo[39m: [32mNotification jobs started[39m
+2026-04-26 20:16:08:168 [32minfo[39m: [32mAll scheduled jobs initialized successfully[39m
+2026-04-26 20:16:08:168 [32minfo[39m: [32m[39m
+[32m      ################################################[39m
+[32m      🚀 Server listening on port: 5000 🚀[39m
+[32m      🏠 Environment: development[39m
+[32m      📊 API URL: http://localhost:5000/api[39m
+[32m      ################################################[39m
+[32m      [39m
+2026-04-26 20:16:10:1610 [32minfo[39m: [32mEmail transporter ready[39m
+2026-04-26 20:16:58:1658 [32minfo[39m: [32mRequest started[39m
+2026-04-26 20:16:58:1658 [31merror[39m: [31mcolumn "user.id" must appear in the GROUP BY clause or be used in an aggregate function[39m

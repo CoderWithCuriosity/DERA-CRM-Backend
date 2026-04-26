@@ -487,7 +487,7 @@ export const getAuditLogSummary = catchAsync(async (req: Request, res: Response)
     where: whereClause,
     attributes: [
       'action',
-      [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+      [sequelize.fn('COUNT', sequelize.col('AuditLog.id')), 'count']
     ],
     group: ['action']
   });
@@ -497,12 +497,12 @@ export const getAuditLogSummary = catchAsync(async (req: Request, res: Response)
     where: whereClause,
     attributes: [
       'entity_type',
-      [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+      [sequelize.fn('COUNT', sequelize.col('AuditLog.id')), 'count']
     ],
     group: ['entity_type']
   });
 
-  // Get activity by user (top 10)
+  // Get activity by user (top 10) - Fixed version without include
   const userStats = await AuditLog.findAll({
     where: whereClause,
     attributes: [
@@ -511,25 +511,43 @@ export const getAuditLogSummary = catchAsync(async (req: Request, res: Response)
     ],
     group: ['user_id'],
     order: [[sequelize.literal('count'), 'DESC']],
-    limit: 10,
-    include: [
-      {
-        model: User,
-        as: 'user',
-        attributes: ['id', 'first_name', 'last_name', 'email']
-      }
-    ]
+    limit: 10
   });
+
+  // Fetch user details separately for the top users
+  const topUserIds = userStats
+    .map(stat => stat.getDataValue('user_id'))
+    .filter((id): id is number => id !== null);
+  
+  let usersMap = new Map();
+  
+  if (topUserIds.length > 0) {
+    const users = await User.findAll({
+      where: { id: topUserIds },
+      attributes: ['id', 'first_name', 'last_name', 'email']
+    });
+    usersMap = new Map(users.map(user => [user.id, user]));
+  }
 
   // Daily activity trend
   const dailyStats = await AuditLog.findAll({
     where: whereClause,
     attributes: [
       [sequelize.fn('DATE', sequelize.col('created_at')), 'date'],
-      [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+      [sequelize.fn('COUNT', sequelize.col('AuditLog.id')), 'count']
     ],
     group: [sequelize.fn('DATE', sequelize.col('created_at'))],
     order: [[sequelize.literal('date'), 'ASC']]
+  });
+
+  // Calculate total activities count
+  const totalActivities = await AuditLog.count({ where: whereClause });
+  
+  // Calculate unique users count
+  const uniqueUsers = await AuditLog.count({ 
+    where: whereClause,
+    distinct: true,
+    col: 'user_id'
   });
 
   return res.status(HTTP_STATUS.OK).json({
@@ -541,20 +559,36 @@ export const getAuditLogSummary = catchAsync(async (req: Request, res: Response)
         end_date: new Date()
       },
       summary: {
-        total_activities: await AuditLog.count({ where: whereClause }),
-        unique_users: await AuditLog.count({ 
-          where: whereClause,
-          distinct: true,
-          col: 'user_id'
-        })
+        total_activities: totalActivities,
+        unique_users: uniqueUsers
       },
-      by_action: actionStats,
-      by_entity: entityStats,
-      by_user: userStats.map((stat: any) => ({
-        user: stat.user,
+      by_action: actionStats.map((stat: any) => ({
+        action: stat.getDataValue('action'),
         count: parseInt(stat.getDataValue('count'))
       })),
-      daily_trend: dailyStats
+      by_entity: entityStats.map((stat: any) => ({
+        entity_type: stat.getDataValue('entity_type'),
+        count: parseInt(stat.getDataValue('count'))
+      })),
+      by_user: userStats.map((stat: any) => {
+        const userId = stat.getDataValue('user_id');
+        const user = userId ? usersMap.get(userId) : null;
+        
+        return {
+          user_id: userId,
+          user: user ? {
+            id: user.id,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email
+          } : null,
+          count: parseInt(stat.getDataValue('count'))
+        };
+      }),
+      daily_trend: dailyStats.map((stat: any) => ({
+        date: stat.getDataValue('date'),
+        count: parseInt(stat.getDataValue('count'))
+      }))
     }
   });
 });

@@ -31,6 +31,26 @@ Looking at your initial documentation and comparing it with the complete codebas
 2. **WebSockets** - Using polling instead for real-time updates
 3. **Social Login** - Not included in this version
 
+
+## User Impersonation
+
+### Overview
+The User Impersonation feature allows administrators to temporarily log in and act as another user (agent or manager) without needing their password. This is useful for:
+- Debugging user-specific issues
+- Providing training and support
+- Auditing user permissions and access
+- Testing workflows from different user perspectives
+
+### Security Features
+- ✅ **Admin Only**: Only users with `admin` role can impersonate others
+- ✅ **No Admin Impersonation**: Cannot impersonate other administrators
+- ✅ **Audit Trail**: All impersonations are logged with admin details
+- ✅ **Short Sessions**: Impersonation tokens expire in 2 hours
+- ✅ **Session Tracking**: All actions during impersonation are tracked
+
+### Impersonation Flow
+
+
 ## 📋 Complete Updated Documentation
 
 ```markdown
@@ -42,6 +62,7 @@ Looking at your initial documentation and comparing it with the complete codebas
 3. [Endpoints](#endpoints)
    - [Authentication](#authentication-endpoints)
    - [Users & Profile](#users--profile-endpoints)
+   - [Users Impersonation](#user-impersonation-endpoints)
    - [Organization](#organization-endpoints)
    - [Contacts](#contacts-endpoints)
    - [Deals & Sales Pipeline](#deals--sales-pipeline-endpoints)
@@ -585,6 +606,79 @@ avatar: [image file] (max 2MB, formats: jpg, jpeg, png, gif)
 }
 ```
 
+
+### Impersonation Endpoints
+
+#### 1. Impersonate a User
+**POST** `/users/:id/impersonate`
+
+Initiates an impersonation session as the specified user.
+
+**Headers:** `Authorization: Bearer <token>`  
+**Access:** Admin only
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Now impersonating Sarah Johnson",
+  "data": {
+    "user": {
+      "id": 101,
+      "email": "sarah.johnson@example.com",
+      "first_name": "Sarah",
+      "last_name": "Johnson",
+      "role": "agent",
+      "avatar": "/uploads/avatars/avatar-1705316400000.jpg",
+      "is_verified": true,
+      "organization_id": 1,
+      "created_at": "2025-11-01T10:00:00.000Z",
+      "updated_at": "2025-11-08T15:30:00.000Z"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "isImpersonating": true,
+    "impersonatedBy": {
+      "id": 1,
+      "name": "John Doe",
+      "email": "admin@example.com"
+    }
+  }
+}
+```
+
+#### 2. Stop Impersonating
+**POST** `/users/stop-impersonating`
+
+Ends the current impersonation session and returns to the original admin account.
+
+**Headers:** `Authorization: Bearer <token>`  
+**Access:** Admin only
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Stopped impersonating. Returned to admin account.",
+  "data": {
+    "user": {
+      "id": 1,
+      "email": "admin@example.com",
+      "first_name": "John",
+      "last_name": "Doe",
+      "role": "admin",
+      "avatar": "/uploads/avatars/admin-avatar.jpg",
+      "is_verified": true,
+      "organization_id": 1,
+      "created_at": "2025-11-01T09:00:00.000Z",
+      "updated_at": "2025-11-08T16:00:00.000Z"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "isImpersonating": false
+  }
+}
+```
+
+
 ### Organization Endpoints
 
 #### 1. Get Organization Settings
@@ -691,9 +785,9 @@ logo: [image file] (max 3MB, formats: jpg, jpeg, png, gif)
 }
 ```
 
-### Contacts Endpoints
+## Contacts Endpoints
 
-#### 1. Create Contact
+### 1. Create Contact
 **POST** `/contacts`
 
 **Headers:** `Authorization: Bearer <token>`
@@ -732,6 +826,7 @@ logo: [image file] (max 3MB, formats: jpg, jpeg, png, gif)
       "source": "website",
       "notes": "Met at tech conference, interested in our enterprise plan",
       "tags": ["tech", "marketing", "lead"],
+      "avatar": null,
       "user_id": 1,
       "created_at": "2025-11-08T15:30:00.000Z",
       "updated_at": "2025-11-08T15:30:00.000Z"
@@ -740,7 +835,7 @@ logo: [image file] (max 3MB, formats: jpg, jpeg, png, gif)
 }
 ```
 
-#### 2. Get All Contacts
+### 2. Get All Contacts
 **GET** `/contacts`
 
 **Headers:** `Authorization: Bearer <token>`
@@ -773,6 +868,7 @@ logo: [image file] (max 3MB, formats: jpg, jpeg, png, gif)
         "status": "active",
         "source": "website",
         "tags": ["tech", "marketing", "lead"],
+        "avatar": "http://localhost:3000/uploads/avatars/avatar-1705316400000-abc123.jpg",
         "created_at": "2025-11-08T15:30:00.000Z",
         "updated_at": "2025-11-08T15:30:00.000Z",
         "deals_count": 2,
@@ -796,7 +892,7 @@ logo: [image file] (max 3MB, formats: jpg, jpeg, png, gif)
 }
 ```
 
-#### 3. Get Contact by ID
+### 3. Get Contact by ID
 **GET** `/contacts/:id`
 
 **Headers:** `Authorization: Bearer <token>`
@@ -818,6 +914,7 @@ logo: [image file] (max 3MB, formats: jpg, jpeg, png, gif)
       "source": "website",
       "notes": "Met at tech conference, interested in our enterprise plan",
       "tags": ["tech", "marketing", "lead"],
+      "avatar": "http://localhost:3000/uploads/avatars/avatar-1705316400000-abc123.jpg",
       "user_id": 1,
       "created_at": "2025-11-08T15:30:00.000Z",
       "updated_at": "2025-11-08T15:30:00.000Z",
@@ -858,7 +955,7 @@ logo: [image file] (max 3MB, formats: jpg, jpeg, png, gif)
 }
 ```
 
-#### 4. Update Contact
+### 4. Update Contact
 **PUT** `/contacts/:id`
 
 **Headers:** `Authorization: Bearer <token>`
@@ -889,16 +986,19 @@ logo: [image file] (max 3MB, formats: jpg, jpeg, png, gif)
       "job_title": "VP of Marketing",
       "notes": "Promoted to VP, now has larger budget",
       "tags": ["tech", "marketing", "vip"],
+      "avatar": "http://localhost:3000/uploads/avatars/avatar-1705316400000-abc123.jpg",
       "updated_at": "2025-11-08T16:00:00.000Z"
     }
   }
 }
 ```
 
-#### 5. Delete Contact
+### 5. Delete Contact
 **DELETE** `/contacts/:id`
 
 **Headers:** `Authorization: Bearer <token>`
+
+**Note:** This will also delete the contact's avatar file from the server.
 
 **Response (200 OK):**
 ```json
@@ -908,7 +1008,42 @@ logo: [image file] (max 3MB, formats: jpg, jpeg, png, gif)
 }
 ```
 
-#### 6. Import Contacts
+### 6. Upload Contact Avatar
+**POST** `/contacts/:id/avatar`
+
+**Headers:** `Authorization: Bearer <token>`  
+**Content-Type:** `multipart/form-data`
+
+**Form Data:**
+```
+avatar: [Image file] (JPEG, PNG, GIF, WEBP, max 2MB)
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Avatar uploaded successfully",
+  "data": {
+    "avatar": "http://localhost:3000/uploads/avatars/avatar-1705316400000-abc123.jpg"
+  }
+}
+```
+
+### 7. Delete Contact Avatar
+**DELETE** `/contacts/:id/avatar`
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Avatar deleted successfully"
+}
+```
+
+### 8. Import Contacts
 **POST** `/contacts/import`
 
 **Headers:** `Authorization: Bearer <token>`  
@@ -941,7 +1076,7 @@ column_mapping: {
 }
 ```
 
-#### 7. Get Import Status
+### 9. Get Import Status
 **GET** `/contacts/import/:import_id/status`
 
 **Headers:** `Authorization: Bearer <token>`  
@@ -969,15 +1104,21 @@ column_mapping: {
 }
 ```
 
-#### 8. Export Contacts
+### 10. Export Contacts
 **GET** `/contacts/export`
 
 **Headers:** `Authorization: Bearer <token>`
 
 **Query Parameters:**
-- `format`: csv/excel (default: csv)
-- `fields`: Comma-separated list of fields to export
-- `filters`: Apply same filters as GET /contacts
+| Parameter | Type | Description | Default |
+|-----------|------|-------------|---------|
+| format | string | csv/excel | csv |
+| fields | string | Comma-separated list of fields | all fields |
+| status | string | Filter by status | - |
+| tag | string | Filter by tag | - |
+| search | string | Search query | - |
+
+**Note:** Avatar URLs are not included in exports for privacy/performance reasons.
 
 **Response (200 OK):**
 ```json
@@ -990,7 +1131,7 @@ column_mapping: {
 }
 ```
 
-#### 9. Add Tag to Contact
+### 11. Add Tag to Contact
 **POST** `/contacts/:id/tags`
 
 **Headers:** `Authorization: Bearer <token>`
@@ -1013,7 +1154,7 @@ column_mapping: {
 }
 ```
 
-#### 10. Remove Tag from Contact
+### 12. Remove Tag from Contact
 **DELETE** `/contacts/:id/tags/:tag`
 
 **Headers:** `Authorization: Bearer <token>`
@@ -1029,7 +1170,7 @@ column_mapping: {
 }
 ```
 
-#### 11. Get All Tags
+### 13. Get All Tags
 **GET** `/contacts/tags/all`
 
 **Headers:** `Authorization: Bearer <token>`
@@ -1053,6 +1194,31 @@ column_mapping: {
 }
 ```
 
+## Avatar Upload Specifications
+
+### Supported File Types
+- JPEG/JPG (`image/jpeg`)
+- PNG (`image/png`)
+- GIF (`image/gif`)
+- WEBP (`image/webp`)
+
+### File Size Limit
+- Maximum: 2MB per avatar
+
+### Storage
+- Avatars are stored in: `/uploads/avatars/`
+- Filename format: `avatar-[timestamp]-[uuid].[extension]`
+- Example: `avatar-1705316400000-abc123.jpg`
+
+### URL Format
+```
+http://localhost:3000/uploads/avatars/[filename]
+```
+
+### Automatic Cleanup
+- Old avatars are automatically deleted when uploading a new one
+- Avatars are deleted when the contact is deleted
+- Server may periodically clean up orphaned avatar files
 ### Deals & Sales Pipeline Endpoints
 
 #### 1. Create Deal
@@ -2647,6 +2813,21 @@ All ticket operations are logged to the `AuditLog` table:
 | VIEW | ticket | "Viewed ticket: TKT-2025-0001" |
 | DELETE | ticket | "Deleted ticket: TKT-2025-0001" |
 
+### Sample Audit Log Entry:
+```json
+{
+  "id": 5001,
+  "user_id": 1,
+  "action": "IMPERSONATE",
+  "entity_type": "user",
+  "entity_id": 101,
+  "details": "Admin john@example.com impersonated user sarah@example.com",
+  "ip_address": "192.168.1.100",
+  "user_agent": "Mozilla/5.0...",
+  "created_at": "2025-11-08T16:30:00.000Z"
+}
+```
+
 ---
 
 ## Implementation Notes
@@ -3903,7 +4084,7 @@ curl https://api.deracrm.com/health
 ### ✅ **Added Features:**
 1. **Organization Management** - Complete company settings
 2. **SLA Tracking** - Response and resolution time monitoring
-3. **Audit Logging** - Full audit trail for compliance
+3. **Audit Logging** - Full audit trail for compliance (Every action is audited)
 4. **Backup System** - Automated database backups
 5. **Campaign Analytics** - Detailed email campaign metrics
 6. **Tag Management** - Comprehensive tagging system

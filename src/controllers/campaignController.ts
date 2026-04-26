@@ -1,15 +1,16 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { Op, Order } from 'sequelize';
-import { Campaign, EmailTemplate, Contact, CampaignRecipient, AuditLog, User, Organization } from '../models';
-import { 
-  HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, 
+import { Campaign, EmailTemplate, Contact, CampaignRecipient, User, Organization } from '../models';
+import {
+  HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES,
   CAMPAIGN_STATUS, AUDIT_ACTIONS, ENTITY_TYPES, CAMPAIGN_RECIPIENT_STATUS
 } from '../config/constants';
 import catchAsync from '../utils/catchAsync';
 import { getPagination, getPagingData } from '../utils/pagination';
 import { sendEmail } from '../services/emailService';
 import { queueCampaign } from '../jobs/campaignScheduler';
+import { createDetailedAudit, createSimpleAudit } from '../utils/auditHelper';
 
 // Define interfaces for type safety - Fix: Don't extend Campaign, use composition instead
 interface CampaignWithAssociations {
@@ -162,14 +163,37 @@ export const createCampaign = catchAsync(async (req: Request, res: Response) => 
   }) : null;
 
   // Log audit
-  await AuditLog.create({
-    user_id: (req.user as any).id,
+  await createDetailedAudit({
+    userId: req.user.id,
     action: AUDIT_ACTIONS.CREATE,
-    entity_type: ENTITY_TYPES.CAMPAIGN,
-    entity_id: campaign.id,
-    details: `Created campaign: ${campaign.name}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    entityType: ENTITY_TYPES.CAMPAIGN,
+    entityId: campaign.id,
+    entityName: campaign.name,
+    req,
+    newData: {
+      name: campaign.name,
+      target_count: campaign.target_count,
+      status: campaign.status
+    }
+  });
+
+  // After bulkCreate recipients, add:
+  await createDetailedAudit({
+    userId: req.user.id,
+    action: AUDIT_ACTIONS.CREATE,
+    entityType: ENTITY_TYPES.CAMPAIGN_RECIPIENT,
+    entityId: campaign.id,
+    entityName: `${campaign.name} recipients`,
+    req,
+    newData: {
+      recipient_count: recipients.length,
+      contact_ids: contactIds,
+      total_recipients: recipients.length
+    },
+    additionalInfo: {
+      campaign_name: campaign.name,
+      recipient_list_summary: `${recipients.length} contacts added`
+    }
   });
 
   // Queue campaign if scheduled
@@ -304,6 +328,16 @@ export const getCampaignById = catchAsync(async (req: Request, res: Response) =>
     complaints: 0
   };
 
+  // After finding campaign, add:
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.VIEW,
+    ENTITY_TYPES.CAMPAIGN,
+    campaign.id,
+    campaign.name,
+    req
+  );
+
   return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: {
@@ -345,6 +379,13 @@ export const updateCampaign = catchAsync(async (req: Request, res: Response) => 
     });
   }
 
+    const oldCampaignData = {
+    name: campaign.name,
+    status: campaign.status,
+    scheduled_at: campaign.scheduled_at,
+    target_count: campaign.target_count
+  };
+
   await campaign.update(updates);
 
   // Reschedule if scheduled_at changed
@@ -353,14 +394,22 @@ export const updateCampaign = catchAsync(async (req: Request, res: Response) => 
   }
 
   // Log audit
-  await AuditLog.create({
-    user_id: (req.user as any).id,
+
+  // AFTER update:
+  await createDetailedAudit({
+    userId: req.user.id,
     action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.CAMPAIGN,
-    entity_id: campaign.id,
-    details: `Updated campaign: ${campaign.name}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    entityType: ENTITY_TYPES.CAMPAIGN,
+    entityId: campaign.id,
+    entityName: campaign.name,
+    req,
+    oldData: oldCampaignData,
+    newData: {
+      name: campaign.name,
+      status: campaign.status,
+      scheduled_at: campaign.scheduled_at,
+      target_count: campaign.target_count
+    }
   });
 
   return res.status(HTTP_STATUS.OK).json({
@@ -438,15 +487,14 @@ export const sendCampaign = catchAsync(async (req: Request, res: Response) => {
   }
 
   // Log audit
-  await AuditLog.create({
-    user_id: (req.user as any).id,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.CAMPAIGN,
-    entity_id: campaign.id,
-    details: `Started sending campaign: ${campaign.name}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.UPDATE,
+    ENTITY_TYPES.CAMPAIGN,
+    campaign.id,
+    `Started sending: ${campaign.name}`,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -492,15 +540,14 @@ export const cancelCampaign = catchAsync(async (req: Request, res: Response) => 
   await campaign.update({ status: CAMPAIGN_STATUS.CANCELLED });
 
   // Log audit
-  await AuditLog.create({
-    user_id: (req.user as any).id,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.CAMPAIGN,
-    entity_id: campaign.id,
-    details: `Cancelled campaign: ${campaign.name}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.UPDATE,
+    ENTITY_TYPES.CAMPAIGN,
+    campaign.id,
+    `Cancelled: ${campaign.name}`,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -538,16 +585,16 @@ export const sendTestEmail = catchAsync(async (req: Request, res: Response) => {
   }
 
   const template = campaign.get('template') as EmailTemplate | undefined;
-  
+
   // Get the user/agent who created the campaign
   const campaignUser = campaign.get('createdBy') as User | undefined;
-  
+
   // Get organization info from the user's organization_id
   let organization = null;
   if (campaignUser?.organization_id) {
     organization = await Organization.findByPk(campaignUser.organization_id);
   }
-  
+
   // Prepare test data with all available variables
   const fullTestData = {
     // ========== CONTACT INFORMATION (Test recipient) ==========
@@ -556,48 +603,48 @@ export const sendTestEmail = catchAsync(async (req: Request, res: Response) => {
     full_name: `${test_data?.first_name || 'Test'} ${test_data?.last_name || 'User'}`.trim(),
     email: test_email,
     phone: test_data?.phone || '+1 (555) 123-4567',
-    
+
     // Contact's company information (where they work)
     contact_company: test_data?.contact_company || 'Test Company',
     contact_job_title: test_data?.contact_job_title || 'Marketing Manager',
     contact_status: 'active',
-    
+
     // ========== SENDER/ORGANIZATION INFORMATION (Your company) ==========
     company_name: organization?.company_name || 'Dera CRM',
     company_email: organization?.company_email || 'support@deracrm.com',
     company_phone: organization?.company_phone || '+1 (555) 987-6543',
     company_website: organization?.website || 'https://deracrm.com',
     company_address: organization?.company_address || '123 Business Ave, Suite 100',
-    
+
     // Sender/Agency info
     agency_name: organization?.company_name || 'Dera CRM',
     agency_email: organization?.company_email || 'support@deracrm.com',
     agency_phone: organization?.company_phone || '+1 (555) 987-6543',
-    
+
     // Agent info (who created the campaign)
     agent_name: campaignUser ? `${campaignUser.first_name} ${campaignUser.last_name}` : 'Support Agent',
     agent_email: campaignUser?.email || 'support@deracrm.com',
-    
+
     // ========== CAMPAIGN INFORMATION ==========
     campaign_name: campaign.name,
     campaign_id: campaign.id,
     sent_date: new Date().toLocaleDateString(),
     sent_time: new Date().toLocaleTimeString(),
-    
+
     // ========== TRACKING LINKS (test) ==========
     unsubscribe_link: '#test-unsubscribe-link',
     tracking_pixel: '#test-tracking-pixel',
-    
+
     // ========== ADDITIONAL USEFUL VARIABLES ==========
     current_year: new Date().getFullYear(),
     current_date: new Date().toLocaleDateString(),
     current_time: new Date().toLocaleTimeString(),
     name: test_data?.first_name ? `${test_data.first_name} ${test_data.last_name || 'User'}` : 'Test User',
-    
+
     // Any additional test data passed
     ...test_data
   };
-  
+
   // Render email with test data
   const preview = template?.renderPreview(fullTestData) || { subject: '', body: '' };
 
@@ -747,7 +794,7 @@ export const duplicateCampaign = catchAsync(async (req: Request, res: Response) 
 
   // Duplicate recipients
   const recipients = (campaign.get('recipients') as CampaignRecipient[]) || [];
-  
+
   if (recipients.length > 0) {
     const newRecipients = recipients.map(r => ({
       campaign_id: duplicate.id,
@@ -760,15 +807,14 @@ export const duplicateCampaign = catchAsync(async (req: Request, res: Response) 
   }
 
   // Log audit
-  await AuditLog.create({
-    user_id: (req.user as any).id,
-    action: AUDIT_ACTIONS.CREATE,
-    entity_type: ENTITY_TYPES.CAMPAIGN,
-    entity_id: duplicate.id,
-    details: `Duplicated campaign from: ${campaign.name}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.CREATE,
+    ENTITY_TYPES.CAMPAIGN,
+    duplicate.id,
+    `Duplicated from: ${campaign.name}`,
+    req
+  );
 
   return res.status(HTTP_STATUS.CREATED).json({
     success: true,
@@ -809,10 +855,10 @@ async function processCampaign(campaignId: number) {
 
   let sentCount = 0;
   const recipients = (campaign.get('recipients') as (CampaignRecipient & { contact?: Contact })[]) || [];
-  
+
   // Get the user/agent who created this campaign
   const campaignUser = campaign.get('createdBy') as User | undefined;
-  
+
   // Get organization info from the user's organization_id (your company)
   let organization = null;
   if (campaignUser?.organization_id) {
@@ -824,7 +870,7 @@ async function processCampaign(campaignId: number) {
 
     try {
       const template = campaign.get('template') as EmailTemplate | undefined;
-      
+
       // Prepare ALL available variables for the template
       const templateData = {
         // ========== CONTACT INFORMATION (The recipient) ==========
@@ -833,15 +879,15 @@ async function processCampaign(campaignId: number) {
         full_name: `${recipient.contact?.first_name || ''} ${recipient.contact?.last_name || ''}`.trim(),
         email: recipient.contact?.email || '',
         phone: recipient.contact?.phone || '',
-        
+
         // Contact's company information (where they work)
         contact_company: recipient.contact?.company || '',
         contact_job_title: recipient.contact?.job_title || '',
         contact_status: recipient.contact?.status || '',
-        
+
         // Contact's custom fields (if any)
         ...((recipient.contact as any)?.custom_fields || {}),
-        
+
         // ========== SENDER/ORGANIZATION INFORMATION (Your company) ==========
         // Company info (your agency/company)
         company_name: organization?.company_name || '',
@@ -849,32 +895,32 @@ async function processCampaign(campaignId: number) {
         company_phone: organization?.company_phone || '',
         company_website: organization?.website || '',
         company_address: organization?.company_address || '',
-        
+
         // Sender/Agency info
         agency_name: organization?.company_name || '',
         agency_email: organization?.company_email || '',
         agency_phone: organization?.company_phone || '',
-        
+
         // Agent info (who created the campaign)
         agent_name: campaignUser ? `${campaignUser.first_name} ${campaignUser.last_name}` : '',
         agent_email: campaignUser?.email || '',
-        
+
         // ========== CAMPAIGN INFORMATION ==========
         campaign_name: campaign.name,
         campaign_id: campaign.id,
         sent_date: new Date().toLocaleDateString(),
         sent_time: new Date().toLocaleTimeString(),
-        
+
         // ========== TRACKING LINKS ==========
         unsubscribe_link: `${process.env.FRONTEND_URL}/unsubscribe?email=${recipient.contact?.email}&campaign=${campaign.id}`,
         tracking_pixel: `${process.env.API_URL}/api/tracking/open/${recipient.id}`,
-        
+
         // ========== ADDITIONAL USEFUL VARIABLES ==========
         // Current date/time in different formats
         current_year: new Date().getFullYear(),
         current_date: new Date().toLocaleDateString(),
         current_time: new Date().toLocaleTimeString(),
-        
+
         // Contact fallbacks
         name: `${recipient.contact?.first_name || ''} ${recipient.contact?.last_name || ''}`.trim() || 'Valued Customer',
       };
@@ -902,6 +948,18 @@ async function processCampaign(campaignId: number) {
         status: CAMPAIGN_RECIPIENT_STATUS.SENT,
         sent_at: new Date()
       });
+
+      // After recipient.update, add:
+      await createDetailedAudit({
+        userId: campaign.user_id,
+        action: AUDIT_ACTIONS.UPDATE,
+        entityType: ENTITY_TYPES.CAMPAIGN_RECIPIENT,
+        entityId: recipient.id,
+        entityName: `Recipient ${recipient.email}`,
+        req: { ip: null, get: () => null }, // System action
+        oldData: { status: 'pending' },
+        newData: { status: recipient.status, sent_at: recipient.sent_at }
+      }).catch(console.error);
 
       sentCount++;
 

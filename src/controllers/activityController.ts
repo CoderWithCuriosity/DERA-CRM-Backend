@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
-import { Activity, Contact, Deal, User, AuditLog } from '../models';
+import { Activity, Contact, Deal, User } from '../models';
 import {
   HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, ACTIVITY_STATUS,
   AUDIT_ACTIONS, ENTITY_TYPES
@@ -9,6 +9,8 @@ import {
 import catchAsync from '../utils/catchAsync';
 import { getPagination, getPagingData } from '../utils/pagination';
 import { scheduleActivityReminder } from '../services/notificationService';
+import { createDetailedAudit, createSimpleAudit } from '../utils/auditHelper';
+
 
 // @desc    Create activity
 // @route   POST /api/activities
@@ -108,14 +110,19 @@ export const createActivity = catchAsync(async (req: Request, res: Response) => 
   }
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
+  await createDetailedAudit({
+    userId: req.user.id,
     action: AUDIT_ACTIONS.CREATE,
-    entity_type: ENTITY_TYPES.ACTIVITY,
-    entity_id: activity.id,
-    details: `Created ${type}: ${activity.subject}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent') || null
+    entityType: ENTITY_TYPES.ACTIVITY,
+    entityId: activity.id,
+    entityName: `${type}: ${activity.subject}`,
+    req,
+    newData: {
+      type: activity.type,
+      subject: activity.subject,
+      scheduled_date: activity.scheduled_date,
+      status: activity.status
+    }
   });
 
   return res.status(HTTP_STATUS.CREATED).json({
@@ -243,6 +250,16 @@ export const getActivityById = catchAsync(async (req: Request, res: Response) =>
     });
   }
 
+  // After checking permission, add:
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.VIEW,
+    ENTITY_TYPES.ACTIVITY,
+    activity.id,
+    `${activity.type}: ${activity.subject}`,
+    req
+  );
+
   return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: { activity }
@@ -289,6 +306,15 @@ export const updateActivity = catchAsync(async (req: Request, res: Response) => 
     });
   }
 
+  const oldActivityData = {
+    type: activity.type,
+    subject: activity.subject,
+    description: activity.description,
+    scheduled_date: activity.scheduled_date,
+    duration: activity.duration,
+    status: activity.status
+  };
+
   await activity.update(updates);
 
   // Reschedule reminder ONLY if it's not a note and date changed
@@ -297,14 +323,24 @@ export const updateActivity = catchAsync(async (req: Request, res: Response) => 
   }
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
+
+  // AFTER update:
+  await createDetailedAudit({
+    userId: req.user.id,
     action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.ACTIVITY,
-    entity_id: activity.id,
-    details: `Updated ${activity.type}: ${activity.subject}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent') || null
+    entityType: ENTITY_TYPES.ACTIVITY,
+    entityId: activity.id,
+    entityName: `${activity.type}: ${activity.subject}`,
+    req,
+    oldData: oldActivityData,
+    newData: {
+      type: activity.type,
+      subject: activity.subject,
+      description: activity.description,
+      scheduled_date: activity.scheduled_date,
+      duration: activity.duration,
+      status: activity.status
+    }
   });
 
   return res.status(HTTP_STATUS.OK).json({
@@ -373,14 +409,37 @@ export const completeActivity = catchAsync(async (req: Request, res: Response) =
   }
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
+  const oldStatus = activity.status;
+  const oldCompletedDate = activity.completed_date;
+
+  const oldActivityData = {
+    status: oldStatus,
+    completed_date: oldCompletedDate,
+    outcome: activity.outcome,
+    duration: activity.duration
+  };
+
+  await activity.update({
+    status: ACTIVITY_STATUS.COMPLETED,
+    completed_date: new Date(),
+    outcome: outcome || activity.outcome,
+    duration: duration || activity.duration
+  });
+
+  await createDetailedAudit({
+    userId: req.user.id,
     action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.ACTIVITY,
-    entity_id: activity.id,
-    details: `Completed activity: ${activity.subject}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent') || null
+    entityType: ENTITY_TYPES.ACTIVITY,
+    entityId: activity.id,
+    entityName: activity.subject,
+    req,
+    oldData: oldActivityData,
+    newData: {
+      status: activity.status,
+      completed_date: activity.completed_date,
+      outcome: outcome || activity.outcome,
+      duration: duration || activity.duration
+    }
   });
 
   return res.status(HTTP_STATUS.OK).json({
@@ -416,15 +475,14 @@ export const deleteActivity = catchAsync(async (req: Request, res: Response) => 
   await activity.destroy();
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.DELETE,
-    entity_type: ENTITY_TYPES.ACTIVITY,
-    entity_id: parseInt(id),
-    details: `Deleted activity: ${activity.subject}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent') || null
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.DELETE,
+    ENTITY_TYPES.ACTIVITY,
+    parseInt(id),
+    activity.subject,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,

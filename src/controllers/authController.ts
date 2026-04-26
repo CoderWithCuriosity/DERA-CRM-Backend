@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
-import { User, RefreshToken, PasswordReset, AuditLog, Organization } from '../models';
+import { User, RefreshToken, PasswordReset, Organization } from '../models';
 import { environment } from '../config/environment';
 import { HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, AUDIT_ACTIONS, ENTITY_TYPES } from '../config/constants';
 import catchAsync from '../utils/catchAsync';
 import { sendEmail } from '../services/emailService';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../services/tokenService';
+import { createSimpleAudit } from '../utils/auditHelper';
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -92,15 +93,14 @@ export const register = catchAsync(async (req: Request, res: Response) => {
   const refreshToken = await generateRefreshToken(createdUser.id);
 
   // Log audit
-  await AuditLog.create({
-    user_id: createdUser.id,
-    action: AUDIT_ACTIONS.CREATE,
-    entity_type: ENTITY_TYPES.USER,
-    entity_id: createdUser.id,
-    details: `User registered: ${createdUser.email} for organization: ${organization.company_name}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    createdUser.id,
+    AUDIT_ACTIONS.CREATE,
+    ENTITY_TYPES.USER,
+    createdUser.id,
+    createdUser.email,
+    req
+  );
 
   return res.status(HTTP_STATUS.CREATED).json({
     success: true,
@@ -166,15 +166,14 @@ export const login = catchAsync(async (req: Request, res: Response) => {
   const refreshToken = await generateRefreshToken(user.id);
 
   // Log audit
-  await AuditLog.create({
-    user_id: user.id,
-    action: AUDIT_ACTIONS.LOGIN,
-    entity_type: ENTITY_TYPES.USER,
-    entity_id: user.id,
-    details: `User logged in`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+    await createSimpleAudit(
+    user.id,
+    AUDIT_ACTIONS.LOGIN,
+    ENTITY_TYPES.USER,
+    user.id,
+    user.email,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -242,15 +241,14 @@ export const logout = catchAsync(async (req: Request, res: Response) => {
   }
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.LOGOUT,
-    entity_type: ENTITY_TYPES.USER,
-    entity_id: req.user.id,
-    details: `User logged out`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+    await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.LOGOUT,
+    ENTITY_TYPES.USER,
+    req.user.id,
+    req.user.email,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -285,15 +283,14 @@ export const verifyEmail = catchAsync(async (req: Request, res: Response) => {
     await user.update({ is_verified: true });
 
     // Log audit
-    await AuditLog.create({
-      user_id: user.id,
-      action: AUDIT_ACTIONS.UPDATE,
-      entity_type: ENTITY_TYPES.USER,
-      entity_id: user.id,
-      details: `Email verified`,
-      ip_address: req.ip,
-      user_agent: req.get('user-agent')
-    });
+      await createSimpleAudit(
+    user.id,
+    AUDIT_ACTIONS.UPDATE,
+    ENTITY_TYPES.USER,
+    user.id,
+    `${user.email} - email verified`,
+    req
+  );
 
     return res.status(HTTP_STATUS.OK).json({
       success: true,
@@ -400,16 +397,14 @@ export const resetPassword = catchAsync(async (req: Request, res: Response) => {
   );
 
   // Log audit
-  await AuditLog.create({
-    user_id: user.id,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.USER,
-    entity_id: user.id,
-    details: `Password reset`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
-
+    await createSimpleAudit(
+    user.id,
+    AUDIT_ACTIONS.UPDATE,
+    ENTITY_TYPES.USER,
+    user.id,
+    `${user.email} - password reset`,
+    req
+  );
    // Check if verified
   if (!user.is_verified) {
      // Generate new verification token

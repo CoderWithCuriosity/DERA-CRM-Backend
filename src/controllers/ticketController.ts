@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
 import sequelize from '../config/database';
-import { Ticket, TicketComment, Contact, User, AuditLog } from '../models';
+import { Ticket, TicketComment, Contact, User } from '../models';
 import {
   HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES,
   TICKET_STATUS, PRIORITIES,
@@ -11,6 +11,7 @@ import {
 import catchAsync from '../utils/catchAsync';
 import { getPagination, getPagingData } from '../utils/pagination';
 import { sendEmail } from '../services/emailService';
+import { createDetailedAudit, createSimpleAudit } from '../utils/auditHelper';
 
 // Extend Request type to include user
 interface AuthenticatedRequest extends Request {
@@ -68,7 +69,7 @@ export const createTicket = catchAsync(async (req: AuthenticatedRequest, res: Re
   const slaResolutionTime = getSLAResolutionTime(priority as string);
   void slaResolutionTime;
 
-    // Generate ticket number
+  // Generate ticket number
   const year = new Date().getFullYear();
   const [countResult] = await sequelize.query(
     `SELECT COUNT(*) as count FROM tickets WHERE EXTRACT(YEAR FROM created_at) = :year`,
@@ -112,14 +113,23 @@ export const createTicket = catchAsync(async (req: AuthenticatedRequest, res: Re
   });
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
+  await createDetailedAudit({
+    userId: req.user.id,
     action: AUDIT_ACTIONS.CREATE,
-    entity_type: ENTITY_TYPES.TICKET,
-    entity_id: ticket.id,
-    details: `Created ticket: ${ticket.ticket_number}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    entityType: ENTITY_TYPES.TICKET,
+    entityId: ticket.id,
+    entityName: ticket.ticket_number,
+    req,
+    newData: {
+      subject: ticket.subject,
+      priority: ticket.priority,
+      status: ticket.status,
+      due_date: ticket.due_date
+    },
+    additionalInfo: {
+      contact_id: ticket.contact_id,
+      assigned_to: ticket.assigned_to
+    }
   });
 
   // Send notification email if assigned
@@ -358,15 +368,14 @@ export const getTicketById = catchAsync(async (req: AuthenticatedRequest, res: R
   };
 
   // Log view
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.VIEW,
-    entity_type: ENTITY_TYPES.TICKET,
-    entity_id: ticket.id,
-    details: `Viewed ticket: ${ticket.ticket_number}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.VIEW,
+    ENTITY_TYPES.TICKET,
+    ticket.id,
+    ticket.ticket_number,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -427,17 +436,38 @@ export const updateTicket = catchAsync(async (req: AuthenticatedRequest, res: Re
   delete updates.sla_response_due;
   delete updates.sla_resolution_due;
 
-  await ticket.update(updates);
+  // BEFORE update, store old data:
+  const oldTicketData = {
+    subject: ticket.subject,
+    description: ticket.description,
+    priority: ticket.priority,
+    status: ticket.status,
+    due_date: ticket.due_date,
+    assigned_to: ticket.assigned_to
+  };
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
+  // REPLACE the UPDATE ticket audit with:
+
+  await ticket.update(updates);
+
+  // AFTER update:
+  await createDetailedAudit({
+    userId: req.user.id,
     action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.TICKET,
-    entity_id: ticket.id,
-    details: `Updated ticket: ${ticket.ticket_number}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    entityType: ENTITY_TYPES.TICKET,
+    entityId: ticket.id,
+    entityName: ticket.ticket_number,
+    req,
+    oldData: oldTicketData,
+    newData: {
+      subject: ticket.subject,
+      description: ticket.description,
+      priority: ticket.priority,
+      status: ticket.status,
+      due_date: ticket.due_date,
+      assigned_to: ticket.assigned_to
+    }
   });
 
   return res.status(HTTP_STATUS.OK).json({
@@ -525,14 +555,22 @@ export const updateTicketStatus = catchAsync(async (req: AuthenticatedRequest, r
   }
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
+  const oldStatus = ticket.status;
+
+  await ticket.update({
+    status,
+    resolved_at: status === TICKET_STATUS.RESOLVED ? new Date() : ticket.resolved_at
+  });
+
+  await createDetailedAudit({
+    userId: req.user.id,
     action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.TICKET,
-    entity_id: ticket.id,
-    details: `Updated ticket status to ${status}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    entityType: ENTITY_TYPES.TICKET,
+    entityId: ticket.id,
+    entityName: ticket.ticket_number,
+    req,
+    oldData: { status: oldStatus },
+    newData: { status: ticket.status, resolved_at: ticket.resolved_at }
   });
 
   return res.status(HTTP_STATUS.OK).json({
@@ -619,14 +657,22 @@ export const assignTicket = catchAsync(async (req: AuthenticatedRequest, res: Re
   });
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
+  const oldAssignee = ticket.assigned_to;
+
+  await ticket.update({ assigned_to });
+
+  await createDetailedAudit({
+    userId: req.user.id,
     action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.TICKET,
-    entity_id: ticket.id,
-    details: `Assigned ticket to user ${assigned_to}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    entityType: ENTITY_TYPES.TICKET,
+    entityId: ticket.id,
+    entityName: ticket.ticket_number,
+    req,
+    oldData: { assigned_to: oldAssignee },
+    newData: { assigned_to: ticket.assigned_to },
+    additionalInfo: {
+      assigned_to_name: assigneeUser?.fullName || 'unassigned'
+    }
   });
 
   return res.status(HTTP_STATUS.OK).json({
@@ -826,15 +872,14 @@ export const deleteTicket = catchAsync(async (req: AuthenticatedRequest, res: Re
   await ticket.destroy();
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.DELETE,
-    entity_type: ENTITY_TYPES.TICKET,
-    entity_id: parseInt(id),
-    details: `Deleted ticket: ${ticket.ticket_number}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.DELETE,
+    ENTITY_TYPES.TICKET,
+    parseInt(id),
+    ticket.ticket_number,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,

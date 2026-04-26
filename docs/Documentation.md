@@ -2804,29 +2804,684 @@ Generates SLA compliance report for tickets.
 
 ## Audit Logging
 
-All ticket operations are logged to the `AuditLog` table:
+### Overview
 
-| Action | Entity Type | Details Example |
-|--------|-------------|-----------------|
-| CREATE | ticket | "Created ticket: TKT-2025-0001" |
-| UPDATE | ticket | "Updated ticket: TKT-2025-0001" |
-| VIEW | ticket | "Viewed ticket: TKT-2025-0001" |
-| DELETE | ticket | "Deleted ticket: TKT-2025-0001" |
+The DERA CRM Audit Log System provides comprehensive tracking of all user actions within the system. Unlike simple logging systems that only record "who did what", our enhanced audit system captures **exactly what changed** - showing old values, new values, and providing human-readable summaries of every modification.
 
-### Sample Audit Log Entry:
+### Key Features
+
+- ✅ **Detailed Change Tracking** - See exactly what changed from what to what
+- ✅ **User Attribution** - Track who made each change with full user details
+- ✅ **Timestamp Precision** - Every action is timestamped to the millisecond
+- ✅ **IP & Device Tracking** - Record IP addresses and user agents for security
+- ✅ **Entity History** - View complete change history for any record
+- ✅ **Structured Data** - JSON-formatted details for easy parsing
+- ✅ **Legacy Support** - Old text logs are automatically converted
+- ✅ **Comprehensive Coverage** - All CRUD operations across all entities
+
+---
+
+## Audit Data Model
+
+### Audit Actions
+
+| Action | Description | When Triggered |
+|--------|-------------|----------------|
+| `CREATE` | New record created | Contact/Deal/Ticket/Activity/Campaign creation |
+| `UPDATE` | Record modified | Any update to an existing record |
+| `DELETE` | Record removed | Permanent deletion of a record |
+| `VIEW` | Record viewed | When fetching record details (for sensitive data) |
+| `LOGIN` | User login | Successful authentication |
+| `LOGOUT` | User logout | Manual logout or token expiration |
+| `EXPORT` | Data exported | CSV/Excel export of contacts or other data |
+| `IMPORT` | Data imported | Bulk import of contacts |
+| `IMPERSONATE` | Admin impersonation | When admin starts impersonating a user |
+| `STOP_IMPERSONATING` | End impersonation | When admin returns to their own account |
+
+### Entity Types
+
+| Entity | Description |
+|--------|-------------|
+| `contact` | CRM contacts/leads |
+| `deal` | Sales pipeline deals |
+| `ticket` | Support tickets |
+| `activity` | Tasks, calls, meetings, notes |
+| `campaign` | Email marketing campaigns |
+| `campaign_recipient` | Individual email recipients |
+| `user` | System users |
+| `organization` | Company/organization settings |
+| `email_template` | Email templates for campaigns |
+| `backup` | Database backups |
+
+---
+
+## Audit Details Structure
+
+### Structured Audit Format
+
+Every audit log stores a JSON object in the `details` field with the following structure:
+
 ```json
 {
-  "id": 5001,
-  "user_id": 1,
-  "action": "IMPERSONATE",
-  "entity_type": "user",
+  "action": "UPDATE",
   "entity_id": 101,
-  "details": "Admin john@example.com impersonated user sarah@example.com",
+  "entity_name": "Sarah Johnson",
+  "summary": "Updated contact \"Sarah Johnson\": Changed Phone Number from \"555-1234\" to \"555-6789\", Changed Job Title from \"Marketing Director\" to \"VP of Marketing\"",
+  "changes": [
+    {
+      "field": "phone",
+      "old_value": "555-1234",
+      "new_value": "555-6789",
+      "display_name": "Phone Number"
+    },
+    {
+      "field": "job_title",
+      "old_value": "Marketing Director",
+      "new_value": "VP of Marketing",
+      "display_name": "Job Title"
+    }
+  ],
+  "timestamp": "2025-11-08T15:30:00.000Z",
+  "user_id": 1,
+  "user_name": "John Doe",
   "ip_address": "192.168.1.100",
-  "user_agent": "Mozilla/5.0...",
-  "created_at": "2025-11-08T16:30:00.000Z"
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 }
 ```
+
+### Change Tracking Fields
+
+Each change object contains:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `field` | string | Database field name (e.g., "first_name") |
+| `old_value` | any | Previous value before the change |
+| `new_value` | any | New value after the change |
+| `display_name` | string | Human-readable field name (e.g., "First Name") |
+
+### Special Audit Types
+
+#### Delete Operations
+For deletions, additional data is preserved:
+
+```json
+{
+  "action": "DELETE",
+  "entity_id": 101,
+  "entity_name": "Sarah Johnson",
+  "summary": "Deleted contact: Sarah Johnson",
+  "deleted_data": {
+    "first_name": "Sarah",
+    "last_name": "Johnson",
+    "email": "sarah@example.com",
+    "phone": "555-1234",
+    "company": "Tech Solutions",
+    "created_at": "2025-10-01T10:00:00.000Z"
+  },
+  "timestamp": "2025-11-08T16:00:00.000Z",
+  "user_id": 1
+}
+```
+
+#### Impersonation Events
+
+```json
+{
+  "action": "IMPERSONATE",
+  "entity_id": 42,
+  "entity_name": "Admin john@example.com impersonating user sarah@example.com",
+  "summary": "Started impersonating user: sarah@example.com",
+  "timestamp": "2025-11-08T14:00:00.000Z",
+  "user_id": 1,
+  "additional_info": {
+    "impersonated_user_id": 42,
+    "impersonated_user_email": "sarah@example.com"
+  }
+}
+```
+
+---
+
+## API Endpoints
+
+### 1. Get Audit Logs (Paginated)
+
+**GET** `/api/admin/audit-logs`
+
+Retrieves a paginated list of audit logs with filtering options.
+
+**Headers:** `Authorization: Bearer <token>`  
+**Access:** Admin/Manager only
+
+**Query Parameters:**
+
+| Parameter | Type | Description | Default |
+|-----------|------|-------------|---------|
+| `page` | integer | Page number | 1 |
+| `limit` | integer | Items per page (max 100) | 20 |
+| `user_id` | integer | Filter by user ID | - |
+| `action` | string | Filter by action type | - |
+| `entity_type` | string | Filter by entity type | - |
+| `date_from` | date | Start date (YYYY-MM-DD) | - |
+| `date_to` | date | End date (YYYY-MM-DD) | - |
+
+**Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "id": 5432,
+        "user_id": 1,
+        "action": "UPDATE",
+        "entity_type": "contact",
+        "entity_id": 101,
+        "details": "{\"action\":\"UPDATE\",\"entity_id\":101,\"summary\":\"Updated contact \\\"Sarah Johnson\\\": Changed Phone Number\",\"changes\":[...]}",
+        "ip_address": "192.168.1.100",
+        "user_agent": "Mozilla/5.0...",
+        "created_at": "2025-11-08T15:30:00.000Z",
+        "user": {
+          "id": 1,
+          "first_name": "John",
+          "last_name": "Doe",
+          "email": "john@example.com"
+        }
+      }
+    ],
+    "totalItems": 1250,
+    "totalPages": 25,
+    "currentPage": 1,
+    "itemsPerPage": 50
+  }
+}
+```
+
+---
+
+### 2. Get Detailed Audit Log by ID
+
+**GET** `/api/admin/audit-logs/:id/detail`
+
+Retrieves a single audit log with parsed JSON details and enriched user information.
+
+**Headers:** `Authorization: Bearer <token>`  
+**Access:** Admin/Manager only
+
+**URL Parameters:**
+- `id`: Audit log ID (integer)
+
+**Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 5432,
+    "action": "UPDATE",
+    "entity_type": "contact",
+    "entity_id": 101,
+    "created_at": "2025-11-08T15:30:00.000Z",
+    "user": {
+      "id": 1,
+      "first_name": "John",
+      "last_name": "Doe",
+      "email": "john@example.com"
+    },
+    "details": {
+      "action": "UPDATE",
+      "entity_id": 101,
+      "entity_name": "Sarah Johnson",
+      "summary": "Updated contact \"Sarah Johnson\": Changed Phone Number from \"555-1234\" to \"555-6789\", Changed Job Title from \"Marketing Director\" to \"VP of Marketing\"",
+      "changes": [
+        {
+          "field": "phone",
+          "old_value": "555-1234",
+          "new_value": "555-6789",
+          "display_name": "Phone Number"
+        },
+        {
+          "field": "job_title",
+          "old_value": "Marketing Director",
+          "new_value": "VP of Marketing",
+          "display_name": "Job Title"
+        }
+      ],
+      "timestamp": "2025-11-08T15:30:00.000Z",
+      "user_id": 1,
+      "user_name": "John Doe",
+      "ip_address": "192.168.1.100",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    },
+    "is_structured": true,
+    "raw_details": "{\"action\":\"UPDATE\",...}"
+  }
+}
+```
+
+**Legacy Format Response:**
+For older audit logs created before the structured format:
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1001,
+    "action": "CREATE",
+    "entity_type": "contact",
+    "entity_id": 101,
+    "created_at": "2025-10-01T10:00:00.000Z",
+    "user": {
+      "id": 1,
+      "first_name": "John",
+      "last_name": "Doe"
+    },
+    "details": {
+      "action": "CREATE",
+      "entity_id": 101,
+      "entity_name": "Unknown",
+      "summary": "Created contact: Sarah Johnson",
+      "changes": [],
+      "timestamp": "2025-10-01T10:00:00.000Z",
+      "user_id": 1,
+      "ip_address": "192.168.1.100",
+      "user_agent": "Mozilla/5.0...",
+      "is_legacy_format": true
+    },
+    "is_structured": false,
+    "raw_details": "Created contact: Sarah Johnson"
+  }
+}
+```
+
+---
+
+### 3. Get Entity Change History
+
+**GET** `/api/admin/audit-logs/entity/:entityType/:entityId`
+
+Retrieves the complete change history for a specific entity (contact, deal, ticket, etc.).
+
+**Headers:** `Authorization: Bearer <token>`  
+**Access:** Admin/Manager only
+
+**URL Parameters:**
+- `entityType`: Type of entity (contact, deal, ticket, campaign, user, organization)
+- `entityId`: Entity ID (integer)
+
+**Query Parameters:**
+- `page`: Page number (default: 1)
+- `limit`: Items per page (default: 20)
+
+**Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "entity_type": "contact",
+    "entity_id": 101,
+    "history": {
+      "items": [
+        {
+          "id": 5432,
+          "action": "UPDATE",
+          "created_at": "2025-11-08T15:30:00.000Z",
+          "user": {
+            "id": 1,
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "john@example.com"
+          },
+          "summary": "Updated contact \"Sarah Johnson\": Changed Phone Number from \"555-1234\" to \"555-6789\"",
+          "changes": [
+            {
+              "field": "phone",
+              "old_value": "555-1234",
+              "new_value": "555-6789",
+              "display_name": "Phone Number"
+            }
+          ],
+          "ip_address": "192.168.1.100"
+        },
+        {
+          "id": 5400,
+          "action": "CREATE",
+          "created_at": "2025-11-01T10:00:00.000Z",
+          "user": {
+            "id": 1,
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "john@example.com"
+          },
+          "summary": "Created contact: Sarah Johnson",
+          "changes": [
+            {
+              "field": "first_name",
+              "old_value": null,
+              "new_value": "Sarah",
+              "display_name": "First Name"
+            },
+            {
+              "field": "last_name",
+              "old_value": null,
+              "new_value": "Johnson",
+              "display_name": "Last Name"
+            },
+            {
+              "field": "email",
+              "old_value": null,
+              "new_value": "sarah@example.com",
+              "display_name": "Email"
+            }
+          ],
+          "ip_address": "192.168.1.100"
+        }
+      ],
+      "totalItems": 8,
+      "totalPages": 1,
+      "currentPage": 1,
+      "itemsPerPage": 20
+    }
+  }
+}
+```
+
+---
+
+### 4. Get Audit Log Summary
+
+**GET** `/api/admin/audit-logs/summary`
+
+Provides statistical summary of audit activities over a specified period.
+
+**Headers:** `Authorization: Bearer <token>`  
+**Access:** Admin only
+
+**Query Parameters:**
+- `days`: Number of days to analyze (default: 30)
+- `entity_type`: Filter by specific entity type (optional)
+
+**Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "period": {
+      "days": 30,
+      "start_date": "2025-10-09T00:00:00.000Z",
+      "end_date": "2025-11-08T23:59:59.000Z"
+    },
+    "summary": {
+      "total_activities": 3450,
+      "unique_users": 12
+    },
+    "by_action": [
+      { "action": "CREATE", "count": 450 },
+      { "action": "UPDATE", "count": 1200 },
+      { "action": "DELETE", "count": 45 },
+      { "action": "VIEW", "count": 1500 },
+      { "action": "LOGIN", "count": 250 },
+      { "action": "LOGOUT", "count": 5 }
+    ],
+    "by_entity": [
+      { "entity_type": "contact", "count": 800 },
+      { "entity_type": "deal", "count": 450 },
+      { "entity_type": "ticket", "count": 350 },
+      { "entity_type": "activity", "count": 1200 },
+      { "entity_type": "campaign", "count": 50 },
+      { "entity_type": "user", "count": 200 },
+      { "entity_type": "organization", "count": 10 }
+    ],
+    "by_user": [
+      {
+        "user": {
+          "id": 1,
+          "first_name": "John",
+          "last_name": "Doe",
+          "email": "john@example.com"
+        },
+        "count": 1250
+      },
+      {
+        "user": {
+          "id": 2,
+          "first_name": "Jane",
+          "last_name": "Smith",
+          "email": "jane@example.com"
+        },
+        "count": 800
+      }
+    ],
+    "daily_trend": [
+      { "date": "2025-11-01", "count": 110 },
+      { "date": "2025-11-02", "count": 95 },
+      { "date": "2025-11-03", "count": 120 },
+      { "date": "2025-11-04", "count": 105 },
+      { "date": "2025-11-05", "count": 130 },
+      { "date": "2025-11-06", "count": 98 },
+      { "date": "2025-11-07", "count": 115 },
+      { "date": "2025-11-08", "count": 85 }
+    ]
+  }
+}
+```
+
+---
+
+## Field Display Names
+
+The audit system converts database field names to human-readable display names:
+
+| Database Field | Display Name |
+|----------------|--------------|
+| `first_name` | First Name |
+| `last_name` | Last Name |
+| `email` | Email |
+| `phone` | Phone Number |
+| `company` | Company |
+| `job_title` | Job Title |
+| `status` | Status |
+| `stage` | Pipeline Stage |
+| `amount` | Amount |
+| `probability` | Probability |
+| `priority` | Priority |
+| `subject` | Subject |
+| `description` | Description |
+| `assigned_to` | Assigned To |
+| `due_date` | Due Date |
+| `expected_close_date` | Expected Close Date |
+| `actual_close_date` | Actual Close Date |
+| `notes` | Notes |
+| `tags` | Tags |
+| `source` | Source |
+| `type` | Type |
+| `scheduled_date` | Scheduled Date |
+| `duration` | Duration (minutes) |
+| `outcome` | Outcome |
+| `name` | Name |
+| `template_id` | Template |
+| `target_count` | Target Count |
+| `sent_count` | Sent Count |
+| `open_count` | Open Count |
+| `click_count` | Click Count |
+| `scheduled_at` | Scheduled At |
+| `sent_at` | Sent At |
+| `company_name` | Company Name |
+| `company_logo` | Company Logo |
+| `company_email` | Company Email |
+| `company_phone` | Company Phone |
+| `company_address` | Company Address |
+| `website` | Website |
+| `timezone` | Timezone |
+| `date_format` | Date Format |
+| `currency` | Currency |
+| `ticket_number` | Ticket Number |
+| `resolved_at` | Resolved At |
+
+---
+
+## Example Audit Log Messages
+
+### Contact Examples
+
+**Create Contact:**
+> John Doe created contact: Sarah Johnson at 2025-11-08 10:30:00
+
+**Update Contact:**
+> John Doe updated contact "Sarah Johnson": Changed Phone Number from "555-1234" to "555-6789", Changed Job Title from "Marketing Director" to "VP of Marketing" at 2025-11-08 15:30:00
+
+**Delete Contact:**
+> John Doe deleted contact: Sarah Johnson (Email: sarah@example.com, Company: Tech Solutions) at 2025-11-08 16:00:00
+
+### Deal Examples
+
+**Create Deal:**
+> John Doe created deal: Enterprise Plan - Tech Solutions ($15,000) at 2025-11-08 11:00:00
+
+**Update Deal Stage:**
+> John Doe updated deal "Enterprise Plan - Tech Solutions": Changed Pipeline Stage from "Lead" to "Qualified", Changed Probability from "20%" to "40%" at 2025-11-08 14:30:00
+
+**Mark Deal as Won:**
+> John Doe marked deal "Enterprise Plan - Tech Solutions" as WON at 2025-11-08 17:00:00
+
+### Ticket Examples
+
+**Create Ticket:**
+> Sarah Johnson created ticket: TKT-2025-0042 - "Cannot access premium features" (Priority: High) at 2025-11-08 09:15:00
+
+**Assign Ticket:**
+> John Doe assigned ticket TKT-2025-0042 to Bob Johnson at 2025-11-08 10:00:00
+
+**Resolve Ticket:**
+> Bob Johnson resolved ticket TKT-2025-0042: Changed Status from "Open" to "Resolved" at 2025-11-08 16:45:00
+
+### Activity Examples
+
+**Create Activity (Call):**
+> John Doe created call: "Initial discovery call" scheduled for 2025-11-09 14:00:00 at 2025-11-08 13:00:00
+
+**Complete Activity:**
+> John Doe completed activity: "Initial discovery call" with outcome "Client interested, moving to proposal stage" at 2025-11-09 14:45:00
+
+### User Examples
+
+**Login:**
+> John Doe logged in from IP 192.168.1.100 at 2025-11-08 08:30:00
+
+**Update Profile:**
+> John Doe updated profile: Changed Email from "john.old@example.com" to "john@example.com" at 2025-11-08 12:00:00
+
+**Impersonate User:**
+> Admin John Doe started impersonating user Sarah Johnson at 2025-11-08 13:00:00
+
+### Organization Examples
+
+**Update Settings:**
+> John Doe updated organization settings: Changed Company Name from "Acme Inc" to "Acme Corporation", Changed Currency from "USD" to "EUR" at 2025-11-08 11:30:00
+
+### Campaign Examples
+
+**Create Campaign:**
+> John Doe created campaign: "Welcome Campaign - November 2025" targeting 250 contacts at 2025-11-08 14:00:00
+
+**Send Campaign:**
+> John Doe started sending campaign: "Welcome Campaign - November 2025" at 2025-11-09 10:00:00
+
+---
+
+## Best Practices
+
+### For Developers
+
+1. **Always use detailed audit for updates** - Track exactly what changed
+2. **Use simple audit for views** - No need to track field changes for read operations
+3. **Include oldData for deletions** - Preserve record information
+4. **Add additionalInfo for context** - Include related data when helpful
+5. **Don't log sensitive data** - Passwords, tokens, API keys (automatically excluded)
+
+### For Administrators
+
+1. **Monitor unusual patterns** - High volume of deletions or updates
+2. **Review impersonation logs** - Track when admins act as users
+3. **Set up alerts** - For suspicious actions (e.g., bulk exports)
+4. **Regular audits** - Review logs weekly for security
+5. **Export for compliance** - Use the audit summary endpoint for reports
+
+### For Security Teams
+
+1. **Track login failures** - Not stored in audit logs (separate security log)
+2. **Monitor IP changes** - User logging in from different locations
+3. **Watch for data exfiltration** - Large exports or repeated views
+4. **Investigate privilege escalations** - Role changes, impersonation
+
+---
+
+## API Response Examples
+
+### Success Response (Detailed Log)
+```json
+{
+  "success": true,
+  "data": {
+    "id": 5432,
+    "action": "UPDATE",
+    "entity_type": "contact",
+    "entity_id": 101,
+    "created_at": "2025-11-08T15:30:00.000Z",
+    "user": {
+      "id": 1,
+      "first_name": "John",
+      "last_name": "Doe"
+    },
+    "details": {
+      "summary": "Updated contact \"Sarah Johnson\": Changed Phone Number from \"555-1234\" to \"555-6789\"",
+      "changes": [...]
+    }
+  }
+}
+```
+
+### Error Response
+```json
+{
+  "success": false,
+  "message": "Audit log not found",
+  "timestamp": "2025-11-08T15:30:00.000Z",
+  "path": "/api/admin/audit-logs/99999/detail"
+}
+```
+
+---
+
+## Frequently Asked Questions
+
+**Q: How long are audit logs kept?**  
+A: Standard retention is 90 days. Sensitive actions (CREATE/DELETE) may be kept longer for compliance.
+
+**Q: Can I export audit logs?**  
+A: Yes, use the audit logs endpoint with pagination to export all logs.
+
+**Q: Are API requests logged?**  
+A: Only successful requests that modify data or access sensitive endpoints are logged. READ operations are selectively logged.
+
+**Q: What about failed login attempts?**  
+A: Failed logins are logged separately for security monitoring but are not in the audit log system.
+
+**Q: Can users see their own audit logs?**  
+A: Users can see logs related to entities they own. Only admins can see all logs.
+
+**Q: How do I find who deleted a record?**  
+A: Search audit logs with action=DELETE and the entity type. The deleted_data field contains the record info.
+
+**Q: Are batch operations logged individually?**  
+A: Bulk operations (imports, exports) are logged as single events with summary information.
+
+---
+
 
 ---
 
@@ -4120,4 +4775,5 @@ curl https://api.deracrm.com/health
 **Status:** Production Ready  
 **Author:** Nwankwo Chidera David
 
-This updated documentation reflects all the code I've provided, including the new features, enhanced endpoints, and removed test-related content as you requested.
+
+

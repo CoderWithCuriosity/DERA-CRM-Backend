@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { Op, Order } from 'sequelize';
-import { Contact, Deal, Ticket, Activity, AuditLog, User } from '../models';
+import { Contact, Deal, Ticket, Activity, User } from '../models';
 import { HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, CONTACT_STATUS, AUDIT_ACTIONS, ENTITY_TYPES } from '../config/constants';
 import catchAsync from '../utils/catchAsync';
 import { getPagination, getPagingData } from '../utils/pagination';
@@ -14,6 +14,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { deleteFile, getFileUrl } from '../config/fileUpload';
 import { ContactAttributes } from '../models';
+import { createDetailedAudit, createSimpleAudit } from '../utils/auditHelper';
 
 
 
@@ -56,14 +57,22 @@ export const createContact = catchAsync(async (req: Request, res: Response) => {
   });
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
+  await createDetailedAudit({
+    userId: req.user.id,
     action: AUDIT_ACTIONS.CREATE,
-    entity_type: ENTITY_TYPES.CONTACT,
-    entity_id: contact.id,
-    details: `Created contact: ${contact.fullName}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    entityType: ENTITY_TYPES.CONTACT,
+    entityId: contact.id,
+    entityName: contact.fullName,
+    req,
+    newData: {
+      first_name: contact.first_name,
+      last_name: contact.last_name,
+      email: contact.email,
+      phone: contact.phone,
+      company: contact.company,
+      job_title: contact.job_title,
+      status: contact.status
+    }
   });
 
   return res.status(HTTP_STATUS.CREATED).json({
@@ -255,15 +264,14 @@ export const getContactById = catchAsync(async (req: Request, res: Response) => 
   }
 
   // Log view
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.VIEW,
-    entity_type: ENTITY_TYPES.CONTACT,
-    entity_id: contact.id,
-    details: `Viewed contact: ${contact.fullName}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+    await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.VIEW,
+    ENTITY_TYPES.CONTACT,
+    contact.id,
+    contact.fullName,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -305,18 +313,44 @@ export const updateContact = catchAsync(async (req: Request, res: Response) => {
       });
     }
   }
+  
+  // Before updating, store old data:
+  const oldContactData = {
+    first_name: contact.first_name,
+    last_name: contact.last_name,
+    email: contact.email,
+    phone: contact.phone,
+    company: contact.company,
+    job_title: contact.job_title,
+    status: contact.status,
+    notes: contact.notes,
+    tags: contact.tags
+  };
 
   await contact.update(updates);
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
+
+  // After updating:
+  await createDetailedAudit({
+    userId: req.user.id,
     action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.CONTACT,
-    entity_id: contact.id,
-    details: `Updated contact: ${contact.fullName}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    entityType: ENTITY_TYPES.CONTACT,
+    entityId: contact.id,
+    entityName: contact.fullName,
+    req,
+    oldData: oldContactData,
+    newData: {
+      first_name: contact.first_name,
+      last_name: contact.last_name,
+      email: contact.email,
+      phone: contact.phone,
+      company: contact.company,
+      job_title: contact.job_title,
+      status: contact.status,
+      notes: contact.notes,
+      tags: contact.tags
+    }
   });
 
   return res.status(HTTP_STATUS.OK).json({
@@ -363,15 +397,23 @@ export const deleteContact = catchAsync(async (req: Request, res: Response) => {
   await contact.destroy();
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.DELETE,
-    entity_type: ENTITY_TYPES.CONTACT,
-    entity_id: parseInt(id),
-    details: `Deleted contact: ${contact.fullName}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createDetailedAudit({
+  userId: req.user.id,
+  action: AUDIT_ACTIONS.DELETE,
+  entityType: ENTITY_TYPES.CONTACT,
+  entityId: parseInt(id),
+  entityName: contact.fullName,
+  req,
+  oldData: {
+    first_name: contact.first_name,
+    last_name: contact.last_name,
+    email: contact.email,
+    phone: contact.phone,
+    company: contact.company,
+    job_title: contact.job_title,
+    created_at: contact.created_at
+  }
+});
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -487,19 +529,19 @@ export const exportContacts = catchAsync(async (req: Request, res: Response) => 
     createdByLastName?: string;
   };
 
-const plainContacts: PlainContact[] = contacts.map(contact => {
-  const { id, createdBy, createdAt, updatedAt, ...plain } = contact.get({ plain: true }) as ContactAttributes & {
-    createdBy?: { first_name: string; last_name: string };
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
+  const plainContacts: PlainContact[] = contacts.map(contact => {
+    const { id, createdBy, createdAt, updatedAt, ...plain } = contact.get({ plain: true }) as ContactAttributes & {
+      createdBy?: { first_name: string; last_name: string };
+      createdAt?: Date;
+      updatedAt?: Date;
+    };
 
-  return {
-    ...plain,
-    createdByFirstName: createdBy?.first_name,
-    createdByLastName: createdBy?.last_name
-  };
-});
+    return {
+      ...plain,
+      createdByFirstName: createdBy?.first_name,
+      createdByLastName: createdBy?.last_name
+    };
+  });
 
   const exportFields = fields ? (fields as string).split(',') : undefined;
 
@@ -510,15 +552,14 @@ const plainContacts: PlainContact[] = contacts.map(contact => {
 
   const exportData = await generateExport(plainContacts, exportOptions);
 
-  await AuditLog.create({
-    user_id: (req.user as any).id,
-    action: AUDIT_ACTIONS.EXPORT,
-    entity_type: ENTITY_TYPES.CONTACT,
-    entity_id: 0,
-    details: `Exported ${contacts.length} contacts`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.EXPORT,
+    ENTITY_TYPES.CONTACT,
+    0,
+    `${contacts.length} contacts`,
+    req
+  );
 
   res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -835,15 +876,14 @@ export const uploadContactAvatar = catchAsync(async (req: Request, res: Response
   await contact.update({ avatar: avatarUrl });
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.CONTACT,
-    entity_id: contact.id,
-    details: `Updated contact avatar: ${contact.fullName}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+    await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.UPDATE,
+    ENTITY_TYPES.CONTACT,
+    contact.id,
+    `${contact.fullName} - avatar updated`,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -882,15 +922,14 @@ export const deleteContactAvatar = catchAsync(async (req: Request, res: Response
   }
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.CONTACT,
-    entity_id: contact.id,
-    details: `Deleted contact avatar: ${contact.fullName}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+    await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.UPDATE,
+    ENTITY_TYPES.CONTACT,
+    contact.id,
+    `${contact.fullName} - avatar removed`,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,

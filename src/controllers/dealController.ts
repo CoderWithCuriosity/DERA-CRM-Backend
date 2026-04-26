@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
-import { Deal, Contact, User, Activity, AuditLog } from '../models';
+import { Deal, Contact, User, Activity } from '../models';
 import {
   HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES,
   DEAL_STAGES, DEAL_STATUS, DEAL_STAGE_DISPLAY, DEAL_STAGE_COLORS,
@@ -11,6 +11,7 @@ import catchAsync from '../utils/catchAsync';
 import { getPagination, getPagingData } from '../utils/pagination';
 import { sendEmail } from '../services/emailService';
 import sequelize from '../config/database';
+import { createDetailedAudit, createSimpleAudit } from '../utils/auditHelper';
 
 // @desc    Create deal
 // @route   POST /api/deals
@@ -84,14 +85,20 @@ export const createDeal = catchAsync(async (req: Request, res: Response) => {
   });
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
+  await createDetailedAudit({
+    userId: req.user.id,
     action: AUDIT_ACTIONS.CREATE,
-    entity_type: ENTITY_TYPES.DEAL,
-    entity_id: deal.id,
-    details: `Created deal: ${deal.name}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    entityType: ENTITY_TYPES.DEAL,
+    entityId: deal.id,
+    entityName: deal.name,
+    req,
+    newData: {
+      name: deal.name,
+      amount: deal.amount,
+      stage: deal.stage,
+      probability: deal.probability,
+      expected_close_date: deal.expected_close_date
+    }
   });
 
   // Send notification email if assigned to different user
@@ -293,15 +300,14 @@ export const getDealById = catchAsync(async (req: Request, res: Response) => {
   }
 
   // Log view
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.VIEW,
-    entity_type: ENTITY_TYPES.DEAL,
-    entity_id: deal.id,
-    details: `Viewed deal: ${deal.name}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.VIEW,
+    ENTITY_TYPES.DEAL,
+    deal.id,
+    deal.name,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -337,17 +343,37 @@ export const updateDeal = catchAsync(async (req: Request, res: Response) => {
   const previousAmount = deal.amount;
   const previousProbability = deal.probability;
 
+  // Before update, store old data:
+  const oldDealData = {
+    name: deal.name,
+    stage: deal.stage,
+    amount: deal.amount,
+    probability: deal.probability,
+    expected_close_date: deal.expected_close_date,
+    notes: deal.notes
+  };
+
   await deal.update(updates);
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
+
+  // After update:
+  await createDetailedAudit({
+    userId: req.user.id,
     action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.DEAL,
-    entity_id: deal.id,
-    details: `Updated deal: ${deal.name}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    entityType: ENTITY_TYPES.DEAL,
+    entityId: deal.id,
+    entityName: deal.name,
+    req,
+    oldData: oldDealData,
+    newData: {
+      name: deal.name,
+      stage: deal.stage,
+      amount: deal.amount,
+      probability: deal.probability,
+      expected_close_date: deal.expected_close_date,
+      notes: deal.notes
+    }
   });
 
   const pipelineUpdate = {
@@ -397,15 +423,14 @@ export const updateDealStage = catchAsync(async (req: Request, res: Response) =>
   });
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.DEAL,
-    entity_id: deal.id,
-    details: `Updated deal stage to ${stage}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.UPDATE,
+    ENTITY_TYPES.DEAL,
+    deal.id,
+    `${deal.name} - stage changed to ${stage}`,
+    req
+  );
 
   // Get updated pipeline summary
   const whereClause = req.user.role === 'agent' ? { user_id: req.user.id } : {};
@@ -467,15 +492,14 @@ export const markDealAsWon = catchAsync(async (req: Request, res: Response) => {
   });
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.DEAL,
-    entity_id: deal.id,
-    details: `Marked deal as won`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.UPDATE,
+    ENTITY_TYPES.DEAL,
+    deal.id,
+    `${deal.name} - marked as WON`,
+    req
+  );
 
   // Send notification
   if (deal.owner) {
@@ -534,15 +558,14 @@ export const markDealAsLost = catchAsync(async (req: Request, res: Response) => 
   });
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.DEAL,
-    entity_id: deal.id,
-    details: `Marked deal as lost`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.UPDATE,
+    ENTITY_TYPES.DEAL,
+    deal.id,
+    `${deal.name} - marked as LOST`,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -574,17 +597,24 @@ export const deleteDeal = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
+  const oldDealData = {
+    name: deal.name,
+    amount: deal.amount,
+    stage: deal.stage,
+    contact_id: deal.contact_id
+  };
+
   await deal.destroy();
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
+  await createDetailedAudit({
+    userId: req.user.id,
     action: AUDIT_ACTIONS.DELETE,
-    entity_type: ENTITY_TYPES.DEAL,
-    entity_id: parseInt(id),
-    details: `Deleted deal: ${deal.name}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    entityType: ENTITY_TYPES.DEAL,
+    entityId: parseInt(id),
+    entityName: deal.name,
+    req,
+    oldData: oldDealData
   });
 
   return res.status(HTTP_STATUS.OK).json({
@@ -689,7 +719,7 @@ async function getDealSummary(whereClause: any) {
     // Fix: Handle the return type of get properly
     const count = s.get('count');
     const value = s.get('value');
-    
+
     return {
       name: s.stage,
       display_name: DEAL_STAGE_DISPLAY[s.stage as keyof typeof DEAL_STAGE_DISPLAY] || s.stage,
@@ -758,7 +788,7 @@ async function getDealSummary(whereClause: any) {
       ...whereClause,
       expected_close_date: {
         [Op.between]: [
-          firstDayOfNextMonth, 
+          firstDayOfNextMonth,
           new Date(firstDayOfNextMonth.getFullYear(), firstDayOfNextMonth.getMonth() + 1, 1)
         ]
       }

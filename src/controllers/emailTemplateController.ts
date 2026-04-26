@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
-import { EmailTemplate, Campaign, AuditLog } from '../models';
+import { EmailTemplate, Campaign } from '../models';
 import {
   HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES,
   AUDIT_ACTIONS, ENTITY_TYPES
@@ -9,7 +9,8 @@ import {
 import catchAsync from '../utils/catchAsync';
 import { getPagination, getPagingData } from '../utils/pagination';
 import sequelize from '../config/database';
-import {User} from '../models';
+import { User } from '../models';
+import { createSimpleAudit } from '../utils/auditHelper';
 
 // @desc    Create email template
 // @route   POST /api/email-templates
@@ -52,15 +53,14 @@ export const createEmailTemplate = catchAsync(async (req: Request, res: Response
   });
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.CREATE,
-    entity_type: ENTITY_TYPES.EMAIL_TEMPLATE,
-    entity_id: template.id,
-    details: `Created email template: ${template.name}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.CREATE,
+    ENTITY_TYPES.EMAIL_TEMPLATE,
+    template.id,
+    template.name,
+    req
+  );
 
   return res.status(HTTP_STATUS.CREATED).json({
     success: true,
@@ -180,6 +180,16 @@ export const getEmailTemplateById = catchAsync(async (req: Request, res: Respons
     });
   }
 
+  // After permission check, add:
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.VIEW,
+    ENTITY_TYPES.EMAIL_TEMPLATE,
+    template.id,
+    template.name,
+    req
+  );
+
   return res.status(HTTP_STATUS.OK).json({
     success: true,
     data: { template }
@@ -237,15 +247,14 @@ export const updateEmailTemplate = catchAsync(async (req: Request, res: Response
   });
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.EMAIL_TEMPLATE,
-    entity_id: template.id,
-    details: `Updated email template: ${template.name}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.UPDATE,
+    ENTITY_TYPES.EMAIL_TEMPLATE,
+    template.id,
+    template.name,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -289,15 +298,14 @@ export const deleteEmailTemplate = catchAsync(async (req: Request, res: Response
   await template.destroy();
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.DELETE,
-    entity_type: ENTITY_TYPES.EMAIL_TEMPLATE,
-    entity_id: parseInt(id),
-    details: `Deleted email template: ${template.name}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.DELETE,
+    ENTITY_TYPES.EMAIL_TEMPLATE,
+    parseInt(id),
+    template.name,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -380,15 +388,14 @@ export const duplicateEmailTemplate = catchAsync(async (req: Request, res: Respo
   });
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.CREATE,
-    entity_type: ENTITY_TYPES.EMAIL_TEMPLATE,
-    entity_id: duplicate.id,
-    details: `Duplicated email template from: ${template.name}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.CREATE,
+    ENTITY_TYPES.EMAIL_TEMPLATE,
+    duplicate.id,
+    `Duplicated from: ${template.name}`,
+    req
+  );
 
   return res.status(HTTP_STATUS.CREATED).json({
     success: true,

@@ -50,3 +50,6 @@
 [31mperiod is not defined[39m
 2026-04-26 16:00:30:030 [31merror[39m: [31mError sending email: Failed to render email template[39m
 2026-04-26 16:00:30:030 [31merror[39m: [31mEmail failed after 3 retries: 21b4cc47-f3a3-4285-a5d8-f961d38aff40 Failed to render email template[39m
+2026-04-26 19:17:21:1721 [31merror[39m: [31mcolumn reference "id" is ambiguous[39m
+2026-04-26 20:13:25:1325 [31merror[39m: [31mcolumn reference "id" is ambiguous[39m
+2026-04-26 20:13:56:1356 [31merror[39m: [31mcolumn reference "id" is ambiguous[39m

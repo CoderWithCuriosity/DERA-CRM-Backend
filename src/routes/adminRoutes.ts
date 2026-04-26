@@ -2,12 +2,15 @@ import { Router } from 'express';
 import { query, param } from 'express-validator';
 import {
   getSystemStats,
-  getAuditLogs,
   getUserActivityReport,
   createBackup,
   getBackupStatus,
   getSystemHealth,
-  getSystemConfig
+  getSystemConfig,
+  getAuditLogDetail,
+  getEntityChangeHistory,
+  getAuditLogSummary,
+  getAuditLogs
 } from '../controllers/adminController';
 import { protect, restrictTo } from '../middleware/auth';
 import { validate } from '../middleware/validation';
@@ -41,21 +44,68 @@ router.get('/config', getSystemConfig);
 
 /**
  * @route   GET /api/admin/audit-logs
- * @desc    Get audit logs
- * @access  Private/Admin
+ * @desc    Get paginated audit logs with filters
+ * @access  Private/Admin/Manager
  */
 router.get(
   '/audit-logs',
   [
     query('page').optional().isInt({ min: 1 }).toInt(),
     query('limit').optional().isInt({ min: 1, max: 100 }).toInt(),
-    query('user_id').optional().isInt(),
+    query('user_id').optional().isInt().toInt(),
     query('action').optional().isString(),
+    query('entity_type').optional().isString(),
     query('date_from').optional().isISO8601().toDate(),
     query('date_to').optional().isISO8601().toDate()
   ],
   validate,
   getAuditLogs
+);
+
+/**
+ * @route   GET /api/admin/audit-logs/:id/detail
+ * @desc    Get detailed audit log by ID with parsed JSON details
+ * @access  Private/Admin/Manager
+ */
+router.get(
+  '/audit-logs/:id/detail',
+  [
+    param('id').isInt().withMessage('Invalid audit log ID')
+  ],
+  validate,
+  getAuditLogDetail
+);
+
+/**
+ * @route   GET /api/admin/audit-logs/entity/:entityType/:entityId
+ * @desc    Get complete change history for a specific entity
+ * @access  Private/Admin/Manager
+ */
+router.get(
+  '/audit-logs/entity/:entityType/:entityId',
+  [
+    param('entityType').isString().withMessage('Invalid entity type'),
+    param('entityId').isInt().withMessage('Invalid entity ID'),
+    query('page').optional().isInt({ min: 1 }).toInt(),
+    query('limit').optional().isInt({ min: 1, max: 100 }).toInt()
+  ],
+  validate,
+  getEntityChangeHistory
+);
+
+/**
+ * @route   GET /api/admin/audit-logs/summary
+ * @desc    Get audit log statistics summary
+ * @access  Private/Admin
+ */
+router.get(
+  '/audit-logs/summary',
+  [
+    query('days').optional().isInt({ min: 1, max: 365 }).toInt(),
+    query('entity_type').optional().isString()
+  ],
+  validate,
+  getAuditLogSummary
 );
 
 /**

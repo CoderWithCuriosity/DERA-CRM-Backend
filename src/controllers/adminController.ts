@@ -12,6 +12,7 @@
   import { createBackup as createDatabaseBackup, getBackupStatus as getBackupStatusService } from '../services/backupService';
   import fs from 'fs';
   import path from 'path';
+import { createSimpleAudit } from '../utils/auditHelper';
 
   // @desc    Get system stats
   // @route   GET /api/admin/stats
@@ -214,55 +215,349 @@
     });
   });
 
-  // @desc    Get audit logs
-  // @route   GET /api/admin/audit-logs
-  // @access  Private/Admin
-  export const getAuditLogs = catchAsync(async (req: Request, res: Response) => {
-    const { page, limit, user_id, action, date_from, date_to } = req.query;
+  // Add this with your other controller functions
+// @desc    Get paginated audit logs
+// @route   GET /api/admin/audit-logs
+// @access  Private/Admin/Manager
+export const getAuditLogs = catchAsync(async (req: Request, res: Response) => {
+  const { 
+    page = 1, 
+    limit = 20, 
+    user_id, 
+    action, 
+    entity_type, 
+    date_from, 
+    date_to 
+  } = req.query;
 
-    const { limit: take, skip } = getPagination(page as string, limit as string);
+  const { limit: take, skip } = getPagination(page as string, limit as string);
 
-    let whereClause: any = {};
+  // Build where clause
+  let whereClause: any = {};
 
-    if (user_id) {
-      whereClause.user_id = user_id;
+  if (user_id) {
+    whereClause.user_id = user_id;
+  }
+
+  if (action) {
+    whereClause.action = action;
+  }
+
+  if (entity_type) {
+    whereClause.entity_type = entity_type;
+  }
+
+  if (date_from || date_to) {
+    whereClause.created_at = {};
+    if (date_from) {
+      whereClause.created_at[Op.gte] = date_from;
     }
-
-    if (action) {
-      whereClause.action = action;
+    if (date_to) {
+      // Set to end of day
+      const endDate = new Date(date_to as string);
+      endDate.setHours(23, 59, 59, 999);
+      whereClause.created_at[Op.lte] = endDate;
     }
+  }
 
-    if (date_from || date_to) {
-      whereClause.created_at = {};
-      if (date_from) {
-        whereClause.created_at[Op.gte] = new Date(date_from as string);
-      }
-      if (date_to) {
-        whereClause.created_at[Op.lte] = new Date(date_to as string);
-      }
-    }
-
-    const logs = await AuditLog.findAndCountAll({
-      where: whereClause,
-      limit: take,
-      offset: skip, // Use the skip value as offset
-      order: [['created_at', 'DESC']],
-      include: [
-        {
-          model: User,
-          as: 'user',
-          attributes: ['id', 'first_name', 'last_name']
-        }
-      ]
-    });
-
-    const response = getPagingData(logs, page as string, limit as string);
-
-    res.status(HTTP_STATUS.OK).json({
-      success: true,
-      data: response
-    });
+  // Fetch audit logs with pagination
+  const logs = await AuditLog.findAndCountAll({
+    where: whereClause,
+    limit: take,
+    offset: skip,
+    order: [['created_at', 'DESC']],
+    attributes: ['id', 'user_id', 'action', 'entity_type', 'entity_id', 'details', 'ip_address', 'user_agent', 'created_at']
   });
+
+  // Get unique user IDs from logs (filter out null values)
+  const userIds = logs.rows
+    .map(log => log.user_id)
+    .filter((id): id is number => id !== null);
+
+  // Fetch all users in one query
+  let users: User[] = [];
+  if (userIds.length > 0) {
+    users = await User.findAll({
+      where: { id: userIds },
+      attributes: ['id', 'first_name', 'last_name', 'email', 'avatar']
+    });
+  }
+
+  // Create a map for quick user lookup
+  const userMap = new Map(users.map(user => [user.id, user]));
+
+  // Attach user data to logs
+  const enhancedLogs = logs.rows.map(log => {
+    const user = log.user_id !== null ? userMap.get(log.user_id) : null;
+    
+    return {
+      id: log.id,
+      user_id: log.user_id,
+      action: log.action,
+      entity_type: log.entity_type,
+      entity_id: log.entity_id,
+      details: log.details, // Keep as JSON string for list view
+      ip_address: log.ip_address,
+      user_agent: log.user_agent,
+      created_at: log.created_at,
+      user: user ? {
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        avatar: (user as any).avatar
+      } : null
+    };
+  });
+
+  const response = getPagingData(
+    { count: logs.count, rows: enhancedLogs },
+    page as string,
+    limit as string
+  );
+
+  return res.status(HTTP_STATUS.OK).json({
+    success: true,
+    data: response
+  });
+});
+
+// @desc    Get detailed audit log by ID
+// @route   GET /api/admin/audit-logs/:id/detail
+// @access  Private/Admin
+export const getAuditLogDetail = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const log = await AuditLog.findByPk(id);
+
+  if (!log) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      success: false,
+      message: 'Audit log not found'
+    });
+  }
+
+  // Parse the details JSON if it's stored as JSON string
+  let parsedDetails = null;
+  let isStructured = false;
+
+  try {
+    parsedDetails = JSON.parse(log.details);
+    isStructured = true;
+  } catch (e) {
+    // Legacy text format - convert to structured format
+    parsedDetails = {
+      action: log.action,
+      entity_id: log.entity_id,
+      entity_name: 'Unknown',
+      summary: log.details,
+      changes: [],
+      timestamp: log.created_at.toISOString(),
+      user_id: log.user_id,
+      ip_address: log.ip_address,
+      user_agent: log.user_agent,
+      is_legacy_format: true
+    };
+  }
+
+  // Fetch user data separately using the user_id (handle null case)
+  let user = null;
+  if (log.user_id !== null) {
+    user = await User.findByPk(log.user_id, {
+      attributes: ['id', 'first_name', 'last_name', 'email']
+    });
+    
+    if (user && !parsedDetails.user_name) {
+      parsedDetails.user_name = `${user.first_name} ${user.last_name}`;
+      parsedDetails.user_email = user.email;
+    }
+  }
+
+  return res.status(HTTP_STATUS.OK).json({
+    success: true,
+    data: {
+      id: log.id,
+      action: log.action,
+      entity_type: log.entity_type,
+      entity_id: log.entity_id,
+      created_at: log.created_at,
+      user: user || { id: log.user_id, first_name: 'Unknown', last_name: 'User', email: null },
+      details: parsedDetails,
+      is_structured: isStructured,
+      raw_details: log.details
+    }
+  });
+});
+
+// @desc    Get entity change history
+// @route   GET /api/admin/audit-logs/entity/:entityType/:entityId
+// @access  Private/Admin/Manager
+export const getEntityChangeHistory = catchAsync(async (req: Request, res: Response) => {
+  const { entityType, entityId } = req.params;
+  const { page, limit } = req.query;
+
+  const { limit: take, skip } = getPagination(page as string, limit as string);
+
+  const logs = await AuditLog.findAndCountAll({
+    where: {
+      entity_type: entityType,
+      entity_id: entityId
+    },
+    limit: take,
+    offset: skip,
+    order: [['created_at', 'DESC']]
+  });
+
+  // Get unique user IDs from logs (filter out null values)
+  const userIds = logs.rows
+    .map(log => log.user_id)
+    .filter((id): id is number => id !== null);
+
+  // Fetch all users in one query
+  let users: User[] = [];
+  if (userIds.length > 0) {
+    users = await User.findAll({
+      where: { id: userIds },
+      attributes: ['id', 'first_name', 'last_name', 'email', 'avatar']
+    });
+  }
+  
+  // Create a map for quick user lookup
+  const userMap = new Map(users.map(user => [user.id, user]));
+
+  // Parse all details and attach user info
+  const enhancedLogs = logs.rows.map(log => {
+    let parsedDetails = null;
+    try {
+      parsedDetails = JSON.parse(log.details);
+    } catch (e) {
+      parsedDetails = { summary: log.details, changes: [] };
+    }
+
+    const user = log.user_id !== null ? userMap.get(log.user_id) : null;
+
+    return {
+      id: log.id,
+      action: log.action,
+      created_at: log.created_at,
+      user: user || null,
+      summary: parsedDetails.summary || log.details,
+      changes: parsedDetails.changes || [],
+      ip_address: log.ip_address
+    };
+  });
+
+  const response = getPagingData(
+    { count: logs.count, rows: enhancedLogs },
+    page as string,
+    limit as string
+  );
+
+  return res.status(HTTP_STATUS.OK).json({
+    success: true,
+    data: {
+      entity_type: entityType,
+      entity_id: parseInt(entityId),
+      history: response
+    }
+  });
+});
+
+// @desc    Get audit log summary with statistics
+// @route   GET /api/admin/audit-logs/summary
+// @access  Private/Admin
+export const getAuditLogSummary = catchAsync(async (req: Request, res: Response) => {
+  const { days = 30, entity_type } = req.query;
+
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - parseInt(days as string));
+
+  let whereClause: any = {
+    created_at: {
+      [Op.gte]: startDate
+    }
+  };
+
+  if (entity_type) {
+    whereClause.entity_type = entity_type;
+  }
+
+  // Get activity by action type
+  const actionStats = await AuditLog.findAll({
+    where: whereClause,
+    attributes: [
+      'action',
+      [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+    ],
+    group: ['action']
+  });
+
+  // Get activity by entity type
+  const entityStats = await AuditLog.findAll({
+    where: whereClause,
+    attributes: [
+      'entity_type',
+      [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+    ],
+    group: ['entity_type']
+  });
+
+  // Get activity by user (top 10)
+  const userStats = await AuditLog.findAll({
+    where: whereClause,
+    attributes: [
+      'user_id',
+      [sequelize.fn('COUNT', sequelize.col('AuditLog.id')), 'count']
+    ],
+    group: ['user_id'],
+    order: [[sequelize.literal('count'), 'DESC']],
+    limit: 10,
+    include: [
+      {
+        model: User,
+        as: 'user',
+        attributes: ['id', 'first_name', 'last_name', 'email']
+      }
+    ]
+  });
+
+  // Daily activity trend
+  const dailyStats = await AuditLog.findAll({
+    where: whereClause,
+    attributes: [
+      [sequelize.fn('DATE', sequelize.col('created_at')), 'date'],
+      [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+    ],
+    group: [sequelize.fn('DATE', sequelize.col('created_at'))],
+    order: [[sequelize.literal('date'), 'ASC']]
+  });
+
+  return res.status(HTTP_STATUS.OK).json({
+    success: true,
+    data: {
+      period: {
+        days: parseInt(days as string),
+        start_date: startDate,
+        end_date: new Date()
+      },
+      summary: {
+        total_activities: await AuditLog.count({ where: whereClause }),
+        unique_users: await AuditLog.count({ 
+          where: whereClause,
+          distinct: true,
+          col: 'user_id'
+        })
+      },
+      by_action: actionStats,
+      by_entity: entityStats,
+      by_user: userStats.map((stat: any) => ({
+        user: stat.user,
+        count: parseInt(stat.getDataValue('count'))
+      })),
+      daily_trend: dailyStats
+    }
+  });
+});
 
   // @desc    Get user activity report
   // @route   GET /api/admin/user-activity
@@ -377,15 +672,15 @@ export const createBackup = catchAsync(async (req: Request, res: Response) => {
   const backupId = await createDatabaseBackup();
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.CREATE,
-    entity_type: ENTITY_TYPES.BACKUP,
-    entity_id: backupId, // Use the actual backup ID instead of 0
-    details: `Created database backup: ${backupId}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+
+await createSimpleAudit(
+  req.user.id,
+  AUDIT_ACTIONS.CREATE,
+  ENTITY_TYPES.BACKUP,
+  backupId,
+  `Database Backup ${backupId}`,
+  req
+);
 
   res.status(HTTP_STATUS.ACCEPTED).json({
     success: true,

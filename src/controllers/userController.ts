@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import { Op } from 'sequelize'; // Add this import
-import { User, AuditLog, Contact, Deal, Ticket, Activity } from '../models'; // Add Activity import
+import { Op } from 'sequelize'; 
+import { User, Contact, Deal, Ticket, Activity } from '../models';
 import { HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES, USER_ROLES, AUDIT_ACTIONS, ENTITY_TYPES } from '../config/constants';
 import catchAsync from '../utils/catchAsync';
 import { getPagination, getPagingData } from '../utils/pagination';
@@ -10,6 +10,7 @@ import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
+import { createDetailedAudit, createSimpleAudit } from '../utils/auditHelper';
 
 // Extend Request type to include user
 interface AuthenticatedRequest extends Request {
@@ -95,21 +96,33 @@ export const updateProfile = catchAsync(async (req: AuthenticatedRequest, res: R
     }
   }
 
+  // Log audit
+  const oldUserData = {
+    first_name: user.first_name,
+    last_name: user.last_name,
+    email: user.email
+  };
+
   await user.update({
     first_name: first_name || user.first_name,
     last_name: last_name || user.last_name,
     email: email || user.email
   });
 
-  // Log audit
-  await AuditLog.create({
-    user_id: user.id,
+  // AFTER update:
+  await createDetailedAudit({
+    userId: req.user.id,
     action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.USER,
-    entity_id: user.id,
-    details: `Profile updated`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    entityType: ENTITY_TYPES.USER,
+    entityId: user.id,
+    entityName: `${user.first_name} ${user.last_name}`,
+    req,
+    oldData: oldUserData,
+    newData: {
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email
+    }
   });
 
   return res.status(HTTP_STATUS.OK).json({
@@ -162,17 +175,20 @@ export const changePassword = catchAsync(async (req: AuthenticatedRequest, res: 
 
   // Update password
   user.password = new_password;
+  const old_user_updated_data = user.updated_at;
   await user.save();
 
   // Log audit
-  await AuditLog.create({
-    user_id: user.id,
+  await createDetailedAudit({
+    userId: user.id,
     action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.USER,
-    entity_id: user.id,
-    details: `Password changed`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
+    entityType: ENTITY_TYPES.USER,
+    entityId: user.id,
+    entityName: user.email,
+    req,
+    oldData: { password_changed_at: old_user_updated_data },
+    newData: { password_changed_at: new Date() },
+    additionalInfo: { action: 'password_change' }
   });
 
   return res.status(HTTP_STATUS.OK).json({
@@ -234,15 +250,14 @@ export const uploadAvatar = catchAsync(async (req: AuthenticatedRequest, res: Re
   await user.update({ avatar: avatarUrl });
 
   // Log audit
-  await AuditLog.create({
-    user_id: user.id,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.USER,
-    entity_id: user.id,
-    details: `Avatar uploaded`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+    await createSimpleAudit(
+    user.id,
+    AUDIT_ACTIONS.UPDATE,
+    ENTITY_TYPES.USER,
+    user.id,
+    `${user.email} - avatar removed`,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -279,15 +294,14 @@ export const removeAvatar = catchAsync(async (req: AuthenticatedRequest, res: Re
   }
 
   // Log audit
-  await AuditLog.create({
-    user_id: user.id,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.USER,
-    entity_id: user.id,
-    details: `Avatar removed`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+    await createSimpleAudit(
+    user.id,
+    AUDIT_ACTIONS.UPDATE,
+    ENTITY_TYPES.USER,
+    user.id,
+    `${user.email} - avatar removed`,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -419,15 +433,14 @@ export const updateUserRole = catchAsync(async (req: AuthenticatedRequest, res: 
   await user.update({ role });
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.USER,
-    entity_id: user.id,
-    details: `User role updated to ${role}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+    await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.UPDATE,
+    ENTITY_TYPES.USER,
+    user.id,
+    `User ${user.email} role updated to ${role}`,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -476,15 +489,14 @@ export const deleteUser = catchAsync(async (req: AuthenticatedRequest, res: Resp
   await user.destroy();
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.DELETE,
-    entity_type: ENTITY_TYPES.USER,
-    entity_id: parseInt(id),
-    details: `User deleted: ${user.email}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+    await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.DELETE,
+    ENTITY_TYPES.USER,
+    parseInt(id),
+    user.email,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -552,15 +564,14 @@ export const impersonateUser = catchAsync(async (req: AuthenticatedRequest, res:
   );
 
   // Log audit
-  await AuditLog.create({
-    user_id: adminUser.id,
-    action: AUDIT_ACTIONS.IMPERSONATE,
-    entity_type: ENTITY_TYPES.USER,
-    entity_id: targetUser.id,
-    details: `Admin ${adminUser.email} impersonated user ${targetUser.email}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+    await createSimpleAudit(
+    adminUser.id,
+    AUDIT_ACTIONS.IMPERSONATE,
+    ENTITY_TYPES.USER,
+    targetUser.id,
+    `${adminUser.email} impersonating ${targetUser.email}`,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -632,15 +643,14 @@ export const stopImpersonating = catchAsync(async (req: AuthenticatedRequest, re
   );
 
   // Log audit
-  await AuditLog.create({
-    user_id: adminUser.id,
-    action: AUDIT_ACTIONS.STOP_IMPERSONATING,
-    entity_type: ENTITY_TYPES.USER,
-    entity_id: req.user.id,
-    details: `Admin ${adminUser.email} stopped impersonating user ${req.user.email}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+    await createSimpleAudit(
+    adminUser.id,
+    AUDIT_ACTIONS.STOP_IMPERSONATING,
+    ENTITY_TYPES.USER,
+    req.user.id,
+    `${adminUser.email} stopped impersonating ${req.user.id}`,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,

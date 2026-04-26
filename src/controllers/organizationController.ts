@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
 import jwt from 'jsonwebtoken';
-import { Organization, AuditLog, User } from '../models';
+import { Organization, User } from '../models';
 import {
   HTTP_STATUS, SUCCESS_MESSAGES, ERROR_MESSAGES,
   AUDIT_ACTIONS, ENTITY_TYPES, TIME
@@ -15,6 +15,7 @@ import fs from 'fs';
 import { getPagination, getPagingData } from '../utils/pagination';
 import { sendEmail } from '../services/emailService';
 import { environment } from '../config/environment';
+import { createDetailedAudit, createSimpleAudit } from '../utils/auditHelper';
 
 // Extend Request type to include user
 interface AuthenticatedRequest extends Request {
@@ -50,6 +51,16 @@ export const getOrganizationSettings = catchAsync(async (req: AuthenticatedReque
       currency: 'USD'
     });
   }
+
+  // After finding/creating organization, add:
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.VIEW,
+    ENTITY_TYPES.ORGANIZATION,
+    organization.id,
+    organization.company_name,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -92,20 +103,52 @@ export const updateOrganizationSettings = catchAsync(async (req: AuthenticatedRe
 
   if (!organization) {
     organization = await Organization.create(updates);
+    // Log audit
+    await createSimpleAudit(
+      req.user.id,
+      AUDIT_ACTIONS.UPDATE,
+      ENTITY_TYPES.ORGANIZATION,
+      organization.id,
+      'Organization settings updated',
+      req
+    );
   } else {
+    // BEFORE update, store old data:
+    const oldOrgData = {
+      company_name: organization.company_name,
+      company_email: organization.company_email,
+      company_phone: organization.company_phone,
+      company_address: organization.company_address,
+      website: organization.website,
+      timezone: organization.timezone,
+      date_format: organization.date_format,
+      currency: organization.currency
+    };
+
     await organization.update(updates);
+
+    // AFTER update:
+    await createDetailedAudit({
+      userId: req.user.id,
+      action: AUDIT_ACTIONS.UPDATE,
+      entityType: ENTITY_TYPES.ORGANIZATION,
+      entityId: organization.id,
+      entityName: organization.company_name,
+      req,
+      oldData: oldOrgData,
+      newData: {
+        company_name: organization.company_name,
+        company_email: organization.company_email,
+        company_phone: organization.company_phone,
+        company_address: organization.company_address,
+        website: organization.website,
+        timezone: organization.timezone,
+        date_format: organization.date_format,
+        currency: organization.currency
+      }
+    });
   }
 
-  // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.ORGANIZATION,
-    entity_id: organization.id,
-    details: `Updated organization settings`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -178,15 +221,14 @@ export const uploadCompanyLogo = catchAsync(async (req: AuthenticatedRequest, re
   await organization.update({ company_logo: logoUrl });
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.UPDATE,
-    entity_type: ENTITY_TYPES.ORGANIZATION,
-    entity_id: organization.id,
-    details: `Uploaded company logo`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.UPDATE,
+    ENTITY_TYPES.ORGANIZATION,
+    organization.id,
+    'Company logo uploaded',
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,
@@ -223,15 +265,14 @@ export const removeCompanyLogo = catchAsync(async (req: AuthenticatedRequest, re
     await organization.update({ company_logo: null });
 
     // Log audit
-    await AuditLog.create({
-      user_id: req.user.id,
-      action: AUDIT_ACTIONS.UPDATE,
-      entity_type: ENTITY_TYPES.ORGANIZATION,
-      entity_id: organization.id,
-      details: `Removed company logo`,
-      ip_address: req.ip,
-      user_agent: req.get('user-agent')
-    });
+    await createSimpleAudit(
+      req.user.id,
+      AUDIT_ACTIONS.UPDATE,
+      ENTITY_TYPES.ORGANIZATION,
+      organization.id,
+      'Company logo removed',
+      req
+    );
   }
 
   return res.status(HTTP_STATUS.OK).json({
@@ -355,15 +396,14 @@ export const inviteUser = catchAsync(async (req: AuthenticatedRequest, res: Resp
   });
 
   // Log audit
-  await AuditLog.create({
-    user_id: req.user.id,
-    action: AUDIT_ACTIONS.CREATE,
-    entity_type: ENTITY_TYPES.USER,
-    entity_id: 0,
-    details: `Invited user: ${email}`,
-    ip_address: req.ip,
-    user_agent: req.get('user-agent')
-  });
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.CREATE,
+    ENTITY_TYPES.USER,
+    0,
+    `Invited user: ${email}`,
+    req
+  );
 
   return res.status(HTTP_STATUS.OK).json({
     success: true,

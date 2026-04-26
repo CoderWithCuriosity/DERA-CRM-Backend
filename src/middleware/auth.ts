@@ -16,7 +16,8 @@ declare global {
 /**
  * Authentication middleware
  * Verifies JWT token and attaches user to request
- */
+ * Updated the protect middleware to handle impersonation
+ */ 
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
   try {
     let token;
@@ -34,15 +35,41 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
       });
     }
 
+    
     try {
       // Verify token
       const decoded: any = jwt.verify(token, environment.jwtSecret);
 
-      // Get user from database
+      // Check if this is an impersonation token
+      if (decoded.isImpersonating) {
+        // For impersonation, we don't need to check database again
+        // But we should verify the user still exists
+        const user = await User.findByPk(decoded.userId, {
+          attributes: { exclude: ['password'] }
+        });
+
+        if (!user) {
+          return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+            success: false,
+            message: 'User no longer exists'
+          });
+        }
+
+        // Attach user with impersonation metadata
+        req.user = {
+          ...user.toJSON(),
+          isImpersonating: true,
+          impersonatedBy: decoded.impersonatedBy
+        };
+        
+        return next();
+      }
+
+      // Regular authentication flow
       const user = await User.findByPk(decoded.userId, {
         attributes: { exclude: ['password'] }
       });
-
+      
       if (!user) {
         return res.status(HTTP_STATUS.UNAUTHORIZED).json({
           success: false,
@@ -57,7 +84,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
           message: ERROR_MESSAGES.ACCOUNT_NOT_VERIFIED
         });
       }
-
+      
       // Attach user to request
       req.user = user;
       return next();
@@ -116,7 +143,7 @@ export const optionalAuth = async (req: Request, _res: Response, next: NextFunct
  * Restricts access to users with specified roles
  */
 export const restrictTo = (...roles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     // Check if user exists (should be attached by protect middleware)
     if (!req.user) {
       return res.status(HTTP_STATUS.UNAUTHORIZED).json({
@@ -125,7 +152,42 @@ export const restrictTo = (...roles: string[]) => {
       });
     }
 
-    // Check if user role is allowed
+    // Check if this is an impersonation session
+    if (req.user.isImpersonating && req.user.impersonatedBy) {
+      try {
+        // Get the original admin user from database to check their role
+        const originalAdmin = await User.findByPk(req.user.impersonatedBy.id, {
+          attributes: ['role', 'id', 'email']
+        });
+        
+        if (!originalAdmin) {
+          return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+            success: false,
+            message: 'Original admin account not found'
+          });
+        }
+        
+        // Check if the original admin has the required role
+        if (!roles.includes(originalAdmin.role)) {
+          return res.status(HTTP_STATUS.FORBIDDEN).json({
+            success: false,
+            message: ERROR_MESSAGES.FORBIDDEN
+          });
+        }
+        
+        console.log("Good to go")
+        // Original admin has permission, allow access
+        return next();
+      } catch (error) {
+        console.error('Error checking impersonation permissions:', error);
+        return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+          success: false,
+          message: 'Error checking permissions'
+        });
+      }
+    }
+
+    // Regular authentication - check user role
     if (!roles.includes(req.user.role)) {
       return res.status(HTTP_STATUS.FORBIDDEN).json({
         success: false,

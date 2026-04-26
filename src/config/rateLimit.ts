@@ -1,8 +1,21 @@
 import rateLimit from 'express-rate-limit';
 import { rateLimit as rateLimitConfig } from './environment';
+import { Request, Response, NextFunction } from 'express';
+
+// Check if rate limiting is enabled from environment config
+const ENABLE_RATE_LIMIT = rateLimitConfig.enabled;
+
+// Helper for conditional rate limiting
+const conditionalRateLimit = (options: any) => {
+  if (!ENABLE_RATE_LIMIT) {
+    // Return passthrough middleware
+    return (_req: Request, _res: Response, next: NextFunction) => next();
+  }
+  return rateLimit(options);
+};
 
 // General API rate limiter
-export const apiLimiter = rateLimit({
+export const apiLimiter = conditionalRateLimit({
   windowMs: rateLimitConfig.windowMs,
   max: rateLimitConfig.max,
   message: {
@@ -12,11 +25,11 @@ export const apiLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req) => req.path === '/health' || req.path.startsWith('/public')
+  skip: (req:Request) => req.path === '/health' || req.path.startsWith('/public')
 });
 
 // Stricter limiter for auth endpoints
-export const authLimiter = rateLimit({
+export const authLimiter = conditionalRateLimit({
   windowMs: rateLimitConfig.authWindowMs,
   max: rateLimitConfig.authMax,
   message: {
@@ -30,7 +43,7 @@ export const authLimiter = rateLimit({
 });
 
 // Campaign sending limiter
-export const campaignLimiter = rateLimit({
+export const campaignLimiter = conditionalRateLimit({
   windowMs: rateLimitConfig.campaignWindowMs,
   max: rateLimitConfig.campaignMax,
   message: {
@@ -43,7 +56,7 @@ export const campaignLimiter = rateLimit({
 });
 
 // File upload limiter
-export const uploadLimiter = rateLimit({
+export const uploadLimiter = conditionalRateLimit({
   windowMs: rateLimitConfig.uploadWindowMs,
   max: rateLimitConfig.uploadMax,
   message: {
@@ -56,7 +69,7 @@ export const uploadLimiter = rateLimit({
 });
 
 // Export limiter
-export const exportLimiter = rateLimit({
+export const exportLimiter = conditionalRateLimit({
   windowMs: rateLimitConfig.uploadWindowMs,
   max: rateLimitConfig.uploadMax,
   message: {
@@ -70,7 +83,7 @@ export const exportLimiter = rateLimit({
 
 // Create custom limiter
 export const createCustomLimiter = (windowMs: number, max: number, message: string) => {
-  return rateLimit({
+  return conditionalRateLimit({
     windowMs,
     max,
     message: {

@@ -17,13 +17,7 @@ import { validate } from '../middleware/validation';
 const router = Router();
 
 // Apply stricter rate limiting to auth routes
-// Check if rate limiting is enabled
-const ENABLE_RATE_LIMIT = process.env.ENABLE_RATE_LIMIT === 'true';
-
-// Conditionally apply rate limiter
-if (ENABLE_RATE_LIMIT) {
-  router.use(authLimiter);
-}
+router.use(authLimiter);
 
 /**
  * @route   POST /api/auth/register

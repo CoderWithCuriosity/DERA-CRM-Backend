@@ -600,6 +600,7 @@ export const assignTicket = catchAsync(async (req: AuthenticatedRequest, res: Re
           first_name: assignee.first_name,
           ticket_number: ticket.ticket_number,
           subject: ticket.subject,
+          description: ticket.description,
           priority: ticket.priority,
           contact_name: ticket.contact?.fullName,
           ticket_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`

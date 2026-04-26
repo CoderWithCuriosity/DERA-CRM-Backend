@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router } from 'express';
 import { body, param, query } from 'express-validator';
 import {
   getProfile,
@@ -9,21 +9,15 @@ import {
   getUsers,
   getUserById,
   updateUserRole,
-  deleteUser
+  deleteUser,
+   impersonateUser, 
+  stopImpersonating 
 } from '../controllers/userController';
 import { protect, restrictTo } from '../middleware/auth';
 import { validate } from '../middleware/validation';
 import { avatarUpload } from '../config/fileUpload';
 import { USER_ROLES } from '../config/constants';
 import { uploadLimiter } from '../config/rateLimit';
-
-// Check if rate limiting is enabled
-const ENABLE_RATE_LIMIT = process.env.ENABLE_RATE_LIMIT === 'true';
-
-// Helper function for better readability
-const maybeUploadRateLimit = ENABLE_RATE_LIMIT 
-  ? uploadLimiter 
-  : (_req: Request, _res: Response, next: NextFunction) => next();
 
 const router = Router();
 
@@ -79,7 +73,7 @@ router.put(
  */
 router.post(
   '/avatar',
-  maybeUploadRateLimit,
+  uploadLimiter,
   avatarUpload.single('avatar'),
   uploadAvatar
 );
@@ -93,6 +87,13 @@ router.delete('/avatar', removeAvatar);
 
 // Admin/Manager only routes
 router.use(restrictTo(USER_ROLES.ADMIN, USER_ROLES.MANAGER));
+
+/**
+ * @route   POST /api/users/stop-impersonating
+ * @desc    Stop impersonating and return to admin account
+ * @access  Private
+ */
+router.post('/stop-impersonating', stopImpersonating);
 
 /**
  * @route   GET /api/users
@@ -156,5 +157,23 @@ router.delete(
   validate,
   deleteUser
 );
+
+// Admin only routes for impersonation (must be before the generic /:id routes)
+router.use(restrictTo(USER_ROLES.ADMIN));
+
+/**
+ * @route   POST /api/users/:id/impersonate
+ * @desc    Impersonate a user
+ * @access  Private/Admin
+ */
+router.post(
+  '/:id/impersonate',
+  [
+    param('id').isInt().withMessage('Invalid user ID')
+  ],
+  validate,
+  impersonateUser
+);
+
 
 export default router;

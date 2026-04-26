@@ -1,107 +1,11 @@
-2026-04-20 22:51:20:5120 [31merror[39m: [31mCannot GET /favicon.ico[39m
-2026-04-21 10:45:14:4514 [31merror[39m: [31mnotNull Violation: Ticket.ticket_number cannot be null[39m
-2026-04-21 10:55:51:5551 [31merror[39m: [31mnotNull Violation: Ticket.ticket_number cannot be null[39m
-2026-04-21 11:13:30:1330 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\ticketAssigned.ejs:147[39m
-[31m    145|                 <div class="detail-row">[39m
-[31m    146|                     <div class="detail-label">Description:</div>[39m
-[31m >> 147|                     <div class="detail-value"><%= description %></div>[39m
-[31m    148|                 </div>[39m
-[31m    149|                 [39m
-[31m    150|                 <div class="detail-row">[39m
-
-[31mdescription is not defined[39m
-2026-04-21 11:13:30:1330 [31merror[39m: [31mError sending email: Failed to render email template[39m
-2026-04-21 11:13:35:1335 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\ticketAssigned.ejs:147[39m
-[31m    145|                 <div class="detail-row">[39m
-[31m    146|                     <div class="detail-label">Description:</div>[39m
-[31m >> 147|                     <div class="detail-value"><%= description %></div>[39m
-[31m    148|                 </div>[39m
-[31m    149|                 [39m
-[31m    150|                 <div class="detail-row">[39m
-
-[31mdescription is not defined[39m
-2026-04-21 11:13:35:1335 [31merror[39m: [31mError sending email: Failed to render email template[39m
-2026-04-21 11:13:45:1345 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\ticketAssigned.ejs:147[39m
-[31m    145|                 <div class="detail-row">[39m
-[31m    146|                     <div class="detail-label">Description:</div>[39m
-[31m >> 147|                     <div class="detail-value"><%= description %></div>[39m
-[31m    148|                 </div>[39m
-[31m    149|                 [39m
-[31m    150|                 <div class="detail-row">[39m
-
-[31mdescription is not defined[39m
-2026-04-21 11:13:45:1345 [31merror[39m: [31mError sending email: Failed to render email template[39m
-2026-04-21 11:14:00:140 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\ticketAssigned.ejs:147[39m
-[31m    145|                 <div class="detail-row">[39m
-[31m    146|                     <div class="detail-label">Description:</div>[39m
-[31m >> 147|                     <div class="detail-value"><%= description %></div>[39m
-[31m    148|                 </div>[39m
-[31m    149|                 [39m
-[31m    150|                 <div class="detail-row">[39m
-
-[31mdescription is not defined[39m
-2026-04-21 11:14:00:140 [31merror[39m: [31mError sending email: Failed to render email template[39m
-2026-04-21 11:14:00:140 [31merror[39m: [31mEmail failed after 3 retries: 32dc1d57-7ce7-4615-9523-9e0b4b4c7864 Failed to render email template[39m
-2026-04-21 18:00:00:00 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaWarning.ejs'[39m
-2026-04-21 18:00:00:00 [31merror[39m: [31mError sending email: Failed to render email template[39m
-2026-04-21 18:00:00:00 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaBreached.ejs:201[39m
-[31m    199|                 <div class="detail-row">[39m
-[31m    200|                     <div class="detail-label">Customer:</div>[39m
-[31m >> 201|                     <div class="detail-value"><%= contact_name %></div>[39m
-[31m    202|                 </div>[39m
-[31m    203|                 [39m
-[31m    204|                 <div class="detail-row">[39m
-
-[31mcontact_name is not defined[39m
-2026-04-21 18:00:00:00 [31merror[39m: [31mError sending email: Failed to render email template[39m
-2026-04-21 18:00:05:05 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaWarning.ejs'[39m
-2026-04-21 18:00:05:05 [31merror[39m: [31mError sending email: Failed to render email template[39m
-2026-04-21 18:00:05:05 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaBreached.ejs:201[39m
-[31m    199|                 <div class="detail-row">[39m
-[31m    200|                     <div class="detail-label">Customer:</div>[39m
-[31m >> 201|                     <div class="detail-value"><%= contact_name %></div>[39m
-[31m    202|                 </div>[39m
-[31m    203|                 [39m
-[31m    204|                 <div class="detail-row">[39m
-
-[31mcontact_name is not defined[39m
-2026-04-21 18:00:05:05 [31merror[39m: [31mError sending email: Failed to render email template[39m
-2026-04-21 19:16:09:169 [31merror[39m: [31mCannot GET /favicon.ico[39m
-2026-04-23 08:00:01:01 [31merror[39m: [31mFailed to send digest to user 3: column contact.fullName does not exist[39m
-2026-04-23 08:00:01:01 [31merror[39m: [31mFailed to send digest to user 2: column contact.fullName does not exist[39m
-2026-04-23 08:00:01:01 [31merror[39m: [31mFailed to send digest to user 1: column contact.fullName does not exist[39m
-2026-04-23 08:31:29:3129 [31merror[39m: [31mmissing FROM-clause entry for table "email_template"[39m
-2026-04-23 12:24:18:2418 [31merror[39m: [31mmissing FROM-clause entry for table "email_template"[39m
-2026-04-23 13:09:21:921 [31merror[39m: [31mmissing FROM-clause entry for table "email_template"[39m
-2026-04-23 13:09:52:952 [31merror[39m: [31mmissing FROM-clause entry for table "email_template"[39m
-2026-04-24 20:59:25:5925 [31merror[39m: [31mCannot GET /favicon.ico[39m
-2026-04-24 22:44:19:4419 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\campaign.ejs'[39m
-2026-04-24 22:44:19:4419 [31merror[39m: [31mError sending email: Failed to render email template[39m
-2026-04-24 22:44:24:4424 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\campaign.ejs'[39m
-2026-04-24 22:44:24:4424 [31merror[39m: [31mError sending email: Failed to render email template[39m
-2026-04-24 22:44:34:4434 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\campaign.ejs'[39m
-2026-04-24 22:44:34:4434 [31merror[39m: [31mError sending email: Failed to render email template[39m
-2026-04-24 22:44:49:4449 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\campaign.ejs'[39m
-2026-04-24 22:44:49:4449 [31merror[39m: [31mError sending email: Failed to render email template[39m
-2026-04-24 22:44:49:4449 [31merror[39m: [31mEmail failed after 3 retries: 0d4a94b1-e8e3-4c82-bb6e-debcf7a9ce74 Failed to render email template[39m
-2026-04-24 22:48:49:4849 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\campaign.ejs:6[39m
-[31m    4|     <meta charset="UTF-8">[39m
-[31m    5|     <meta name="viewport" content="width=device-width, initial-scale=1.0">[39m
-[31m >> 6|     <title><%= subject || 'Email Campaign' %></title>[39m
-[31m    7|     <style>[39m
-[31m    8|         /* Email client friendly styles */[39m
-[31m    9|         .email-container {[39m
-
-[31msubject is not defined[39m
-2026-04-24 22:48:49:4849 [31merror[39m: [31mError sending email: Failed to render email template[39m
-2026-04-24 22:48:54:4854 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\campaign.ejs:6[39m
-[31m    4|     <meta charset="UTF-8">[39m
-[31m    5|     <meta name="viewport" content="width=device-width, initial-scale=1.0">[39m
-[31m >> 6|     <title><%= subject || 'Email Campaign' %></title>[39m
-[31m    7|     <style>[39m
-[31m    8|         /* Email client friendly styles */[39m
-[31m    9|         .email-container {[39m
-
-[31msubject is not defined[39m
-2026-04-24 22:48:54:4854 [31merror[39m: [31mError sending email: Failed to render email template[39m
-2026-04-24 23:09:23:923 [31merror[39m: [31mCould not close connections in time, forcefully shutting down[39m
+2026-04-26 00:00:00:00 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaReport.ejs'[39m
+2026-04-26 00:00:00:00 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-26 00:00:05:05 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaReport.ejs'[39m
+2026-04-26 00:00:05:05 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-26 00:00:15:015 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaReport.ejs'[39m
+2026-04-26 00:00:15:015 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-26 00:00:30:030 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaReport.ejs'[39m
+2026-04-26 00:00:30:030 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-26 00:00:30:030 [31merror[39m: [31mEmail failed after 3 retries: 01f2365c-b735-4c92-8aa5-8a247aacb381 Failed to render email template[39m
+2026-04-26 01:00:00:00 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaReport.ejs'[39m
+2026-04-26 01:00:00:00 [31merror[39m: [31mError sending email: Failed to render email template[39m

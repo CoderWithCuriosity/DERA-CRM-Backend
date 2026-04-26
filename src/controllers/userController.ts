@@ -9,6 +9,7 @@ import { deleteFile } from '../config/fileUpload';
 import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs';
+import jwt from 'jsonwebtoken';
 
 // Extend Request type to include user
 interface AuthenticatedRequest extends Request {
@@ -16,6 +17,8 @@ interface AuthenticatedRequest extends Request {
     id: number;
     email: string;
     role: string;
+    isImpersonating?: boolean,
+    impersonatedBy?: Record<string, string>
   };
 }
 
@@ -486,5 +489,177 @@ export const deleteUser = catchAsync(async (req: AuthenticatedRequest, res: Resp
   return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: SUCCESS_MESSAGES.DELETED('User')
+  });
+});
+
+// @desc    Impersonate a user (Admin only)
+// @route   POST /api/users/:id/impersonate
+// @access  Private/Admin
+export const impersonateUser = catchAsync(async (req: AuthenticatedRequest, res: Response) => {
+  // Check if user is authenticated and is admin
+  if (!req.user?.id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+      success: false,
+      message: 'User not authenticated'
+    });
+  }
+
+  const adminUser = await User.findByPk(req.user.id);
+  
+  if (!adminUser || adminUser.role !== USER_ROLES.ADMIN) {
+    return res.status(HTTP_STATUS.FORBIDDEN).json({
+      success: false,
+      message: 'Only administrators can impersonate users'
+    });
+  }
+
+  const { id } = req.params;
+  
+  const targetUser = await User.findByPk(id, {
+    attributes: { exclude: ['password'] }
+  });
+
+  if (!targetUser) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      success: false,
+      message: ERROR_MESSAGES.NOT_FOUND('User')
+    });
+  }
+
+  // Don't allow impersonating admin users (security)
+  if (targetUser.role === USER_ROLES.ADMIN) {
+    return res.status(HTTP_STATUS.FORBIDDEN).json({
+      success: false,
+      message: 'Cannot impersonate another administrator'
+    });
+  }
+
+  // Generate a special impersonation token
+  const impersonationToken = jwt.sign(
+    {
+      userId: targetUser.id,
+      email: targetUser.email,
+      role: targetUser.role,
+      isImpersonating: true,
+      impersonatedBy: {
+        id: adminUser.id,
+        email: adminUser.email,
+        name: `${adminUser.first_name} ${adminUser.last_name}`
+      }
+    },
+    process.env.JWT_SECRET!,
+    { expiresIn: '2h' } 
+  );
+
+  // Log audit
+  await AuditLog.create({
+    user_id: adminUser.id,
+    action: AUDIT_ACTIONS.IMPERSONATE,
+    entity_type: ENTITY_TYPES.USER,
+    entity_id: targetUser.id,
+    details: `Admin ${adminUser.email} impersonated user ${targetUser.email}`,
+    ip_address: req.ip,
+    user_agent: req.get('user-agent')
+  });
+
+  return res.status(HTTP_STATUS.OK).json({
+    success: true,
+    message: `Now impersonating ${targetUser.first_name} ${targetUser.last_name}`,
+    data: {
+      user: targetUser,
+      token: impersonationToken,
+      isImpersonating: true,
+      impersonatedBy: {
+        id: adminUser.id,
+        name: `${adminUser.first_name} ${adminUser.last_name}`,
+        email: adminUser.email
+      }
+    }
+  });
+});
+
+// @desc    Stop impersonating and return to admin account
+// @route   POST /api/users/stop-impersonating
+// @access  Private (only while impersonating)
+export const stopImpersonating = catchAsync(async (req: AuthenticatedRequest, res: Response) => {
+  // Check if user is authenticated
+  if (!req.user?.id) {
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+      success: false,
+      message: 'User not authenticated'
+    });
+  }
+
+  // Check if this is an impersonation session using the user object from middleware
+  if (!req.user.isImpersonating) {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      message: 'Not currently impersonating a user'
+    });
+  }
+
+  // Get the original admin user from the impersonatedBy metadata
+  const adminUserId = req.user.impersonatedBy?.id;
+  
+  if (!adminUserId) {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      message: 'Original admin information not found'
+    });
+  }
+
+  // Get the original admin user
+  const adminUser = await User.findByPk(adminUserId, {
+    attributes: { exclude: ['password'] }
+  });
+
+  if (!adminUser) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      success: false,
+      message: 'Original admin account not found'
+    });
+  }
+
+  // Generate new token for admin
+  const newToken = (jwt as any).sign(
+    {
+      userId: adminUser.id,
+      email: adminUser.email,
+      role: adminUser.role
+    },
+    process.env.JWT_SECRET!,
+    { expiresIn: process.env.JWT_EXPIRE || '7d' }
+  );
+
+  // Log audit
+  await AuditLog.create({
+    user_id: adminUser.id,
+    action: AUDIT_ACTIONS.STOP_IMPERSONATING,
+    entity_type: ENTITY_TYPES.USER,
+    entity_id: req.user.id,
+    details: `Admin ${adminUser.email} stopped impersonating user ${req.user.email}`,
+    ip_address: req.ip,
+    user_agent: req.get('user-agent')
+  });
+
+  return res.status(HTTP_STATUS.OK).json({
+    success: true,
+    message: 'Stopped impersonating. Returned to admin account.',
+    data: {
+      user: {
+        id: adminUser.id,
+        email: adminUser.email,
+        first_name: adminUser.first_name,
+        last_name: adminUser.last_name,
+        role: adminUser.role,
+        avatar: adminUser.avatar,
+        is_verified: adminUser.is_verified,
+        organization_id: adminUser.organization_id,
+        created_at: adminUser.created_at,
+        updated_at: adminUser.updated_at
+      },
+      token: newToken,
+      isImpersonating: false
+    }
   });
 });

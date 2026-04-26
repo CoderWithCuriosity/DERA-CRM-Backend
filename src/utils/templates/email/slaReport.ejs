@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLA Compliance Report - <%= period %>
+    </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f7;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header .period {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        .report-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .content {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-stats {
+            display: flex;
+            gap: 20px;
+            justify-content: space-between;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #3B82F6;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .compliance-gauge {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .gauge-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: #10B981;
+        }
+
+        .gauge-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 20px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .gauge-fill {
+            width: var(--compliance-width);
+            background: linear-gradient(90deg, #10B981, #059669);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .priority-breakdown {
+            margin: 30px 0;
+        }
+
+        .priority-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .priority-table th,
+        .priority-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .priority-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-urgent {
+            background: #DC2626;
+            color: white;
+        }
+
+        .priority-high {
+            background: #F59E0B;
+            color: white;
+        }
+
+        .priority-medium {
+            background: #3B82F6;
+            color: white;
+        }
+
+        .priority-low {
+            background: #10B981;
+            color: white;
+        }
+
+        .breach-rate {
+            color: #DC2626;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 30px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3B82F6;
+        }
+
+        .trend-indicator {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+
+        .trend-up {
+            color: #10B981;
+        }
+
+        .trend-down {
+            color: #DC2626;
+        }
+
+        .recommendations {
+            background: #EFF6FF;
+            border-left: 4px solid #3B82F6;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+        }
+
+        .recommendations ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .recommendations li {
+            margin: 5px 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 12px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .summary-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .priority-table {
+                font-size: 12px;
+            }
+
+            .priority-table th,
+            .priority-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="report-badge">SLA COMPLIANCE REPORT</div>
+            <h1>Service Level Agreement Report</h1>
+            <p>Period: <%= period %>
+            </p>
+            <p class="period">Generated: <%= new Date().toLocaleString() %>
+            </p>
+        </div>
+
+        <div class="content">
+            <h2>Hello <%= first_name %>,</h2>
+
+            <p>Here's your <%= period %> SLA compliance report for tickets handled by your team.</p>
+
+            <!-- Overall Stats -->
+            <div class="summary-stats">
+                <div class="stat-card">
+                    <div class="stat-value">
+                        <%= total_tickets %>
+                    </div>
+                    <div class="stat-label">Total Tickets</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">
+                        <%= compliance_rate %>%
+                    </div>
+                    <div class="stat-label">Overall Compliance</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">
+                        <%= breached_tickets %>
+                    </div>
+                    <div class="stat-label">Breached SLA</div>
+                </div>
+            </div>
+
+            <!-- Compliance Gauge -->
+            <div class="compliance-gauge">
+                <div class="gauge-value">
+                    <%= compliance_rate %>% Compliance
+                </div>
+                <div class="gauge-bar">
+                    <div class="gauge-fill" style="--compliance-width: <%= compliance_rate %>%;"></div>
+                </div>
+                <div style="margin-top: 10px; color: #666;">
+                    Target: 95% | Current: <%= compliance_rate %>%
+                        <% if (compliance_rate>= 95) { %>
+                            <span class="trend-up">✓ Meeting Target</span>
+                            <% } else { %>
+                                <span class="trend-down">⚠ Below Target</span>
+                                <% } %>
+                </div>
+            </div>
+
+            <!-- Priority Breakdown -->
+            <div class="priority-breakdown">
+                <div class="section-title">
+                    📊 Performance by Priority
+                    <span class="trend-indicator">vs previous period</span>
+                </div>
+                <table class="priority-table">
+                    <thead>
+                        <tr>
+                            <th>Priority</th>
+                            <th>Tickets</th>
+                            <th>Response Compliance</th>
+                            <th>Resolution Compliance</th>
+                            <th>Breach Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="priority-badge priority-urgent">URGENT</span></td>
+                            <td>
+                                <%= priority_stats.urgent.count %>
+                            </td>
+                            <td>
+                                <%= priority_stats.urgent.response_compliance %>%
+                            </td>
+                            <td>
+                                <%= priority_stats.urgent.resolution_compliance %>%
+                            </td>
+                            <td class="breach-rate">
+                                <%= priority_stats.urgent.breach_rate %>%
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="priority-badge priority-high">HIGH</span></td>
+                            <td>
+                                <%= priority_stats.high.count %>
+                            </td>
+                            <td>
+                                <%= priority_stats.high.response_compliance %>%
+                            </td>
+                            <td>
+                                <%= priority_stats.high.resolution_compliance %>%
+                            </td>
+                            <td class="breach-rate">
+                                <%= priority_stats.high.breach_rate %>%
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="priority-badge priority-medium">MEDIUM</span></td>
+                            <td>
+                                <%= priority_stats.medium.count %>
+                            </td>
+                            <td>
+                                <%= priority_stats.medium.response_compliance %>%
+                            </td>
+                            <td>
+                                <%= priority_stats.medium.resolution_compliance %>%
+                            </td>
+                            <td class="breach-rate">
+                                <%= priority_stats.medium.breach_rate %>%
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="priority-badge priority-low">LOW</span></td>
+                            <td>
+                                <%= priority_stats.low.count %>
+                            </td>
+                            <td>
+                                <%= priority_stats.low.response_compliance %>%
+                            </td>
+                            <td>
+                                <%= priority_stats.low.resolution_compliance %>%
+                            </td>
+                            <td class="breach-rate">
+                                <%= priority_stats.low.breach_rate %>%
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Response vs Resolution Times -->
+            <div class="section-title">⏱️ Average Times</div>
+            <div class="summary-stats">
+                <div class="stat-card">
+                    <div class="stat-value">
+                        <%= avg_response_time %>
+                    </div>
+                    <div class="stat-label">Avg Response Time</div>
+                    <div style="font-size: 12px; margin-top: 5px;">Target: <%= response_target %>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">
+                        <%= avg_resolution_time %>
+                    </div>
+                    <div class="stat-label">Avg Resolution Time</div>
+                    <div style="font-size: 12px; margin-top: 5px;">Target: <%= resolution_target %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Breached Tickets -->
+            <% if (breached_tickets_list && breached_tickets_list.length> 0) { %>
+                <div class="section-title">🚨 Tickets That Breached SLA</div>
+                <table class="priority-table">
+                    <thead>
+                        <tr>
+                            <th>Ticket #</th>
+                            <th>Subject</th>
+                            <th>Priority</th>
+                            <th>Breach Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% breached_tickets_list.forEach(function(ticket) { %>
+                            <tr>
+                                <td><a href="<%= ticket.url %>" style="color: #3B82F6; text-decoration: none;">#<%=
+                                            ticket.number %></a></td>
+                                <td>
+                                    <%= ticket.subject %>
+                                </td>
+                                <td><span class="priority-badge priority-<%= ticket.priority %>">
+                                        <%= ticket.priority %>
+                                    </span></td>
+                                <td class="breach-rate">
+                                    <%= ticket.breach_duration %>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+                <% } %>
+
+                    <!-- Recommendations -->
+                    <div class="recommendations">
+                        <strong>📋 Recommendations for Improvement:</strong>
+                        <ul>
+                            <% if (compliance_rate < 95) { %>
+                                <li>Review urgent and high priority ticket handling processes - these have the highest
+                                    breach rates</li>
+                                <li>Consider adding more resources during peak hours to reduce response times</li>
+                                <li>Implement automated reminders for tickets approaching SLA deadlines</li>
+                                <% } %>
+                                    <% if (priority_stats.urgent.breach_rate> 10) { %>
+                                        <li>Urgent tickets are showing <strong>
+                                                <%= priority_stats.urgent.breach_rate %>% breach rate
+                                            </strong> - immediate attention required</li>
+                                        <% } %>
+                                            <% if (avg_response_time> response_target) { %>
+                                                <li>Average response time of <%= avg_response_time %> exceeds target -
+                                                        consider response automation or queue management</li>
+                                                <% } %>
+                                                    <li>Schedule a team review meeting to discuss SLA performance and
+                                                        improvement strategies</li>
+                                                    <li>Identify top performers and share best practices across the team
+                                                    </li>
+                        </ul>
+                    </div>
+
+                    <!-- Next Steps -->
+                    <div style="margin-top: 30px; padding: 20px; background: #F3F4F6; border-radius: 8px;">
+                        <strong>✅ Action Items:</strong>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Review this report with your team within 48 hours</li>
+                            <li>Create an action plan for areas below target</li>
+                            <li>Set weekly SLA review meetings</li>
+                            <li>Monitor progress in next week's report</li>
+                        </ul>
+                    </div>
+
+                    <p style="margin-top: 30px;">For detailed analytics and individual ticket performance, please log
+                        into the CRM system.</p>
+
+                    <p>Best regards,<br>The <%= company_name %> Management Team</p>
+        </div>
+
+        <div class="footer">
+            <p>© <%= new Date().getFullYear() %>
+                    <%= company_name %>. All rights reserved.</p>
+            <p>
+                <a href="<%= dashboard_url %>">View Full Dashboard</a> •
+                <a href="<%= report_settings_url %>">Report Settings</a> •
+                <a href="<%= unsubscribe_url %>">Unsubscribe from Reports</a>
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

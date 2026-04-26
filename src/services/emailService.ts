@@ -256,6 +256,7 @@ export const sendTicketAssignmentEmail = async (
       first_name: assignee.first_name,
       ticket_number: ticket.ticket_number,
       subject: ticket.subject,
+      description: ticket.description,
       priority: ticket.priority,
       assigned_by: `${assignedBy.first_name} ${assignedBy.last_name}`,
       ticket_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`

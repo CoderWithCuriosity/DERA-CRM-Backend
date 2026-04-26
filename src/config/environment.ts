@@ -48,6 +48,7 @@ interface FileConfig {
 }
 
 interface RateLimitConfig {
+  enabled: boolean; 
   windowMs: number;
   max: number;
   authWindowMs: number;
@@ -103,7 +104,7 @@ const email: EmailConfig = {
 
 const file: FileConfig = {
   uploadDir: process.env.UPLOAD_DIR || 'uploads',
-  maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '5242880', 10), // 5MB default
+  maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '5242880', 10),
   allowedExtensions: (process.env.ALLOWED_EXTENSIONS || 'jpg,jpeg,png,gif,pdf,doc,docx,csv,xlsx').split(','),
   allowedMimeTypes: [
     'image/jpeg',
@@ -116,42 +117,43 @@ const file: FileConfig = {
     'application/vnd.ms-excel',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
   ],
-  avatarMaxSize: parseInt(process.env.AVATAR_MAX_SIZE || '2097152', 10), // 2MB
+  avatarMaxSize: parseInt(process.env.AVATAR_MAX_SIZE || '2097152', 10),
   avatarDimensions: {
     width: 500,
     height: 500
   },
-  logoMaxSize: parseInt(process.env.LOGO_MAX_SIZE || '3145728', 10), // 3MB
+  logoMaxSize: parseInt(process.env.LOGO_MAX_SIZE || '3145728', 10),
   logoDimensions: {
     width: 300,
     height: 100
   },
-  importMaxSize: parseInt(process.env.IMPORT_MAX_SIZE || '10485760', 10) // 10MB
+  importMaxSize: parseInt(process.env.IMPORT_MAX_SIZE || '10485760', 10)
 };
 
+// FIXED: Now reading from .env file properly
 const rateLimit: RateLimitConfig = {
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX || '100', 10),
-  authWindowMs: 15 * 60 * 1000, // 15 minutes
-  authMax: parseInt(process.env.AUTH_RATE_LIMIT_MAX || '5', 10),
-  campaignWindowMs: 60 * 60 * 1000, // 1 hour
-  campaignMax: parseInt(process.env.CAMPAIGN_RATE_LIMIT_MAX || '50', 10),
-  uploadWindowMs: 60 * 60 * 1000, // 1 hour
-  uploadMax: parseInt(process.env.UPLOAD_RATE_LIMIT_MAX || '10', 10)
+  enabled: process.env.ENABLE_RATE_LIMIT === 'true', 
+  windowMs: (parseInt(process.env.RATE_LIMIT_WINDOW || '30', 10) || 30) * 60 * 1000,
+  max: parseInt(process.env.RATE_LIMIT_MAX || '200', 10) || 200,
+  authWindowMs: (parseInt(process.env.AUTH_RATE_LIMIT_WINDOW || '15', 10) || 15) * 60 * 1000,
+  authMax: parseInt(process.env.AUTH_RATE_LIMIT_MAX || '10', 10) || 10,
+  campaignWindowMs: (parseInt(process.env.CAMPAIGN_RATE_LIMIT_WINDOW || '60', 10) || 60) * 60 * 1000,
+  campaignMax: parseInt(process.env.CAMPAIGN_RATE_LIMIT_MAX || '50', 10) || 50,
+  uploadWindowMs: (parseInt(process.env.UPLOAD_RATE_LIMIT_WINDOW || '60', 10) || 60) * 60 * 1000,
+  uploadMax: parseInt(process.env.UPLOAD_RATE_LIMIT_MAX || '20', 10) || 20,
 };
 
 const cache: CacheConfig = {
   enabled: process.env.CACHE_ENABLED === 'true',
-  ttl: parseInt(process.env.CACHE_TTL || '300', 10), // 5 minutes
-  checkPeriod: parseInt(process.env.CACHE_CHECK_PERIOD || '600', 10) // 10 minutes
+  ttl: parseInt(process.env.CACHE_TTL || '300', 10),
+  checkPeriod: parseInt(process.env.CACHE_CHECK_PERIOD || '600', 10)
 };
 
 const security: SecurityConfig = {
-  // corsOrigin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:3000'],
   corsOrigin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : '*',
   corsCredentials: true,
   helmetEnabled: true,
-  rateLimitEnabled: true,
+  rateLimitEnabled: rateLimit.enabled, // Use the enabled flag
   xssProtection: true,
   noSniff: true,
   hidePoweredBy: true

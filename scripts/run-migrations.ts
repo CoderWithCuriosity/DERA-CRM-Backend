@@ -874,7 +874,7 @@ const migrations = [
           onDelete: 'SET NULL'
         },
         action: {
-          type: Sequelize.ENUM('CREATE', 'UPDATE', 'DELETE', 'VIEW', 'EXPORT', 'IMPORT', 'LOGIN', 'LOGOUT'),
+          type: Sequelize.ENUM('CREATE', 'UPDATE', 'DELETE', 'VIEW', 'EXPORT', 'IMPORT', 'LOGIN', 'LOGOUT', 'IMPERSONATE', 'STOP_IMPERSONATING'),
           allowNull: false
         },
         entity_type: {

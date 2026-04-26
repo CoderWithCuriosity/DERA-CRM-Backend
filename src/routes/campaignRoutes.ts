@@ -1,4 +1,4 @@
-import { Router, Response, Request, NextFunction } from 'express';
+import { Router } from 'express';
 import { body, param, query } from 'express-validator';
 import {
   createCampaign,
@@ -17,14 +17,6 @@ import { CAMPAIGN_STATUS } from '../config/constants';
 import { campaignLimiter } from '../config/rateLimit';
 
 const router = Router();
-
-// Check if rate limiting is enabled
-const ENABLE_RATE_LIMIT = process.env.ENABLE_RATE_LIMIT === 'true';
-
-// Helper function for better readability
-const maybeRateLimit = ENABLE_RATE_LIMIT 
-  ? campaignLimiter 
-  : (_req: Request, _res: Response, next: NextFunction) => next();
 
 // All routes require authentication
 router.use(protect);
@@ -116,7 +108,7 @@ router.put(
  */
 router.post(
   '/:id/send',
-  maybeRateLimit,
+  campaignLimiter,
   [
     param('id').isInt().withMessage('Invalid campaign ID'),
     body('send_immediately').optional().isBoolean().toBoolean()
@@ -146,7 +138,7 @@ router.post(
  */
 router.post(
   '/:id/test',
-  maybeRateLimit,
+  campaignLimiter,
   [
     param('id').isInt().withMessage('Invalid campaign ID'),
     body('test_email').isEmail().normalizeEmail().withMessage('Valid test email is required'),

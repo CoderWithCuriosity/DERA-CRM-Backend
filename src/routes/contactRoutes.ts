@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router } from 'express';
 import { body, param, query } from 'express-validator';
 import {
   createContact,
@@ -22,17 +22,6 @@ import { avatarUpload } from '../config/fileUpload';
 import { uploadContactAvatar, deleteContactAvatar } from '../controllers/contactController';
 
 const router = Router();
-
-// Check if rate limiting is enabled
-const ENABLE_RATE_LIMIT = process.env.ENABLE_RATE_LIMIT === 'true';
-
-// Helper function for better readability
-const maybeUploadRateLimit = ENABLE_RATE_LIMIT 
-  ? uploadLimiter 
-  : (_req: Request, _res: Response, next: NextFunction) => next();
-const maybeExportRateLimit = ENABLE_RATE_LIMIT 
-  ? exportLimiter 
-  : (_req: Request, _res: Response, next: NextFunction) => next();
 
 // All routes require authentication
 router.use(protect);
@@ -111,7 +100,7 @@ router.get('/tags/all', getAllTags);
  */
 router.post(
   '/import',
-  maybeUploadRateLimit,
+  uploadLimiter,
   restrictTo('admin', 'manager'),
   importUpload.single('file'),
   importContacts
@@ -139,7 +128,7 @@ router.get(
  */
 router.get(
   '/export',
-  maybeExportRateLimit,
+  exportLimiter,
   [
     query('format').optional().isIn(['csv', 'excel']).withMessage('Format must be csv or excel'),
     query('fields').optional().isString(),

@@ -40,7 +40,7 @@ router.put(
     body('company_email').optional().isEmail().normalizeEmail(),
     body('company_phone').optional().isMobilePhone('any'),
     body('company_address').optional().trim(),
-    body('website').optional().isURL(),
+    body('website').optional({ values: 'falsy' }).isURL(),
     body('timezone').optional().isString(),
     body('date_format').optional().isString(),
     body('currency').optional().isLength({ min: 3, max: 3 }).isString()

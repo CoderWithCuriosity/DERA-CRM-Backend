@@ -9,3 +9,44 @@
 2026-04-26 00:00:30:030 [31merror[39m: [31mEmail failed after 3 retries: 01f2365c-b735-4c92-8aa5-8a247aacb381 Failed to render email template[39m
 2026-04-26 01:00:00:00 [31merror[39m: [31mError rendering email template: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaReport.ejs'[39m
 2026-04-26 01:00:00:00 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-26 16:00:00:00 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaReport.ejs:7[39m
+[31m    5|     <meta charset="UTF-8">[39m
+[31m    6|     <meta name="viewport" content="width=device-width, initial-scale=1.0">[39m
+[31m >> 7|     <title>SLA Compliance Report - <%= period %>[39m
+[31m    8|     </title>[39m
+[31m    9|     <style>[39m
+[31m    10|         * {[39m
+
+[31mperiod is not defined[39m
+2026-04-26 16:00:00:00 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-26 16:00:05:05 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaReport.ejs:7[39m
+[31m    5|     <meta charset="UTF-8">[39m
+[31m    6|     <meta name="viewport" content="width=device-width, initial-scale=1.0">[39m
+[31m >> 7|     <title>SLA Compliance Report - <%= period %>[39m
+[31m    8|     </title>[39m
+[31m    9|     <style>[39m
+[31m    10|         * {[39m
+
+[31mperiod is not defined[39m
+2026-04-26 16:00:05:05 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-26 16:00:15:015 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaReport.ejs:7[39m
+[31m    5|     <meta charset="UTF-8">[39m
+[31m    6|     <meta name="viewport" content="width=device-width, initial-scale=1.0">[39m
+[31m >> 7|     <title>SLA Compliance Report - <%= period %>[39m
+[31m    8|     </title>[39m
+[31m    9|     <style>[39m
+[31m    10|         * {[39m
+
+[31mperiod is not defined[39m
+2026-04-26 16:00:15:015 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-26 16:00:30:030 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaReport.ejs:7[39m
+[31m    5|     <meta charset="UTF-8">[39m
+[31m    6|     <meta name="viewport" content="width=device-width, initial-scale=1.0">[39m
+[31m >> 7|     <title>SLA Compliance Report - <%= period %>[39m
+[31m    8|     </title>[39m
+[31m    9|     <style>[39m
+[31m    10|         * {[39m
+
+[31mperiod is not defined[39m
+2026-04-26 16:00:30:030 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-26 16:00:30:030 [31merror[39m: [31mEmail failed after 3 retries: 21b4cc47-f3a3-4285-a5d8-f961d38aff40 Failed to render email template[39m

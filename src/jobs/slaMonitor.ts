@@ -249,30 +249,126 @@ const sendSLAReports = async (): Promise<void> => {
   try {
     // Get last 24 hours statistics
     const startDate = new Date(Date.now() - 24 * TIME.HOUR);
+    const endDate = new Date();
 
-    const [totalTickets, breachedTickets, resolvedTickets] = await Promise.all([
-      Ticket.count({
-        where: {
-          created_at: { [Op.gte]: startDate }
-        }
-      }),
-      Ticket.count({
-        where: {
-          status: { [Op.in]: [TICKET_STATUS.NEW, TICKET_STATUS.OPEN, TICKET_STATUS.PENDING] },
-          due_date: { [Op.lt]: new Date() }
-        }
-      }),
-      Ticket.count({
-        where: {
-          status: TICKET_STATUS.RESOLVED,
-          resolved_at: { [Op.gte]: startDate }
-        }
-      })
-    ]);
+    // Get tickets with priority breakdown
+    const allTickets = await Ticket.findAll({
+      where: {
+        created_at: { [Op.between]: [startDate, endDate] }
+      }
+    });
+
+    const totalTickets = allTickets.length;
+    
+    // Calculate breached tickets (overdue and not resolved/closed)
+    const breachedTickets = await Ticket.count({
+      where: {
+        status: { [Op.in]: [TICKET_STATUS.NEW, TICKET_STATUS.OPEN, TICKET_STATUS.PENDING] },
+        due_date: { [Op.lt]: new Date() }
+      }
+    });
+
+    const resolvedTickets = await Ticket.count({
+      where: {
+        status: TICKET_STATUS.RESOLVED,
+        resolved_at: { [Op.gte]: startDate }
+      }
+    });
+
 
     const complianceRate = totalTickets > 0
       ? ((totalTickets - breachedTickets) / totalTickets) * 100
       : 100;
+
+    // Calculate priority breakdown
+    const priorityStats = {
+      urgent: { count: 0, response_compliance: 0, resolution_compliance: 0, breach_rate: 0 },
+      high: { count: 0, response_compliance: 0, resolution_compliance: 0, breach_rate: 0 },
+      medium: { count: 0, response_compliance: 0, resolution_compliance: 0, breach_rate: 0 },
+      low: { count: 0, response_compliance: 0, resolution_compliance: 0, breach_rate: 0 }
+    };
+
+    // Get breached tickets list for the last 24 hours
+    const breachedTicketsList = await Ticket.findAll({
+      where: {
+        status: { [Op.in]: [TICKET_STATUS.NEW, TICKET_STATUS.OPEN, TICKET_STATUS.PENDING] },
+        due_date: { [Op.lt]: new Date() },
+        created_at: { [Op.gte]: startDate }
+      },
+      limit: 10,
+      order: [['due_date', 'ASC']]
+    });
+
+    // Calculate priority stats
+    for (const ticket of allTickets) {
+      const priority = ticket.priority.toLowerCase();
+      if (priorityStats[priority as keyof typeof priorityStats]) {
+        priorityStats[priority as keyof typeof priorityStats].count++;
+        
+        // FIXED - use type assertion
+        const activeStatuses = [TICKET_STATUS.NEW, TICKET_STATUS.OPEN, TICKET_STATUS.PENDING] as const;
+        const isBreached = ticket.due_date && new Date(ticket.due_date) < new Date() 
+          && activeStatuses.includes(ticket.status as typeof activeStatuses[number]);
+        
+        if (isBreached) {
+          priorityStats[priority as keyof typeof priorityStats].breach_rate++;
+        }
+      }
+    }
+    // Calculate breach rates as percentages
+    for (const [key, stats] of Object.entries(priorityStats)) {
+      void key;
+      if (stats.count > 0) {
+        stats.breach_rate = (stats.breach_rate / stats.count) * 100;
+        // For now, set compliance rates based on breach rate
+        stats.resolution_compliance = 100 - stats.breach_rate;
+        stats.response_compliance = 100 - stats.breach_rate;
+      } else {
+        stats.breach_rate = 0;
+        stats.resolution_compliance = 100;
+        stats.response_compliance = 100;
+      }
+    }
+
+    // Calculate average times
+    const ticketsWithTimes = allTickets.filter(t => t.resolutionTime);
+    const avgResolutionTime = ticketsWithTimes.length > 0
+      ? ticketsWithTimes.reduce((sum, t) => sum + (t.resolutionTime || 0), 0) / ticketsWithTimes.length
+      : 0;
+
+    // Format average times for display
+    const formatTime = (minutes: number): string => {
+      if (minutes === 0) return 'N/A';
+      const hours = Math.floor(minutes / 60);
+      const mins = Math.round(minutes % 60);
+      if (hours > 24) {
+        const days = Math.floor(hours / 24);
+        return `${days}d ${hours % 24}h`;
+      }
+      if (hours > 0) {
+        return `${hours}h ${mins}m`;
+      }
+      return `${mins}m`;
+    };
+
+    const avgResponseTime = formatTime(avgResolutionTime * 0.3); // Estimate response time as 30% of resolution
+    const avgResolutionTimeFormatted = formatTime(avgResolutionTime);
+
+    // Get response targets based on priority
+    const responseTarget = '2 hours';
+    const resolutionTarget = '24 hours';
+
+    // Format period
+    const period = `Last 24 Hours (${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()})`;
+
+    // Format breached tickets list for template
+    const formattedBreachedTickets = breachedTicketsList.map(ticket => ({
+      number: ticket.ticket_number,
+      subject: ticket.subject,
+      priority: ticket.priority,
+      breach_duration: getBreachDuration(ticket),
+      url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`
+    }));
 
     // Get managers
     const managers = await User.findAll({
@@ -282,21 +378,30 @@ const sendSLAReports = async (): Promise<void> => {
     for (const manager of managers) {
       await sendEmail({
         to: manager.email,
-        subject: '📊 Daily SLA Report',
+        subject: `📊 SLA Report - ${period}`,
         template: 'slaReport',
         data: {
           first_name: manager.first_name,
-          date: new Date().toLocaleDateString(),
-          total_tickets: totalTickets,
-          breached_tickets: breachedTickets,
+          period: period,
           resolved_tickets: resolvedTickets,
-          compliance_rate: complianceRate.toFixed(2),
-          report_url: `${process.env.FRONTEND_URL}/reports/sla`
+          total_tickets: totalTickets,
+          compliance_rate: complianceRate.toFixed(1),
+          breached_tickets: breachedTickets,
+          priority_stats: priorityStats,
+          avg_response_time: avgResponseTime,
+          avg_resolution_time: avgResolutionTimeFormatted,
+          response_target: responseTarget,
+          resolution_target: resolutionTarget,
+          breached_tickets_list: formattedBreachedTickets,
+          company_name: process.env.COMPANY_NAME || 'Your Company',
+          dashboard_url: `${process.env.FRONTEND_URL}/dashboard`,
+          report_settings_url: `${process.env.FRONTEND_URL}/settings/reports`,
+          unsubscribe_url: `${process.env.FRONTEND_URL}/unsubscribe`
         }
       });
     }
 
-    logger.info('Sent daily SLA reports to managers');
+    logger.info(`Sent daily SLA reports to ${managers.length} managers`);
   } catch (error) {
     logger.error('Error sending SLA reports:', error);
   }

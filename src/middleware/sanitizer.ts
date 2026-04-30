@@ -278,24 +278,20 @@ export const preventParameterPollution = (req: Request, _res: Response, next: Ne
 export const validateContentType = (req: Request, res: Response, next: NextFunction) => {
   const allowedMethods = ['POST', 'PUT', 'PATCH'];
 
-  // Skip validation for file upload routes
-  const fileUploadRoutes = ['/contacts/import', '/users/avatar', '/organization/logo'];
+  // Skip validation for multipart/form-data (file uploads)
+  const contentType = req.headers['content-type'];
+  const isMultipart = contentType && contentType.includes('multipart/form-data');
   
-  // Check if it's a contact avatar upload route (ends with /avatar)
-  const isContactAvatarRoute = req.path.includes('/contacts/') && req.path.endsWith('/avatar');
-  
-  if (fileUploadRoutes.some(route => req.path.includes(route)) || isContactAvatarRoute) {
+  if (isMultipart) {
     return next();
   }
 
   if (allowedMethods.includes(req.method)) {
-    const contentType = req.headers['content-type'];
-    
     // Check if content-type header exists and includes application/json
     if (!contentType || !contentType.includes('application/json')) {
       return res.status(415).json({
         success: false,
-        message: 'Content-Type must be application/json'
+        message: 'Content-Type must be application/json for JSON requests, or multipart/form-data for file uploads'
       });
     }
   }

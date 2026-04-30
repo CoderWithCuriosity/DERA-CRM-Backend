@@ -10,6 +10,7 @@ backend/
 │   └── dera-crm-backup-2026-03-11-020000.sql
 ├── docs
 │   ├── Documentation.md
+│   ├── New Documentation.md
 │   └── RawCommand.md
 ├── logs
 │   ├── combined.log
@@ -24,7 +25,6 @@ backend/
 │   ├── createAdmin.ts
 │   ├── restore.ts
 │   ├── run-migrations.ts
-│   ├── run-seeders.ts
 │   └── triggerJob.ts
 ├── src
 │   ├── app.ts
@@ -39,12 +39,15 @@ backend/
 │   ├── controllers
 │   │   ├── activityController.ts
 │   │   ├── adminController.ts
+│   │   ├── attachmentController.ts
 │   │   ├── authController.ts
 │   │   ├── campaignController.ts
 │   │   ├── contactController.ts
 │   │   ├── dashboardController.ts
 │   │   ├── dealController.ts
 │   │   ├── emailTemplateController.ts
+│   │   ├── messageController.ts
+│   │   ├── notificationController.ts
 │   │   ├── organizationController.ts
 │   │   ├── ticketController.ts
 │   │   └── userController.ts
@@ -52,20 +55,25 @@ backend/
 │   │   ├── config
 │   │   │   └── config.js
 │   │   ├── migrations
-│   │   │   ├── 2026031101055401-create-organizations-table.js
-│   │   │   ├── 2026031101055402-create-users-table.js
-│   │   │   ├── 2026031101055403-create-contacts-table.js
-│   │   │   ├── 2026031101055404-create-deals-table.js
-│   │   │   ├── 2026031101055405-create-activities-table.js
-│   │   │   ├── 2026031101055406-create-tickets-table.js
-│   │   │   ├── 2026031101055407-create-ticket-comments-table.js
-│   │   │   ├── 2026031101055408-create-email-templates-table.js
-│   │   │   ├── 2026031101055409-create-campaigns-table.js
-│   │   │   ├── 2026031101055410-create-campaign-recipients-table.js
-│   │   │   ├── 2026031101055411-create-audit-logs-table.js
-│   │   │   ├── 2026031101055412-create-refresh-tokens-table.js
-│   │   │   ├── 2026031101055413-create-password-resets-table.js
-│   │   │   └── 2026031101055414-create-backups-table.js
+│   │   │   ├── 2026043018012301-create-organizations-table.js
+│   │   │   ├── 2026043018012302-create-users-table.js
+│   │   │   ├── 2026043018012303-create-contacts-table.js
+│   │   │   ├── 2026043018012304-create-deals-table.js
+│   │   │   ├── 2026043018012305-create-activities-table.js
+│   │   │   ├── 2026043018012306-create-tickets-table.js
+│   │   │   ├── 2026043018012307-create-ticket-comments-table.js
+│   │   │   ├── 2026043018012308-create-email-templates-table.js
+│   │   │   ├── 2026043018012309-create-campaigns-table.js
+│   │   │   ├── 2026043018012310-create-campaign-recipients-table.js
+│   │   │   ├── 2026043018012311-create-audit-logs-table.js
+│   │   │   ├── 2026043018012312-create-refresh-tokens-table.js
+│   │   │   ├── 2026043018012313-create-password-resets-table.js
+│   │   │   ├── 2026043018012314-create-backups-table.js
+│   │   │   ├── 2026043018012315-create-contact-attachments-table.js
+│   │   │   ├── 2026043018012316-create-messages-table.js
+│   │   │   ├── 2026043018012317-create-message-participants-table.js
+│   │   │   ├── 2026043018012318-create-notifications-table.js
+│   │   │   └── 2026043018012319-create-user-notification-preferences-table.js
 │   │   └── seeders
 │   │       ├── 20260224000001-demo-users.js
 │   │       ├── 20260224000002-demo-contacts.js
@@ -103,18 +111,24 @@ backend/
 │   │   ├── Campaign.ts
 │   │   ├── CampaignRecipient.ts
 │   │   ├── Contact.ts
+│   │   ├── ContactAttachment.ts
 │   │   ├── Deal.ts
 │   │   ├── EmailTemplate.ts
 │   │   ├── index.ts
+│   │   ├── Message.ts
+│   │   ├── MessageParticipant.ts
+│   │   ├── Notification.ts
 │   │   ├── Organization.ts
 │   │   ├── PasswordReset.ts
 │   │   ├── RefreshToken.ts
 │   │   ├── Ticket.ts
 │   │   ├── TicketComment.ts
-│   │   └── User.ts
+│   │   ├── User.ts
+│   │   └── UserNotificationPreference.ts
 │   ├── routes
 │   │   ├── activityRoutes.ts
 │   │   ├── adminRoutes.ts
+│   │   ├── attachmentRoutes.ts
 │   │   ├── authRoutes.ts
 │   │   ├── campaignRoutes.ts
 │   │   ├── contactRoutes.ts
@@ -122,6 +136,8 @@ backend/
 │   │   ├── dealRoutes.ts
 │   │   ├── emailTemplateRoutes.ts
 │   │   ├── index.ts
+│   │   ├── messageRoutes.ts
+│   │   ├── notificationRoutes.ts
 │   │   ├── organizationRoutes.ts
 │   │   ├── ticketRoutes.ts
 │   │   └── userRoutes.ts
@@ -137,6 +153,7 @@ backend/
 │   │   ├── importRedisService.ts
 │   │   ├── importService.ts
 │   │   ├── notificationService.ts
+│   │   ├── notificationServiceExtended.ts
 │   │   ├── slaService.ts
 │   │   └── tokenService.ts
 │   ├── types
@@ -147,9 +164,11 @@ backend/
 │   │   └── services.d.ts
 │   └── utils
 │       ├── AppError.ts
+│       ├── auditHelper.ts
 │       ├── catchAsync.ts
 │       ├── constants
 │       │   ├── activityTypes.ts
+│       │   ├── notificationTypes.ts
 │       │   ├── priorities.ts
 │       │   ├── roles.ts
 │       │   ├── stages.ts
@@ -167,6 +186,8 @@ backend/
 │       │   ├── email
 │       │   │   ├── activityReminder.ejs
 │       │   │   ├── assignment.ejs
+│       │   │   ├── campaign-test.ejs
+│       │   │   ├── campaign.ejs
 │       │   │   ├── campaignSummary.ejs
 │       │   │   ├── dailyDigest.ejs
 │       │   │   ├── dealAssigned.ejs
@@ -174,7 +195,9 @@ backend/
 │       │   │   ├── slaBreach.ejs
 │       │   │   ├── slaBreached.ejs
 │       │   │   ├── slaBreachedManager.ejs
+│       │   │   ├── slaReport.ejs
 │       │   │   ├── ticketAssigned.ejs
+│       │   │   ├── ticketComment.ejs
 │       │   │   ├── ticketResolved.ejs
 │       │   │   ├── userInvitation.ejs
 │       │   │   ├── verification.ejs
@@ -196,7 +219,8 @@ backend/
 └── uploads
     ├── attachments
     ├── avatars
-    │   └── user-1773509864561-90e845ea.jpg
+    │   ├── user-1773509864561-90e845ea.jpg
+    │   └── user-1777151153063-6a8fa734.jpg
     ├── exports
     │   ├── export-1773652498891-277bd841.csv
     │   ├── export-1773652509931-50bd2ab0.csv
@@ -218,3 +242,4 @@ backend/
     │   ├── import-1773495996412-1ff178e2.csv
     │   └── import-1773496170921-96511ca3.csv
     └── logos
+        └── logo-1777212604265-eb48f7b9.jpg

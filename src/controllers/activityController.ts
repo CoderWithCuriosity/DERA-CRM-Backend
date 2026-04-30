@@ -10,6 +10,8 @@ import catchAsync from '../utils/catchAsync';
 import { getPagination, getPagingData } from '../utils/pagination';
 import { scheduleActivityReminder } from '../services/notificationService';
 import { createDetailedAudit, createSimpleAudit } from '../utils/auditHelper';
+import { createNotification } from '../services/notificationServiceExtended';
+import { NOTIFICATION_TYPES } from '../utils/constants/notificationTypes';
 
 
 // @desc    Create activity
@@ -82,6 +84,22 @@ export const createActivity = catchAsync(async (req: Request, res: Response) => 
     status: activityStatus,
     completed_date: completedDate
   });
+
+  if (ownerId !== req.user.id) {
+    await createNotification({
+      userId: ownerId,
+      type: NOTIFICATION_TYPES.ACTIVITY_REMINDER,
+      title: 'New Activity Assigned',
+      body: `${req.user.fullName || 'Someone'} assigned you a ${type}: ${subject}`,
+      data: {
+        activity_id: activity.id,
+        type,
+        scheduled_date,
+        url: `${process.env.FRONTEND_URL}/activities/${activity.id}`
+      }
+    });
+  }
+
 
   // Fetch created activity with associations
   const createdActivity = await Activity.findByPk(activity.id, {

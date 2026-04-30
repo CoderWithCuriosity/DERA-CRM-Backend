@@ -878,7 +878,7 @@ const migrations = [
           allowNull: false
         },
         entity_type: {
-          type: Sequelize.ENUM('user', 'contact', 'deal', 'activity', 'ticket', 'ticket_comment', 'email_template', 'campaign', 'campaign_recipient', 'organization', 'backup'),
+          type: Sequelize.ENUM('user', 'contact', 'deal', 'activity', 'ticket', 'ticket_comment', 'email_template', 'campaign', 'campaign_recipient', 'organization', 'backup', 'contact_attachment', 'message', 'notification'),
           allowNull: false
         },
         entity_id: {
@@ -1078,7 +1078,326 @@ const migrations = [
       await queryInterface.dropTable('backups');
       await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_backups_status";');
     `
-  }
+  },
+  {
+  name: `create-contact-attachments-table`,
+  up: `
+    await queryInterface.createTable('contact_attachments', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+      },
+      contact_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'contacts',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      filename: {
+        type: Sequelize.STRING(255),
+        allowNull: false
+      },
+      original_name: {
+        type: Sequelize.STRING(255),
+        allowNull: false
+      },
+      file_path: {
+        type: Sequelize.STRING(500),
+        allowNull: false
+      },
+      file_size: {
+        type: Sequelize.BIGINT,
+        allowNull: false
+      },
+      mime_type: {
+        type: Sequelize.STRING(100),
+        allowNull: false
+      },
+      file_type: {
+        type: Sequelize.ENUM('image', 'video', 'audio', 'document', 'other'),
+        allowNull: false
+      },
+      uploaded_by: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'RESTRICT'
+      },
+      description: {
+        type: Sequelize.TEXT,
+        allowNull: true
+      },
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      }
+    });
+
+    await queryInterface.addIndex('contact_attachments', ['contact_id']);
+    await queryInterface.addIndex('contact_attachments', ['uploaded_by']);
+    await queryInterface.addIndex('contact_attachments', ['file_type']);
+  `,
+  down: `
+    await queryInterface.dropTable('contact_attachments');
+    await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_contact_attachments_file_type";');
+  `
+},
+{
+  name: `create-messages-table`,
+  up: `
+    await queryInterface.createTable('messages', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+      },
+      subject: {
+        type: Sequelize.STRING(255),
+        allowNull: true
+      },
+      body: {
+        type: Sequelize.TEXT,
+        allowNull: false
+      },
+      parent_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'messages',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      sent_by: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'RESTRICT'
+      },
+      is_private: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      }
+    });
+
+    await queryInterface.addIndex('messages', ['parent_id']);
+    await queryInterface.addIndex('messages', ['sent_by']);
+    await queryInterface.addIndex('messages', ['created_at']);
+  `,
+  down: `
+    await queryInterface.dropTable('messages');
+  `
+},
+{
+  name: `create-message-participants-table`,
+  up: `
+    await queryInterface.createTable('message_participants', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+      },
+      message_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'messages',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      can_receive: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+      },
+      status: {
+        type: Sequelize.ENUM('active', 'left', 'hidden'),
+        allowNull: false,
+        defaultValue: 'active'
+      },
+      read_at: {
+        type: Sequelize.DATE,
+        allowNull: true
+      },
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      }
+    });
+
+    await queryInterface.addIndex('message_participants', ['message_id']);
+    await queryInterface.addIndex('message_participants', ['user_id']);
+    await queryInterface.addIndex('message_participants', ['status']);
+  `,
+  down: `
+    await queryInterface.dropTable('message_participants');
+    await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_message_participants_status";');
+  `
+},
+{
+  name: `create-notifications-table`,
+  up: `
+    await queryInterface.createTable('notifications', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+      },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      type: {
+        type: Sequelize.STRING(50),
+        allowNull: false
+      },
+      title: {
+        type: Sequelize.STRING(255),
+        allowNull: false
+      },
+      body: {
+        type: Sequelize.TEXT,
+        allowNull: false
+      },
+      data: {
+        type: Sequelize.JSONB,
+        allowNull: false,
+        defaultValue: {}
+      },
+      read_at: {
+        type: Sequelize.DATE,
+        allowNull: true
+      },
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      }
+    });
+
+    await queryInterface.addIndex('notifications', ['user_id']);
+    await queryInterface.addIndex('notifications', ['type']);
+    await queryInterface.addIndex('notifications', ['read_at']);
+    await queryInterface.addIndex('notifications', ['created_at']);
+  `,
+  down: `
+    await queryInterface.dropTable('notifications');
+  `
+},
+{
+  name: `create-user-notification-preferences-table`,
+  up: `
+    await queryInterface.createTable('user_notification_preferences', {
+      id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+      },
+      user_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      type: {
+        type: Sequelize.STRING(50),
+        allowNull: false
+      },
+      email_enabled: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+      },
+      in_app_enabled: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+      },
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      }
+    });
+
+    await queryInterface.addIndex('user_notification_preferences', ['user_id', 'type'], {
+      unique: true,
+      name: 'user_notification_preferences_user_id_type_unique'
+    });
+  `,
+  down: `
+    await queryInterface.dropTable('user_notification_preferences');
+  `
+}
 ];
 
 // Generate migration files

@@ -12,6 +12,8 @@ import { getPagination, getPagingData } from '../utils/pagination';
 import { sendEmail } from '../services/emailService';
 import sequelize from '../config/database';
 import { createDetailedAudit, createSimpleAudit } from '../utils/auditHelper';
+import { createNotification } from '../services/notificationServiceExtended';
+import { NOTIFICATION_TYPES } from '../utils/constants/notificationTypes';
 
 // @desc    Create deal
 // @route   POST /api/deals
@@ -120,6 +122,21 @@ export const createDeal = catchAsync(async (req: Request, res: Response) => {
       });
     }
   }
+
+ if (ownerId !== req.user.id) {
+  await createNotification({
+    userId: ownerId,
+    type: NOTIFICATION_TYPES.DEAL_ASSIGNED,
+    title: `New Deal Assigned: ${name}`,
+    body: `Amount: ${amount} - Stage: ${DEAL_STAGE_DISPLAY[stage as keyof typeof DEAL_STAGE_DISPLAY]}`,
+    data: {
+      deal_id: deal.id,
+      name: deal.name,
+      amount: deal.amount,
+      url: `${process.env.FRONTEND_URL}/deals/${deal.id}`
+    }
+  });
+}
 
   return res.status(HTTP_STATUS.CREATED).json({
     success: true,

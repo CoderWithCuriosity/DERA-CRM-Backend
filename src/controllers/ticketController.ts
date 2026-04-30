@@ -12,6 +12,8 @@ import catchAsync from '../utils/catchAsync';
 import { getPagination, getPagingData } from '../utils/pagination';
 import { sendEmail } from '../services/emailService';
 import { createDetailedAudit, createSimpleAudit } from '../utils/auditHelper';
+import { createNotification } from '../services/notificationServiceExtended';
+import { NOTIFICATION_TYPES } from '../utils/constants/notificationTypes';
 
 // Extend Request type to include user
 interface AuthenticatedRequest extends Request {
@@ -150,6 +152,22 @@ export const createTicket = catchAsync(async (req: AuthenticatedRequest, res: Re
         }
       });
     }
+  }
+
+  // Inside createTicket, after sending email notification
+  if (assigned_to && assigned_to !== req.user.id) {
+    await createNotification({
+      userId: assigned_to,
+      type: NOTIFICATION_TYPES.TICKET_ASSIGNED,
+      title: `New Ticket Assigned: ${ticketNumber}`,
+      body: `${subject} - Priority: ${priority}`,
+      data: {
+        ticket_id: ticket.id,
+        ticket_number: ticketNumber,
+        priority,
+        url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`
+      }
+    });
   }
 
   return res.status(HTTP_STATUS.CREATED).json({
@@ -554,6 +572,30 @@ export const updateTicketStatus = catchAsync(async (req: AuthenticatedRequest, r
     }
   }
 
+  // Inside updateTicketStatus, after status changes to resolved
+  if (status === TICKET_STATUS.RESOLVED) {
+    // Notify creator and assignee
+    const usersToNotify = [ticket.user_id];
+    if (ticket.assigned_to && ticket.assigned_to !== ticket.user_id) {
+      usersToNotify.push(ticket.assigned_to);
+    }
+    
+    for (const userId of usersToNotify) {
+      await createNotification({
+        userId,
+        type: NOTIFICATION_TYPES.TICKET_RESOLVED,
+        title: `Ticket Resolved: ${ticket.ticket_number}`,
+        body: `Your ticket "${ticket.subject}" has been resolved`,
+        data: {
+          ticket_id: ticket.id,
+          ticket_number: ticket.ticket_number,
+          resolution_time: ticket.resolutionTime,
+          url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`
+        }
+      });
+    }
+  }
+
   // Log audit
   const oldStatus = ticket.status;
 
@@ -767,6 +809,27 @@ export const addTicketComment = catchAsync(async (req: AuthenticatedRequest, res
           comment_author: req.user.fullName || 'A user',
           comment,
           ticket_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`
+        }
+      });
+    }
+  }
+
+  if (!is_internal) {
+    const notifyUsers = [];
+    if (ticket.assigned_to && ticket.assigned_to !== req.user.id) notifyUsers.push(ticket.assigned_to);
+    if (ticket.user_id !== req.user.id) notifyUsers.push(ticket.user_id);
+
+    for (const userId of notifyUsers) {
+      await createNotification({
+        userId,
+        type: NOTIFICATION_TYPES.TICKET_COMMENT,
+        title: `New Comment on Ticket ${ticket.ticket_number}`,
+        body: `${req.user.fullName || 'Someone'} commented: ${comment.substring(0, 100)}...`,
+        data: {
+          ticket_id: ticket.id,
+          ticket_number: ticket.ticket_number,
+          comment_id: ticketComment.id,
+          url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`
         }
       });
     }

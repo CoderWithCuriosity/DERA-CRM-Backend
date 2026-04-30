@@ -16,6 +16,12 @@ import AuditLog, { AuditLogAttributes, AuditLogCreationAttributes } from './Audi
 import RefreshToken, { RefreshTokenAttributes, RefreshTokenCreationAttributes } from './RefreshToken';
 import PasswordReset, { PasswordResetAttributes, PasswordResetCreationAttributes } from './PasswordReset';
 import Backup, { BackupAttributes, BackupCreationAttributes } from './Backup';
+import ContactAttachment from './ContactAttachment';
+import Message from './Message';
+import MessageParticipant from './MessageParticipant';
+import Notification from './Notification';
+import UserNotificationPreference from './UserNotificationPreference';
+
 
 // Define associations
 export const setupAssociations = () => {
@@ -87,6 +93,26 @@ export const setupAssociations = () => {
 
   // PasswordReset associations
   PasswordReset.belongsTo(User, { as: 'user', foreignKey: 'user_id' });
+
+    // ContactAttachment associations
+  ContactAttachment.belongsTo(Contact, { as: 'contact', foreignKey: 'contact_id' });
+  ContactAttachment.belongsTo(User, { as: 'uploader', foreignKey: 'uploaded_by' });
+  
+  // Message associations
+  Message.belongsTo(User, { as: 'sender', foreignKey: 'sent_by' });
+  Message.belongsTo(Message, { as: 'parent', foreignKey: 'parent_id' });
+  Message.hasMany(Message, { as: 'replies', foreignKey: 'parent_id' });
+  Message.hasMany(MessageParticipant, { as: 'participants', foreignKey: 'message_id' });
+  
+  // MessageParticipant associations
+  MessageParticipant.belongsTo(Message, { as: 'message', foreignKey: 'message_id' });
+  MessageParticipant.belongsTo(User, { as: 'user', foreignKey: 'user_id' });
+  
+  // Notification associations
+  Notification.belongsTo(User, { as: 'user', foreignKey: 'user_id' });
+  
+  // UserNotificationPreference associations
+  UserNotificationPreference.belongsTo(User, { as: 'user', foreignKey: 'user_id' });
 };
 
 // Export models and types
@@ -134,5 +160,10 @@ export {
   RefreshTokenCreationAttributes,
   PasswordReset,
   PasswordResetAttributes,
-  PasswordResetCreationAttributes
+  PasswordResetCreationAttributes,
+  ContactAttachment,
+  Message,
+  MessageParticipant,
+  Notification,
+  UserNotificationPreference
 };

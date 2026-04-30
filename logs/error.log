@@ -54,3 +54,43 @@
 2026-04-26 20:13:25:1325 [31merror[39m: [31mcolumn reference "id" is ambiguous[39m
 2026-04-26 20:13:56:1356 [31merror[39m: [31mcolumn reference "id" is ambiguous[39m
 2026-04-26 20:16:58:1658 [31merror[39m: [31mcolumn "user.id" must appear in the GROUP BY clause or be used in an aggregate function[39m
+2026-04-27 13:00:00:00 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaBreached.ejs:201[39m
+[31m    199|                 <div class="detail-row">[39m
+[31m    200|                     <div class="detail-label">Customer:</div>[39m
+[31m >> 201|                     <div class="detail-value"><%= contact_name %></div>[39m
+[31m    202|                 </div>[39m
+[31m    203|                 [39m
+[31m    204|                 <div class="detail-row">[39m
+
+[31mcontact_name is not defined[39m
+2026-04-27 13:00:00:00 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-27 13:00:00:00 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaBreachedManager.ejs:177[39m
+[31m    175|                 <div class="detail-row">[39m
+[31m    176|                     <div class="detail-label">Customer:</div>[39m
+[31m >> 177|                     <div class="detail-value"><%= contact_name %></div>[39m
+[31m    178|                 </div>[39m
+[31m    179|                 [39m
+[31m    180|                 <div class="detail-row">[39m
+
+[31mcontact_name is not defined[39m
+2026-04-27 13:00:00:00 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-27 13:00:05:05 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaBreached.ejs:201[39m
+[31m    199|                 <div class="detail-row">[39m
+[31m    200|                     <div class="detail-label">Customer:</div>[39m
+[31m >> 201|                     <div class="detail-value"><%= contact_name %></div>[39m
+[31m    202|                 </div>[39m
+[31m    203|                 [39m
+[31m    204|                 <div class="detail-row">[39m
+
+[31mcontact_name is not defined[39m
+2026-04-27 13:00:05:05 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-27 13:00:05:05 [31merror[39m: [31mError rendering email template: C:\Users\USER\Desktop\Projects\crm\backend\src\utils\templates\email\slaBreachedManager.ejs:177[39m
+[31m    175|                 <div class="detail-row">[39m
+[31m    176|                     <div class="detail-label">Customer:</div>[39m
+[31m >> 177|                     <div class="detail-value"><%= contact_name %></div>[39m
+[31m    178|                 </div>[39m
+[31m    179|                 [39m
+[31m    180|                 <div class="detail-row">[39m
+
+[31mcontact_name is not defined[39m
+2026-04-27 13:00:05:05 [31merror[39m: [31mError sending email: Failed to render email template[39m

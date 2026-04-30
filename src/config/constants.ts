@@ -200,22 +200,70 @@ export const ENTITY_TYPES = {
   CAMPAIGN: 'campaign',
   CAMPAIGN_RECIPIENT: 'campaign_recipient',
   ORGANIZATION: 'organization',
-  BACKUP: 'backup'
+  BACKUP: 'backup',
+  CONTACT_ATTACHMENT: 'contact_attachment',
+  MESSAGE: 'message',
+  NOTIFICATION: 'notification'
 } as const;
 
 export type EntityType = typeof ENTITY_TYPES[keyof typeof ENTITY_TYPES];
 
+// Message Participant Status
+export const MESSAGE_PARTICIPANT_STATUS = {
+  ACTIVE: 'active',
+  LEFT: 'left',
+  HIDDEN: 'hidden'
+} as const;
+
+export type MessageParticipantStatus = typeof MESSAGE_PARTICIPANT_STATUS[keyof typeof MESSAGE_PARTICIPANT_STATUS];
+
+// File Types for Attachments
+export const FILE_TYPES = {
+  IMAGE: 'image',
+  VIDEO: 'video',
+  AUDIO: 'audio',
+  DOCUMENT: 'document',
+  OTHER: 'other'
+} as const;
+
+export type FileType = typeof FILE_TYPES[keyof typeof FILE_TYPES];
+
+// Notification Types
 // Notification Types
 export const NOTIFICATION_TYPES = {
+  // Activity related
+  ACTIVITY_REMINDER: 'activity_reminder',
+  ACTIVITY_ASSIGNED: 'activity_assigned',
+  
+  // Ticket related
   TICKET_ASSIGNED: 'ticket_assigned',
+  TICKET_COMMENT: 'ticket_comment',
   TICKET_RESOLVED: 'ticket_resolved',
+  TICKET_SLA_WARNING: 'ticket_sla_warning',
+  TICKET_SLA_BREACH: 'ticket_sla_breach',
+  
+  // Deal related
   DEAL_ASSIGNED: 'deal_assigned',
   DEAL_WON: 'deal_won',
-  ACTIVITY_REMINDER: 'activity_reminder',
-  SLA_BREACH: 'sla_breach',
+  DEAL_LOST: 'deal_lost',
+  
+  // Campaign related
+  CAMPAIGN_SENT: 'campaign_sent',
   CAMPAIGN_COMPLETED: 'campaign_completed',
+  
+  // Message related
+  MESSAGE_RECEIVED: 'message_received',
+  COMMENT_MENTION: 'comment_mention',
+  
+  // Summary/Digest
   WEEKLY_SUMMARY: 'weekly_summary',
-  DAILY_DIGEST: 'daily_digest'
+  DAILY_DIGEST: 'daily_digest',
+  
+  // System
+  BACKUP_COMPLETED: 'backup_completed',
+  BACKUP_FAILED: 'backup_failed',
+  IMPORT_COMPLETED: 'import_completed',
+  IMPORT_FAILED: 'import_failed'
 } as const;
 
 export type NotificationType = typeof NOTIFICATION_TYPES[keyof typeof NOTIFICATION_TYPES];

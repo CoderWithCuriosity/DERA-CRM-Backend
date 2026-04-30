@@ -20,6 +20,7 @@ import { CONTACT_STATUS, CONTACT_SOURCES } from '../config/constants';
 import { uploadLimiter, exportLimiter } from '../config/rateLimit';
 import { avatarUpload } from '../config/fileUpload';
 import { uploadContactAvatar, deleteContactAvatar } from '../controllers/contactController';
+import attachmentRoutes from './attachmentRoutes';
 
 const router = Router();
 
@@ -41,6 +42,8 @@ router.delete(
   protect,
   deleteContactAvatar
 );
+
+router.use('/:contactId/attachments', attachmentRoutes);
 
 /**
  * @route   POST /api/contacts

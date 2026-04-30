@@ -20,11 +20,11 @@ module.exports = {
           onDelete: 'SET NULL'
         },
         action: {
-          type: Sequelize.ENUM('CREATE', 'UPDATE', 'DELETE', 'VIEW', 'EXPORT', 'IMPORT', 'LOGIN', 'LOGOUT'),
+          type: Sequelize.ENUM('CREATE', 'UPDATE', 'DELETE', 'VIEW', 'EXPORT', 'IMPORT', 'LOGIN', 'LOGOUT', 'IMPERSONATE', 'STOP_IMPERSONATING'),
           allowNull: false
         },
         entity_type: {
-          type: Sequelize.ENUM('user', 'contact', 'deal', 'activity', 'ticket', 'ticket_comment', 'email_template', 'campaign', 'campaign_recipient', 'organization', 'backup'),
+          type: Sequelize.ENUM('user', 'contact', 'deal', 'activity', 'ticket', 'ticket_comment', 'email_template', 'campaign', 'campaign_recipient', 'organization', 'backup', 'contact_attachment', 'message', 'notification'),
           allowNull: false
         },
         entity_id: {

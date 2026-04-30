@@ -12,7 +12,7 @@ import { sendEmail } from '../services/emailService';
 import { queueCampaign } from '../jobs/campaignScheduler';
 import { createDetailedAudit, createSimpleAudit } from '../utils/auditHelper';
 
-// Define interfaces for type safety - Fix: Don't extend Campaign, use composition instead
+// Define interfaces for type safety 
 interface CampaignWithAssociations {
   id: number;
   name: string;

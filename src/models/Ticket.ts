@@ -15,7 +15,7 @@ export interface TicketAttributes {
   due_date: Date | null;
   resolved_at: Date | null;
   sla_warnings_sent: number[]; // Track which warning thresholds have been sent
-  sla_breach_notified: boolean; // Track if breach notification was sent (you already have this)  
+  sla_breach_notified: boolean; // Track if breach notification was sent
   created_at: Date;
   updated_at: Date;
 }

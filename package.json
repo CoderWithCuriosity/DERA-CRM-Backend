@@ -11,7 +11,7 @@
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",
-    "db:init": "ts-node scripts/run-migrations.ts",
+    "db:init": "ts-node scripts/run-migrations.ts && npx sequelize-cli db:migrate && ts-node scripts/createAdmin.ts",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:migrate:undo": "npx sequelize-cli db:migrate:undo",
     "db:migrate:undo:all": "npx sequelize-cli db:migrate:undo:all",

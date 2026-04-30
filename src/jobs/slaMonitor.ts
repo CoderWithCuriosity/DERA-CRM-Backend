@@ -1,10 +1,12 @@
 import cron from 'node-cron';
 import { Op } from 'sequelize';
-import { Ticket, User } from '../models';
+import { Ticket, User, Contact } from '../models';
 import { TICKET_STATUS, PRIORITIES } from '../config/constants';
 import { sendEmail } from '../services/emailService';
 import logger from '../config/logger';
 import { TIME } from '../config/constants';
+import { createNotification } from '../services/notificationServiceExtended';
+import { NOTIFICATION_TYPES } from '../utils/constants/notificationTypes';
 
 /**
  * SLA configuration by priority
@@ -111,7 +113,6 @@ const checkApproachingBreaches = async (): Promise<void> => {
   }
 };
 
-
 /**
  * Check for actual SLA breaches
  */
@@ -166,21 +167,47 @@ const sendApproachingBreachNotification = async (ticket: Ticket & { assignedTo: 
   try {
     if (!ticket.assignedTo) return;
 
+    const contact = await Contact.findByPk(ticket.contact_id);
+    const contactName = contact 
+      ? `${contact.first_name} ${contact.last_name}`.trim() || 'Unknown Customer'
+      : 'Unknown Customer';
+
     const timeRemaining = calculateTimeRemaining(ticket);
     const thresholdPercent = threshold * 100;
 
     await sendEmail({
       to: ticket.assignedTo.email,
-      subject: `⚠️ SLA Warning: Ticket ${ticket.ticket_number} at ${thresholdPercent}%`,
-      template: 'slaWarning',
+      subject: `SLA Warning: Ticket ${ticket.ticket_number} at ${thresholdPercent}%`,
+      template: 'slaBreach',
       data: {
         first_name: ticket.assignedTo.first_name,
         ticket_number: ticket.ticket_number,
         subject: ticket.subject,
         priority: ticket.priority,
+        contact_name: contactName,      
+        created_at: ticket.created_at,  
+        sla_due: ticket.due_date,     
+        assigned_to: `${ticket.assignedTo.first_name} ${ticket.assignedTo.last_name}`,
         threshold: thresholdPercent,
         time_remaining: timeRemaining,
-        ticket_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`
+        ticket_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`,
+        company_name: process.env.COMPANY_NAME || 'Your Company'
+      }
+    });
+
+    // Add in-app notification for SLA warning
+    await createNotification({
+      userId: ticket.assignedTo.id,
+      type: NOTIFICATION_TYPES.TICKET_SLA_WARNING,
+      title: `SLA Warning: Ticket ${ticket.ticket_number} at ${thresholdPercent}%`,
+      body: `Ticket "${ticket.subject}" is at ${thresholdPercent}% of SLA resolution time. ${timeRemaining} remaining.`,
+      data: {
+        ticket_id: ticket.id,
+        ticket_number: ticket.ticket_number,
+        threshold: thresholdPercent,
+        time_remaining: timeRemaining,
+        priority: ticket.priority,
+        url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`
       }
     });
 
@@ -197,19 +224,51 @@ const sendBreachNotification = async (ticket: Ticket & {
   assignedTo: User
 }): Promise<void> => {
   try {
+    // Get contact information
+    const contact = await Contact.findByPk(ticket.contact_id);
+    const contactName = contact 
+      ? `${contact.first_name} ${contact.last_name}`.trim() || 'Unknown Customer'
+      : 'Unknown Customer';
+    
+    // Get assigned to name
+    const assignedToName = ticket.assignedTo
+      ? `${ticket.assignedTo.first_name || ''} ${ticket.assignedTo.last_name || ''}`.trim() || 'Unassigned'
+      : 'Unassigned';
+
     // Notify assigned agent
     if (ticket.assignedTo) {
       await sendEmail({
         to: ticket.assignedTo.email,
-        subject: `🚨 SLA BREACHED: Ticket ${ticket.ticket_number}`,
+        subject: `SLA BREACHED: Ticket ${ticket.ticket_number}`,
         template: 'slaBreached',
         data: {
           first_name: ticket.assignedTo.first_name,
           ticket_number: ticket.ticket_number,
           subject: ticket.subject,
           priority: ticket.priority,
+          contact_name: contactName,
+          created_at: ticket.created_at,  
+          sla_due: ticket.due_date,       
+          assigned_to: assignedToName,     
           breach_duration: getBreachDuration(ticket),
-          ticket_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`
+          ticket_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`,
+          reassign_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}/reassign`,  
+          company_name: process.env.COMPANY_NAME || 'Your Company'
+        }
+      });
+
+      // Add in-app notification for assigned agent
+      await createNotification({
+        userId: ticket.assignedTo.id,
+        type: NOTIFICATION_TYPES.TICKET_SLA_BREACH,
+        title: `SLA BREACHED: Ticket ${ticket.ticket_number}`,
+        body: `SLA has been breached for ticket "${ticket.subject}". Breach duration: ${getBreachDuration(ticket)}.`,
+        data: {
+          ticket_id: ticket.id,
+          ticket_number: ticket.ticket_number,
+          breach_duration: getBreachDuration(ticket),
+          priority: ticket.priority,
+          url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`
         }
       });
     }
@@ -222,16 +281,36 @@ const sendBreachNotification = async (ticket: Ticket & {
     for (const manager of managers) {
       await sendEmail({
         to: manager.email,
-        subject: `🚨 MANAGER ALERT: SLA Breach - Ticket ${ticket.ticket_number}`,
+        subject: `MANAGER ALERT: SLA Breach - Ticket ${ticket.ticket_number}`,
         template: 'slaBreachedManager',
         data: {
           first_name: manager.first_name,
           ticket_number: ticket.ticket_number,
           subject: ticket.subject,
           priority: ticket.priority,
-          assigned_to: ticket.assignedTo?.fullName || 'Unassigned',
+          contact_name: contactName,
+          assigned_to: assignedToName,
+          created_at: ticket.created_at,      
+          sla_due: ticket.due_date,         
           breach_duration: getBreachDuration(ticket),
-          ticket_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`
+          ticket_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`,
+          company_name: process.env.COMPANY_NAME || 'Your Company'
+        }
+      });
+
+      // Add in-app notification for managers
+      await createNotification({
+        userId: manager.id,
+        type: NOTIFICATION_TYPES.TICKET_SLA_BREACH,
+        title: `MANAGER ALERT: SLA Breach - Ticket ${ticket.ticket_number}`,
+        body: `Ticket "${ticket.subject}" assigned to ${assignedToName} has breached SLA by ${getBreachDuration(ticket)}.`,
+        data: {
+          ticket_id: ticket.id,
+          ticket_number: ticket.ticket_number,
+          assigned_to: assignedToName,
+          breach_duration: getBreachDuration(ticket),
+          priority: ticket.priority,
+          url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`
         }
       });
     }
@@ -275,7 +354,6 @@ const sendSLAReports = async (): Promise<void> => {
       }
     });
 
-
     const complianceRate = totalTickets > 0
       ? ((totalTickets - breachedTickets) / totalTickets) * 100
       : 100;
@@ -305,7 +383,6 @@ const sendSLAReports = async (): Promise<void> => {
       if (priorityStats[priority as keyof typeof priorityStats]) {
         priorityStats[priority as keyof typeof priorityStats].count++;
         
-        // FIXED - use type assertion
         const activeStatuses = [TICKET_STATUS.NEW, TICKET_STATUS.OPEN, TICKET_STATUS.PENDING] as const;
         const isBreached = ticket.due_date && new Date(ticket.due_date) < new Date() 
           && activeStatuses.includes(ticket.status as typeof activeStatuses[number]);
@@ -315,12 +392,12 @@ const sendSLAReports = async (): Promise<void> => {
         }
       }
     }
+    
     // Calculate breach rates as percentages
     for (const [key, stats] of Object.entries(priorityStats)) {
       void key;
       if (stats.count > 0) {
         stats.breach_rate = (stats.breach_rate / stats.count) * 100;
-        // For now, set compliance rates based on breach rate
         stats.resolution_compliance = 100 - stats.breach_rate;
         stats.response_compliance = 100 - stats.breach_rate;
       } else {
@@ -351,17 +428,13 @@ const sendSLAReports = async (): Promise<void> => {
       return `${mins}m`;
     };
 
-    const avgResponseTime = formatTime(avgResolutionTime * 0.3); // Estimate response time as 30% of resolution
+    const avgResponseTime = formatTime(avgResolutionTime * 0.3);
     const avgResolutionTimeFormatted = formatTime(avgResolutionTime);
 
-    // Get response targets based on priority
     const responseTarget = '2 hours';
     const resolutionTarget = '24 hours';
-
-    // Format period
     const period = `Last 24 Hours (${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()})`;
 
-    // Format breached tickets list for template
     const formattedBreachedTickets = breachedTicketsList.map(ticket => ({
       number: ticket.ticket_number,
       subject: ticket.subject,
@@ -370,7 +443,6 @@ const sendSLAReports = async (): Promise<void> => {
       url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`
     }));
 
-    // Get managers
     const managers = await User.findAll({
       where: { role: 'manager' }
     });
@@ -378,7 +450,7 @@ const sendSLAReports = async (): Promise<void> => {
     for (const manager of managers) {
       await sendEmail({
         to: manager.email,
-        subject: `📊 SLA Report - ${period}`,
+        subject: `SLA Report - ${period}`,
         template: 'slaReport',
         data: {
           first_name: manager.first_name,

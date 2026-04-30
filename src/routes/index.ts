@@ -10,7 +10,10 @@ import campaignRoutes from './campaignRoutes';
 import dashboardRoutes from './dashboardRoutes';
 import adminRoutes from './adminRoutes';
 import organizationRoutes from './organizationRoutes';
+import messageRoutes from './messageRoutes';
+import notificationRoutes from './notificationRoutes';
 import { apiLimiter } from '../config/rateLimit';
+
 
 const router = Router();
 
@@ -39,6 +42,8 @@ router.use('/campaigns', campaignRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/admin', adminRoutes);
 router.use('/organization', organizationRoutes);
+router.use('/messages', messageRoutes);
+router.use('/notifications', notificationRoutes);
 
 // 404 handler for undefined routes
 router.use('*', (req, res) => {

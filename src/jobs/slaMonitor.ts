@@ -343,7 +343,8 @@ const sendSLAReports = async (): Promise<void> => {
     const breachedTickets = await Ticket.count({
       where: {
         status: { [Op.in]: [TICKET_STATUS.NEW, TICKET_STATUS.OPEN, TICKET_STATUS.PENDING] },
-        due_date: { [Op.lt]: new Date() }
+        due_date: { [Op.lt]: new Date() },
+        created_at: { [Op.between]: [startDate, endDate] }
       }
     });
 

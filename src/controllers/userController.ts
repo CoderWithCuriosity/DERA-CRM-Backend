@@ -74,7 +74,7 @@ export const updateProfile = catchAsync(async (req: AuthenticatedRequest, res: R
     });
   }
 
-  const { first_name, last_name, email } = req.body;
+  const { first_name, last_name, email, settings } = req.body;
 
   const user = await User.findByPk(req.user.id);
 
@@ -100,13 +100,15 @@ export const updateProfile = catchAsync(async (req: AuthenticatedRequest, res: R
   const oldUserData = {
     first_name: user.first_name,
     last_name: user.last_name,
-    email: user.email
+    email: user.email,
+    settings: settings
   };
 
   await user.update({
     first_name: first_name || user.first_name,
     last_name: last_name || user.last_name,
-    email: email || user.email
+    email: email || user.email,
+    settings: settings || user.settings
   });
 
   // AFTER update:
@@ -121,7 +123,8 @@ export const updateProfile = catchAsync(async (req: AuthenticatedRequest, res: R
     newData: {
       first_name: user.first_name,
       last_name: user.last_name,
-      email: user.email
+      email: user.email,
+      settings: user.settings
     }
   });
 

@@ -719,7 +719,7 @@ export const getKanbanBoard = catchAsync(async (req: Request, res: Response) => 
   });
 });
 
-// Helper function to get deal summary
+
 // Helper function to get deal summary
 async function getDealSummary(whereClause: any) {
   const stages = await Deal.findAll({

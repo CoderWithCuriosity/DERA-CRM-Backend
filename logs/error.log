@@ -94,3 +94,7 @@
 
 [31mcontact_name is not defined[39m
 2026-04-27 13:00:05:05 [31merror[39m: [31mError sending email: Failed to render email template[39m
+2026-04-30 20:26:08:268 [31merror[39m: [31mCannot GET /favicon.ico[39m
+2026-05-01 13:05:14:514 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 192.178.223.108:587[39m
+2026-05-03 08:00:00:00 [31merror[39m: [31mFailed to send digest to user 2: column contact.fullName does not exist[39m
+2026-05-03 08:00:00:00 [31merror[39m: [31mFailed to send digest to user 1: column contact.fullName does not exist[39m

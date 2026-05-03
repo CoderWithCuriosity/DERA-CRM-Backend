@@ -1,7 +1,7 @@
   import { Request, Response } from 'express';
   import { Op } from 'sequelize';
   import { 
-    User, Contact, Deal, Ticket, Campaign, AuditLog,
+    User, Contact, Deal, Ticket, Campaign, AuditLog, Backup,
     sequelize 
   } from '../models';
   import { 
@@ -698,66 +698,6 @@ export const getAuditLogSummary = catchAsync(async (req: Request, res: Response)
     });
   });
 
-// @desc    Create database backup
-// @route   POST /api/admin/backup
-// @access  Private/Admin
-export const createBackup = catchAsync(async (req: Request, res: Response) => {
-  // createDatabaseBackup now returns a number (backup ID)
-  const backupId = await createDatabaseBackup();
-
-  // Log audit
-
-await createSimpleAudit(
-  req.user.id,
-  AUDIT_ACTIONS.CREATE,
-  ENTITY_TYPES.BACKUP,
-  backupId,
-  `Database Backup ${backupId}`,
-  req
-);
-
-  res.status(HTTP_STATUS.ACCEPTED).json({
-    success: true,
-    message: 'Backup started. You will be notified when complete.',
-    data: {
-      backup_id: backupId,
-      estimated_time: '2 minutes'
-    }
-  });
-});
-
-// @desc    Get backup status
-// @route   GET /api/admin/backup/:backup_id/status
-// @access  Private/Admin
-export const getBackupStatus = catchAsync(async (req: Request, res: Response) => {
-  const { backup_id } = req.params;
-  
-  // Convert to number since our service expects a number
-  const backupId = parseInt(backup_id, 10);
-  
-  if (isNaN(backupId)) {
-    return res.status(HTTP_STATUS.BAD_REQUEST).json({
-      success: false,
-      message: 'Invalid backup ID'
-    });
-  }
-
-  // Use the renamed imported function
-  const status = await getBackupStatusService(backupId);
-
-  if (!status) {
-    return res.status(HTTP_STATUS.NOT_FOUND).json({
-      success: false,
-      message: 'Backup not found'
-    });
-  }
-
-  return res.status(HTTP_STATUS.OK).json({
-    success: true,
-    data: status
-  });
-});
-
   // @desc    Get system health
   // @route   GET /api/admin/health
   // @access  Private/Admin
@@ -878,6 +818,247 @@ export const getBackupStatus = catchAsync(async (req: Request, res: Response) =>
       data: config
     });
   });
+
+  // @desc    Create database backup
+// @route   POST /api/admin/backup
+// @access  Private/Admin
+export const createBackup = catchAsync(async (req: Request, res: Response) => {
+  const backupId = await createDatabaseBackup();
+
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.CREATE,
+    ENTITY_TYPES.BACKUP,
+    backupId,
+    `Database Backup ${backupId}`,
+    req
+  );
+
+  res.status(HTTP_STATUS.ACCEPTED).json({
+    success: true,
+    message: 'Backup started. You will be notified when complete.',
+    data: {
+      backup_id: backupId,
+      estimated_time: '2 minutes'
+    }
+  });
+});
+
+// @desc    Get backup status
+// @route   GET /api/admin/backup/:backup_id/status
+// @access  Private/Admin
+export const getBackupStatus = catchAsync(async (req: Request, res: Response) => {
+  const { backup_id } = req.params;
+  
+  const backupId = parseInt(backup_id, 10);
+  
+  if (isNaN(backupId)) {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      message: 'Invalid backup ID'
+    });
+  }
+
+  const status = await getBackupStatusService(backupId);
+
+  if (!status) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      success: false,
+      message: 'Backup not found'
+    });
+  }
+
+  return res.status(HTTP_STATUS.OK).json({
+    success: true,
+    data: status
+  });
+});
+
+// @desc    Get all backups from database
+// @route   GET /api/admin/backups
+// @access  Private/Admin
+export const getBackups = catchAsync(async (_req: Request, res: Response) => {
+  // Fetch backups from database, not from filesystem
+  const backups = await Backup.findAll({
+    order: [['created_at', 'DESC']],
+    attributes: ['id', 'filename', 'size', 'status', 'created_at', 'completed_at', 'error_message']
+  });
+
+  // Transform to expected format
+  const formattedBackups = backups.map(backup => ({
+    id: backup.id,
+    filename: backup.filename,
+    size: backup.size,
+    status: backup.status === 'pending' ? 'processing' : backup.status,
+    created_at: backup.created_at.toISOString(),
+    completed_at: backup.completed_at?.toISOString(),
+    download_url: backup.status === 'completed' ? `/api/admin/backup/${backup.id}/download` : undefined,
+    // Set expiration to 30 days from creation
+    expires_at: new Date(backup.created_at.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString()
+  }));
+
+  return res.status(HTTP_STATUS.OK).json({
+    success: true,
+    data: formattedBackups
+  });
+});
+
+// @desc    Download backup file
+// @route   GET /api/admin/backup/:backup_id/download
+// @access  Private/Admin
+export const downloadBackup = catchAsync(async (req: Request, res: Response) => {
+  const { backup_id } = req.params;
+  
+  const backupId = parseInt(backup_id, 10);
+  
+  if (isNaN(backupId)) {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      message: 'Invalid backup ID'
+    });
+  }
+
+  // Find backup in database
+  const backup = await Backup.findByPk(backupId);
+  
+  if (!backup) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      success: false,
+      message: 'Backup not found'
+    });
+  }
+
+  if (backup.status !== 'completed') {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      message: 'Backup is not ready for download'
+    });
+  }
+
+  // Check if file exists
+  if (!fs.existsSync(backup.path)) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      success: false,
+      message: 'Backup file not found on disk'
+    });
+  }
+
+  const stat = fs.statSync(backup.path);
+  
+  res.setHeader('Content-Length', stat.size);
+  res.setHeader('Content-Type', 'application/octet-stream');
+  res.setHeader('Content-Disposition', `attachment; filename=${backup.filename}`);
+  
+  // Create read stream and pipe to response
+  const readStream = fs.createReadStream(backup.path);
+  readStream.pipe(res);
+  
+  // Handle stream errors
+  readStream.on('error', (error) => {
+    console.error('Stream error:', error);
+    if (!res.headersSent) {
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: 'Error streaming backup file'
+      });
+    }
+  });
+
+  return;
+});
+
+// @desc    Delete backup
+// @route   DELETE /api/admin/backup/:backup_id
+// @access  Private/Admin
+export const deleteBackup = catchAsync(async (req: Request, res: Response) => {
+  const { backup_id } = req.params;
+  
+  const backupId = parseInt(backup_id, 10);
+  
+  if (isNaN(backupId)) {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      message: 'Invalid backup ID'
+    });
+  }
+
+  // Find backup in database
+  const backup = await Backup.findByPk(backupId);
+  
+  if (!backup) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      success: false,
+      message: 'Backup not found'
+    });
+  }
+
+  // Delete file from disk if it exists
+  if (fs.existsSync(backup.path)) {
+    try {
+      fs.unlinkSync(backup.path);
+    } catch (error) {
+      console.error('Error deleting backup file:', error);
+    }
+  }
+
+  // Delete record from database
+  await backup.destroy();
+  
+  // Log audit
+  await createSimpleAudit(
+    req.user.id,
+    AUDIT_ACTIONS.DELETE,
+    ENTITY_TYPES.BACKUP,
+    backupId,
+    `Deleted backup ${backup.filename}`,
+    req
+  );
+  
+  return res.status(HTTP_STATUS.OK).json({
+    success: true,
+    message: 'Backup deleted successfully'
+  });
+});
+
+// @desc    Get backup file info (for status polling)
+// @route   GET /api/admin/backup/:backup_id/info
+// @access  Private/Admin
+export const getBackupInfo = catchAsync(async (req: Request, res: Response) => {
+  const { backup_id } = req.params;
+  
+  const backupId = parseInt(backup_id, 10);
+  
+  if (isNaN(backupId)) {
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      message: 'Invalid backup ID'
+    });
+  }
+
+  const backup = await Backup.findByPk(backupId, {
+    attributes: ['id', 'filename', 'size', 'status', 'created_at', 'completed_at', 'error_message']
+  });
+  
+  if (!backup) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      success: false,
+      message: 'Backup not found'
+    });
+  }
+
+  return res.status(HTTP_STATUS.OK).json({
+    success: true,
+    data: {
+      backup_id: backup.id.toString(),
+      status: backup.status === 'pending' ? 'processing' : backup.status,
+      size: backup.size > 0 ? formatBytes(backup.size) : undefined,
+      download_url: backup.status === 'completed' ? `/api/admin/backup/${backup.id}/download` : undefined,
+      expires_at: new Date(backup.created_at.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      completed_at: backup.completed_at?.toISOString(),
+      error_message: backup.error_message
+    }
+  });
+});
 
   // Helper functions
   function formatBytes(bytes: number): string {

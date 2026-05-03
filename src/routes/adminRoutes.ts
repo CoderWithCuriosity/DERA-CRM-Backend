@@ -10,7 +10,11 @@ import {
   getAuditLogDetail,
   getEntityChangeHistory,
   getAuditLogSummary,
-  getAuditLogs
+  getAuditLogs,
+  getBackups,
+  getBackupInfo,
+  downloadBackup,
+  deleteBackup
 } from '../controllers/adminController';
 import { protect, restrictTo } from '../middleware/auth';
 import { validate } from '../middleware/validation';
@@ -144,5 +148,33 @@ router.get(
   validate,
   getBackupStatus
 );
+
+/**
+ * @route   GET /api/admin/backups
+ * @desc    Get backups
+ * @access  Private/Admin
+ */
+router.get('/backups', getBackups);
+
+/**
+ * @route   GET /api/admin/backup/:backup_id/info
+ * @desc    Get backup Detailed info
+ * @access  Private/Admin
+ */
+router.get('/backup/:backup_id/info', getBackupInfo);
+
+/**
+ * @route   GET /api/admin/backup/:backup_id/download
+ * @desc    Get backup (Download Backup)
+ * @access  Private/Admin
+ */
+router.get('/backup/:backup_id/download', downloadBackup);
+
+/**
+ * @route   DELETE /api/admin/backup/:backup_id
+ * @desc    DELETE backup 
+ * @access  Private/Admin
+ */
+router.delete('/backup/:backup_id', deleteBackup);
 
 export default router;

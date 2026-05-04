@@ -98,3 +98,4 @@
 2026-05-01 13:05:14:514 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 192.178.223.108:587[39m
 2026-05-03 08:00:00:00 [31merror[39m: [31mFailed to send digest to user 2: column contact.fullName does not exist[39m
 2026-05-03 08:00:00:00 [31merror[39m: [31mFailed to send digest to user 1: column contact.fullName does not exist[39m
+2026-05-04 12:30:22:3022 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 172.217.215.108:587[39m

@@ -417,6 +417,14 @@ export const updateUserRole = catchAsync(async (req: AuthenticatedRequest, res: 
   const { id } = req.params;
   const { role } = req.body;
 
+  // Check if trying to modify the super admin (ID 1)
+  if (parseInt(id) === 1) {
+    return res.status(HTTP_STATUS.FORBIDDEN).json({
+      success: false,
+      message: 'Cannot change the role of the super admin user'
+    });
+  }
+
   if (!Object.values(USER_ROLES).includes(role)) {
     return res.status(HTTP_STATUS.BAD_REQUEST).json({
       success: false,
@@ -433,10 +441,18 @@ export const updateUserRole = catchAsync(async (req: AuthenticatedRequest, res: 
     });
   }
 
+  // Prevent self-role change (optional but recommended)
+  if (parseInt(id) === req.user.id) {
+    return res.status(HTTP_STATUS.FORBIDDEN).json({
+      success: false,
+      message: 'Cannot change your own role. Ask another admin to do it.'
+    });
+  }
+
   await user.update({ role });
 
   // Log audit
-    await createSimpleAudit(
+  await createSimpleAudit(
     req.user.id,
     AUDIT_ACTIONS.UPDATE,
     ENTITY_TYPES.USER,

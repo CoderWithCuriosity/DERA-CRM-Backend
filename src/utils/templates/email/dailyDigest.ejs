@@ -345,8 +345,7 @@
                             <div class="deal-name">
                                 <%= deal.name %>
                                     <span class="deal-amount">
-                                        <%= new Intl.NumberFormat('en-US', { style: 'currency' , currency: 'USD'
-                                            }).format(deal.amount) %>
+                                        <%= formatCurrency(deal.amount) %>
                                     </span>
                             </div>
                             <div class="deal-stage">Stage: <%= deal.stage %> • Probability: <%= deal.probability %>%

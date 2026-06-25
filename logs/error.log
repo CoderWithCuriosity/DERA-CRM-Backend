@@ -99,3 +99,6 @@
 2026-05-03 08:00:00:00 [31merror[39m: [31mFailed to send digest to user 2: column contact.fullName does not exist[39m
 2026-05-03 08:00:00:00 [31merror[39m: [31mFailed to send digest to user 1: column contact.fullName does not exist[39m
 2026-05-04 12:30:22:3022 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 172.217.215.108:587[39m
+2026-05-04 13:05:08:58 [31merror[39m: [31mEmail transporter verification failed: connect ETIMEDOUT 172.217.215.109:587[39m
+2026-06-25 08:00:00:00 [31merror[39m: [31mFailed to send digest to user 2: column contact.fullName does not exist[39m
+2026-06-25 08:00:00:00 [31merror[39m: [31mFailed to send digest to user 1: column contact.fullName does not exist[39m

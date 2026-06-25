@@ -1,8 +1,7 @@
-import { Op, fn, col, literal } from 'sequelize';
-import { Contact, Deal, Activity, Ticket, User, sequelize } from '../models';
+import { Op } from 'sequelize';
+import { Contact, Deal, Activity, Ticket, User } from '../models';
 import { 
-  DEAL_STAGES, DEAL_STATUS, TICKET_STATUS, 
-  TIME, ACTIVITY_STATUS 
+  DEAL_STAGES, DEAL_STATUS, TICKET_STATUS, ACTIVITY_STATUS 
 } from '../config/constants';
 
 /**

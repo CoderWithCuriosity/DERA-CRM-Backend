@@ -6,6 +6,7 @@ import logger from '../config/logger';
 import AppError from '../utils/AppError';
 import { HTTP_STATUS } from '../config/constants';
 import { v4 as uuidv4 } from 'uuid';
+import Organization from '../models/Organization';
 
 // Create transporter
 const transporter = nodemailer.createTransport({
@@ -94,7 +95,7 @@ class EmailQueue {
           if (!this.processing) {
             this.process();
           }
-        }, 5000 * job.retries); // Exponential backoff
+        }, 5000 * job.retries);
       } else {
         logger.error(`Email failed after ${job.maxRetries} retries: ${job.id}`, error);
       }
@@ -105,6 +106,64 @@ class EmailQueue {
 const emailQueue = new EmailQueue();
 
 /**
+ * Get organization by user or default
+ */
+const getOrganization = async (user?: any): Promise<any> => {
+  try {
+    let organization = null;
+    
+    // If user has organization_id, try to find by that
+    if (user && user.organization_id) {
+      organization = await Organization.findByPk(user.organization_id);
+    }
+    
+    // If no organization found, get the first one
+    if (!organization) {
+      organization = await Organization.findOne({
+        order: [['id', 'ASC']]
+      });
+    }
+    
+    if (!organization) {
+      // Fallback to default values if no organization exists
+      return {
+        company_name: 'DERA CRM',
+        currency: 'USD',
+        timezone: 'UTC'
+      };
+    }
+    
+    return organization;
+  } catch (error) {
+    logger.error('Error fetching organization:', error);
+    return {
+      company_name: 'DERA CRM',
+      currency: 'USD',
+      timezone: 'UTC'
+    };
+  }
+};
+
+/**
+ * Currency formatting helper for templates
+ * This will be passed to EJS templates
+ */
+export const formatCurrency = (amount: number, currency: string = 'USD'): string => {
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency.toUpperCase()
+    }).format(amount || 0);
+  } catch (error) {
+    // Fallback to USD if currency is invalid
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount || 0);
+  }
+};
+
+/**
  * Render email template
  */
 export const renderTemplate = async (template: string, data: any): Promise<string> => {
@@ -112,7 +171,9 @@ export const renderTemplate = async (template: string, data: any): Promise<strin
     const templatePath = path.join(__dirname, '../utils/templates/email', `${template}.ejs`);
     const templateData = {
       ...data,
-      subject: data.subject
+      subject: data.subject,
+      // Add the currency formatter to template data
+      formatCurrency: (amount: number) => formatCurrency(amount, data.currency || 'USD')
     };
     return await ejs.renderFile(templatePath, templateData);
   } catch (error) {
@@ -148,7 +209,7 @@ export const sendEmailDirect = async ({
       attachments,
       replyTo: emailConfig.replyTo,
       headers: {
-        'X-Application': 'DERA CRM',
+        'X-Application': data.company_name || 'DERA CRM',
         'X-Environment': process.env.NODE_ENV || 'development'
       }
     };
@@ -163,7 +224,6 @@ export const sendEmailDirect = async ({
 /**
  * Queue email for sending
  */
-// Define the exact type that emailQueue.add expects
 type EmailQueueJobInput = {
   to: string;
   subject: string;
@@ -175,7 +235,7 @@ type EmailQueueJobInput = {
     path?: string;
     contentType?: string;
   }>;
-  maxRetries: number; // This is required
+  maxRetries: number;
 };
 
 /**
@@ -192,12 +252,11 @@ export const sendEmail = async (options: {
     path?: string;
     contentType?: string;
   }>;
-  maxRetries?: number; // Make it optional in your function
+  maxRetries?: number;
 }): Promise<string> => {
-  // Provide a default value for maxRetries
   const queueInput: EmailQueueJobInput = {
     ...options,
-    maxRetries: options.maxRetries ?? 3, // Default to 3 if not provided
+    maxRetries: options.maxRetries ?? 3,
   };
   
   return emailQueue.add(queueInput);
@@ -228,13 +287,17 @@ export const sendBulkEmails = async (
  * Send welcome email
  */
 export const sendWelcomeEmail = async (user: any): Promise<void> => {
+  const organization = await getOrganization(user);
+  const companyName = organization.company_name || 'DERA CRM';
+  
   await sendEmail({
     to: user.email,
-    subject: 'Welcome to DERA CRM!',
+    subject: `Welcome to ${companyName}!`,
     template: 'welcome',
     data: {
       first_name: user.first_name,
-      company_name: 'DERA CRM',
+      company_name: companyName,
+      currency: organization.currency || 'USD',
       login_url: `${process.env.FRONTEND_URL}/login`
     }
   });
@@ -248,6 +311,9 @@ export const sendTicketAssignmentEmail = async (
   assignee: any,
   assignedBy: any
 ): Promise<void> => {
+  const organization = await getOrganization(assignee);
+  const companyName = organization.company_name || 'DERA CRM';
+  
   await sendEmail({
     to: assignee.email,
     subject: `New Ticket Assigned: ${ticket.ticket_number}`,
@@ -259,7 +325,9 @@ export const sendTicketAssignmentEmail = async (
       description: ticket.description,
       priority: ticket.priority,
       assigned_by: `${assignedBy.first_name} ${assignedBy.last_name}`,
-      ticket_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`
+      ticket_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`,
+      company_name: companyName,
+      currency: organization.currency || 'USD'
     }
   });
 };
@@ -271,6 +339,9 @@ export const sendTicketResolutionEmail = async (
   ticket: any,
   resolvedBy: any
 ): Promise<void> => {
+  const organization = await getOrganization(resolvedBy);
+  const companyName = organization.company_name || 'DERA CRM';
+  
   await sendEmail({
     to: ticket.contact.email,
     subject: `Ticket Resolved: ${ticket.ticket_number}`,
@@ -280,7 +351,9 @@ export const sendTicketResolutionEmail = async (
       ticket_number: ticket.ticket_number,
       subject: ticket.subject,
       resolved_by: `${resolvedBy.first_name} ${resolvedBy.last_name}`,
-      ticket_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`
+      ticket_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`,
+      company_name: companyName,
+      currency: organization.currency || 'USD'
     }
   });
 };
@@ -293,12 +366,16 @@ export const sendDealAssignmentEmail = async (
   assignee: any,
   assignedBy: any
 ): Promise<void> => {
+  const organization = await getOrganization(assignee);
+  const companyName = organization.company_name || 'DERA CRM';
+  
   const contactFullName = deal.contact 
     ? `${deal.contact.first_name || ''} ${deal.contact.last_name || ''}`.trim()
     : 'Unknown Contact';
+  
   await sendEmail({
     to: assignee.email,
-    subject: 'New Deal Assigned',
+    subject: `New Deal Assigned - ${companyName}`,
     template: 'dealAssigned',
     data: {
       first_name: assignee.first_name,
@@ -306,8 +383,11 @@ export const sendDealAssignmentEmail = async (
       contact_name: contactFullName,
       amount: deal.amount,
       stage: deal.stage,
+      probability: deal.probability || 50,
       assigned_by: `${assignedBy.first_name} ${assignedBy.last_name}`,
-      deal_url: `${process.env.FRONTEND_URL}/deals/${deal.id}`
+      deal_url: `${process.env.FRONTEND_URL}/deals/${deal.id}`,
+      company_name: companyName,
+      currency: organization.currency || 'USD'
     }
   });
 };
@@ -319,9 +399,12 @@ export const sendCampaignSummaryEmail = async (
   campaign: any,
   recipient: any
 ): Promise<void> => {
+  const organization = await getOrganization(recipient);
+  const companyName = organization.company_name || 'DERA CRM';
+  
   await sendEmail({
     to: recipient.email,
-    subject: `Campaign Summary: ${campaign.name}`,
+    subject: `Campaign Summary: ${campaign.name} - ${companyName}`,
     template: 'campaignSummary',
     data: {
       first_name: recipient.first_name,
@@ -329,9 +412,11 @@ export const sendCampaignSummaryEmail = async (
       sent_count: campaign.sent_count,
       open_count: campaign.open_count,
       click_count: campaign.click_count,
-      open_rate: campaign.openRate.toFixed(2),
-      click_rate: campaign.clickRate.toFixed(2),
-      campaign_url: `${process.env.FRONTEND_URL}/campaigns/${campaign.id}`
+      open_rate: campaign.openRate?.toFixed(2) || '0.00',
+      click_rate: campaign.clickRate?.toFixed(2) || '0.00',
+      campaign_url: `${process.env.FRONTEND_URL}/campaigns/${campaign.id}`,
+      company_name: companyName,
+      currency: organization.currency || 'USD'
     }
   });
 };
@@ -340,13 +425,18 @@ export const sendCampaignSummaryEmail = async (
  * Send weekly summary email
  */
 export const sendWeeklySummaryEmail = async (user: any, stats: any): Promise<void> => {
+  const organization = await getOrganization(user);
+  const companyName = organization.company_name || 'DERA CRM';
+  
   await sendEmail({
     to: user.email,
-    subject: 'Your Weekly DERA CRM Summary',
+    subject: `Your Weekly ${companyName} Summary`,
     template: 'weeklySummary',
     data: {
       first_name: user.first_name,
-      ...stats
+      ...stats,
+      company_name: companyName,
+      currency: organization.currency || 'USD'
     }
   });
 };
@@ -355,9 +445,12 @@ export const sendWeeklySummaryEmail = async (user: any, stats: any): Promise<voi
  * Send SLA breach warning email
  */
 export const sendSLABreachEmail = async (ticket: any, assignee: any): Promise<void> => {
+  const organization = await getOrganization(assignee);
+  const companyName = organization.company_name || 'DERA CRM';
+  
   await sendEmail({
     to: assignee.email,
-    subject: `URGENT: SLA Breach Warning - ${ticket.ticket_number}`,
+    subject: `URGENT: SLA Breach Warning - ${ticket.ticket_number} - ${companyName}`,
     template: 'slaBreach',
     data: {
       first_name: assignee.first_name,
@@ -365,7 +458,9 @@ export const sendSLABreachEmail = async (ticket: any, assignee: any): Promise<vo
       subject: ticket.subject,
       priority: ticket.priority,
       due_date: ticket.due_date,
-      ticket_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`
+      ticket_url: `${process.env.FRONTEND_URL}/tickets/${ticket.id}`,
+      company_name: companyName,
+      currency: organization.currency || 'USD'
     }
   });
 };
@@ -374,13 +469,18 @@ export const sendSLABreachEmail = async (ticket: any, assignee: any): Promise<vo
  * Send daily digest email
  */
 export const sendDailyDigestEmail = async (user: any, digest: any): Promise<void> => {
+  const organization = await getOrganization(user);
+  const companyName = organization.company_name || 'DERA CRM';
+  
   await sendEmail({
     to: user.email,
-    subject: 'Your Daily DERA CRM Digest',
+    subject: `Your Daily ${companyName} Digest`,
     template: 'dailyDigest',
     data: {
       first_name: user.first_name,
-      ...digest
+      ...digest,
+      company_name: companyName,
+      currency: organization.currency || 'USD'
     }
   });
 };
@@ -394,18 +494,22 @@ export const sendInvitationEmail = async (
   company: string,
   token: string
 ): Promise<void> => {
+  const organization = await getOrganization(inviter);
+  const companyName = organization.company_name || company || 'DERA CRM';
+  
   const invitationUrl = `${process.env.FRONTEND_URL}/accept-invite?token=${token}`;
   
   await sendEmail({
     to: email,
-    subject: `You've been invited to join ${company}`,
+    subject: `You've been invited to join ${companyName}`,
     template: 'userInvitation',
     data: {
       email,
       inviter_name: `${inviter.first_name} ${inviter.last_name}`,
-      company_name: company,
+      company_name: companyName,
       invitation_url: invitationUrl,
-      expires_in: '7 days'
+      expires_in: '7 days',
+      currency: organization.currency || 'USD'
     }
   });
 };

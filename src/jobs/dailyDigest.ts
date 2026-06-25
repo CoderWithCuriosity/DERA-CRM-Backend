@@ -170,7 +170,7 @@ const generateUserDigest = async (userId: number): Promise<any> => {
     {
       model: Contact,
       as: 'contact',
-      attributes: ['fullName', 'first_name', 'last_name', 'email']
+      attributes: ['first_name', 'last_name', 'email']
     }
   ],
     limit: 5,
@@ -212,7 +212,7 @@ const generateUserDigest = async (userId: number): Promise<any> => {
   const formattedTickets = urgentTickets.map(ticket => ({
     number: ticket.ticket_number,
     subject: ticket.subject,
-    customer: ticket.contact?.fullName || 'Unknown',
+    customer: ticket.contact ? `${ticket.contact.first_name} ${ticket.contact.last_name}` : 'Unknown',
     priority: ticket.priority,
     due_time: ticket.due_date ? formatDate(ticket.due_date, 'HH:mm') : 'No due date'
   }));

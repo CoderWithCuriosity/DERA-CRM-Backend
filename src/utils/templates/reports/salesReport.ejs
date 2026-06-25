@@ -125,7 +125,7 @@
                     <div class="card-label">Deals Won</div>
                 </div>
                 <div class="summary-card">
-                    <div class="card-value"><%= new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(total_revenue) %></div>
+                    <div class="card-value"><%= formatCurrency(total_revenue) %></div>
                     <div class="card-label">Total Revenue</div>
                 </div>
                 <div class="summary-card">
@@ -158,9 +158,9 @@
                     <tr>
                         <td><%= rep.name %></td>
                         <td><%= rep.deals_won %></td>
-                        <td><%= new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(rep.revenue) %></td>
+                        <td><%= formatCurrency(rep.revenue) %></td>
                         <td><%= rep.win_rate %>%</td>
-                        <td><%= new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(rep.avg_deal_size) %></td>
+                        <td><%= formatCurrency(rep.avg_deal_size) %></td>
                     </tr>
                     <% }); %>
                 </tbody>
@@ -181,8 +181,8 @@
                     <tr>
                         <td><%= stage.name %></td>
                         <td><%= stage.count %></td>
-                        <td><%= new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(stage.value) %></td>
-                        <td><%= new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(stage.weighted_value) %></td>
+                        <td><%= formatCurrency(stage.value) %></td>
+                        <td><%= formatCurrency(stage.weighted_value) %></td>
                     </tr>
                     <% }); %>
                 </tbody>

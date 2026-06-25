@@ -260,8 +260,7 @@
                     </div>
                     <div class="stat-label">Deals Won</div>
                     <div class="stat-value" style="font-size: 20px;">
-                        <%= new Intl.NumberFormat('en-US', { style: 'currency' , currency: 'USD' }).format(deals_value)
-                            %>
+                        <%= formatCurrency(deals_value) %>
                     </div>
                     <div class="stat-change change-positive">↑ <%= value_change %>% vs last week</div>
                 </div>
@@ -317,8 +316,7 @@
                             </span>
                             <span><strong>
                                     <%= stage.count %>
-                                </strong> deals • <%= new Intl.NumberFormat('en-US', { style: 'currency' ,
-                                    currency: 'USD' }).format(stage.value) %></span>
+                                </strong> deals • <%= formatCurrency(stage.value) %></span>
                         </div>
                         <div class="progress-bar">
                             <div class="progress-fill"
@@ -329,12 +327,10 @@
                     <% }); %>
 
                         <p style="margin-top: 20px;"><strong>Total Pipeline Value:</strong>
-                            <%= new Intl.NumberFormat('en-US', { style: 'currency' , currency: 'USD'
-                                }).format(total_pipeline) %>
+                            <%= formatCurrency(total_pipeline) %>
                         </p>
                         <p><strong>Weighted Pipeline:</strong>
-                            <%= new Intl.NumberFormat('en-US', { style: 'currency' , currency: 'USD'
-                                }).format(weighted_pipeline) %>
+                            <%= formatCurrency(weighted_pipeline) %>
                         </p>
             </div>
 

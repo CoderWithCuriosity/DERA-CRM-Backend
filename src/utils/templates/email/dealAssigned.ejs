@@ -147,7 +147,7 @@
             
             <div class="deal-card">
                 <div class="stage-badge"><%= stage %></div>
-                <div class="deal-amount"><%= new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount) %></div>
+                <div class="deal-amount"><%= formatCurrency(amount) %></div>
                 <div class="deal-probability">Probability: <%= probability %>%</div>
             </div>
             
